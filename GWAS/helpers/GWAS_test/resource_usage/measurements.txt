@@ -1,0 +1,9 @@
+Test running GWAS
+-Chromosome 3
+-phenotype: scratch/retina/GWAS/helpers/Extract_SBP_Phenotypes/output/
+
+
+Determining RAM requirements
+10GB
+
+Testing time performance with different SBATCH directives
