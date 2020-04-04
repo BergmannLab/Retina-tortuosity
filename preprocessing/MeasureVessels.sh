@@ -9,6 +9,7 @@
 #SBATCH --mem 6GB
 #SBATCH --time 00-00:35:00
 #SBATCH --partition normal
+####### --array=1-582 for full ingestion
 #SBATCH --array=1-1
 
 source $HOME/retina/config.sh

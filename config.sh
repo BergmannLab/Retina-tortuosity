@@ -2,7 +2,7 @@
 
 # RAW IMAGE DATA
 ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/
-raw_data_dirf=$ARIA_data_dir/CLRIS/
+raw_data_dir=$ARIA_data_dir/CLRIS/
 
 # empirically determined quality threshold relative to vessel stat "length__TOT"
 quality_thr=11000

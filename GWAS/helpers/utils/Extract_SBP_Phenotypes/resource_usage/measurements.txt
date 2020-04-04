@@ -1,0 +1,29 @@
+- Request exclusive access to a node: #SBATCH --exclusive
+- Disable: --ntasks --cpus-per-task --mem 
+- Add profiling: #SBATCH --profile=all
+- Allow for enough running time
+
+[mtomason@frt utils]$ sacct --format "JobID,CPUTime,NNodes,NTasks,NCPUS,MaxVMSize" | grep 196198
+196198         00:00:51        1                   1            
+196198.batch   00:00:51        1        1          1   1331040K 
+
+
+[mtomason@frt utils]$ seff 196198
+Use of uninitialized value $lmem in numeric lt (<) at /bin/seff line 130, <DATA> line 624.
+Job ID: 196198
+Cluster: chuv
+User/Group: mtomason/unilcbg
+State: COMPLETED (exit code 0)
+Cores: 1
+CPU Utilized: 00:00:29
+CPU Efficiency: 56.86% of 00:00:51 core-walltime
+Job Wall-clock time: 00:00:51
+Memory Utilized: 0.00 MB (estimated maximum)
+Memory Efficiency: 0.00% of 5.00 GB (5.00 GB/node)
+
+
+TIME: 51 sec
+RAM: 1331040K = 1331M
+
+but with --mem=1500M I get oom
+

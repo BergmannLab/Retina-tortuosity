@@ -17,21 +17,21 @@ classdef Vessel_Data_IO
       
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        % MATTIA: Save VESSEL STATS and MEASUREMTNS to a TEXT file
-       function [stats_file, measurements_file, quality_data] = save_vessel_data_to_text(fpath, fname, vessel_data)
+       function [stats_file, measurements_file, quality_measure] = save_vessel_data_to_text(fpath, fname, vessel_data)
            
             % names of output files
             stats_file = fullfile(fpath, strcat(fname,"_stats.tsv"));
             measurements_file = fullfile(fpath, strcat(fname,"_measurements.tsv"));
             
             % data structure to contain stats
-            stats_names="length__TOT \t max_diameter \t min_diameter \t mean_diameter \t mean_tortuosity \t std_tortuosity \n";
+            stats_names="length__TOT \t max_diameter \t min_diameter \t median_diameter \t median_tortuosity \t std_tortuosity \n";
             stats_names = strrep(stats_names,' ','');
             stats_array = zeros(1,6);
             num_vessels = numel(vessel_data.vessel_list());
             lengths = zeros(num_vessels,1);
             max_diameters = zeros(num_vessels,1);
             min_diameters = zeros(num_vessels,1);
-            mean_diameters = zeros(num_vessels,1);
+            median_diameters = zeros(num_vessels,1);
             tortuosities = zeros(num_vessels,1);
 
             % for each vessel
@@ -48,44 +48,35 @@ classdef Vessel_Data_IO
                 lengths(segmement_index,1) = segment.length_cumulative;
                 max_diameters(segmement_index,1) = max(diameters);
                 min_diameters(segmement_index,1) = min(diameters);
-                mean_diameters(segmement_index,1) = mean(diameters);
+                median_diameters(segmement_index,1) = median(diameters);
                 tortuosities(segmement_index,1) = segment.length_cumulative / segment.length_straight_line;
             end
 
             % return value that will be used for quality filtering
-            quality_data = sum(lengths); % tot length of vasculature system
+            quality_measure = sum(lengths); % tot length of vasculature system
             
             % calculate stats
-            stats_array(1) = quality_data; % length__TOT:
-            stats_array(2) = max(max_diameters); % max_diameter__MEAN
-            stats_array(3) = min(min_diameters); % min_diameter__MEAN
-            stats_array(4) = mean(mean_diameters); % mean_diameter__MEAN
-            stats_array(5) = mean(tortuosities); % tortuosity__MEAN
-            stats_array(6) = std(tortuosities); % tortuosity__STD
+            stats_array(1) = quality_measure;
+            stats_array(2) = max(max_diameters);
+            stats_array(3) = min(min_diameters);
+            stats_array(4) = median(median_diameters);
+            stats_array(5) = median(tortuosities);
+            stats_array(6) = std(tortuosities);
             
             % save stats to tile
-            %save_stats(stats_names, stats_array, stats_file);
             fid = fopen(stats_file,'wt');
             fprintf(fid, stats_names);
             fclose(fid);
-            dlmwrite(stats_file,stats_array,'delimiter','\t','-append');
-       end
-       
-       function save_stats(header, matrix, name)
-            fid = fopen(name, 'w');
-            fprintf(fid, '%s,', header{1,1:end-1}) ;
-            fprintf(fid, '%s\n', header{1,end}) ;
-            fclose(fid) ;
-            dlmwrite(name, matrix(1:end,:), 'precision', 14, '-append') ;
+            dlmwrite(stats_file,stats_array,'delimiter','\t','precision', 14,'-append');
        end
        
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        % MATTIA: apply quality filter
        % remove generated files for images with "quality_data" (i.e. tot 
        % length of vasculature system) < then "threshold"
-       function filter_quality(stats_file, measurements_file, ARIA_object_file, quality_thr, quality_data)
-           if (quality_data < str2double(quality_thr))
-                disp(strcat("  SKIPPING IMAGE: tot amount of vasculature (", num2str(quality_data), ") < quality threshold "))
+       function filter_quality(stats_file, measurements_file, ARIA_object_file, quality_thr, quality_measure)
+           if (quality_measure < str2double(quality_thr))
+                disp(strcat("  SKIPPING IMAGE: tot amount of vasculature (", num2str(quality_measure), ") < quality threshold "))
                 delete(stats_file);
                 delete(measurements_file);
                 delete(ARIA_object_file);
@@ -193,13 +184,14 @@ classdef Vessel_Data_IO
                          throw(MException('Vessel_Data_IO:Open', 'No vessels found in the chosen file.'));
                     else
                         % mattia: save data (measurements and stats) and store object to .m file 
-                        [stats_file, measurements_file, quality_data] = Vessel_Data_IO.save_vessel_data_to_text(fpath, fname, vessel_data); % mattia
+                        [stats_file, measurements_file, quality_measure] = Vessel_Data_IO.save_vessel_data_to_text(fpath, fname, vessel_data); % mattia
                         ARIA_object_file = Vessel_Data_IO.save_vessel_object_to_file(fpath, fname, vessel_data); % mattia
                         % mattia: apply quality filter to appropriate
                         % files, if needed
-                        Vessel_Data_IO.filter_quality(stats_file, measurements_file, ARIA_object_file, quality_thr, quality_data)
+                        Vessel_Data_IO.filter_quality(stats_file, measurements_file, ARIA_object_file, quality_thr, quality_measure)
                     end
 
+                    
                 catch ME
                     rethrow(ME);
                 end
