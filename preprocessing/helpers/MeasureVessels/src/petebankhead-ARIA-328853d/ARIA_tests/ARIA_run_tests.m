@@ -1,4 +1,4 @@
-function ARIA_run_tests(f_name, test_name, path_to_raw, script_dir, chunk_start, chunk_size, quality_thr)
+function ARIA_run_tests(f_name, test_name, path_to_raw, script_dir, chunk_start, chunk_size, quality_thr, path_to_output)
 % Run all the tests using ARIA to create the results reported in the paper
 % 'Fast retinal vessel detection and measurement using wavelets and edge
 % location refinement'.
@@ -206,7 +206,7 @@ if any(strcmp({'review', 'all'}, test_name))
 		processor = zeros(0); % mattia: setting preprocessor to null (the function will take care of initializing it)
         chunk_start = str2double(chunk_start); % mattia: converting input params to correct type
 		chunk_size = str2double(chunk_size); % mattia: converting params
-		REVIEW(ii) = REVIEW_evaluate_diameter_measurements(sets{ii}, processor, chunk_start, chunk_size, quality_thr, path_to_raw);
+		REVIEW(ii) = REVIEW_evaluate_diameter_measurements(sets{ii}, processor, chunk_start, chunk_size, quality_thr, path_to_raw, path_to_output);
     end
 
     % mattia: do not use file, it can create a race condition between SLURM jobs

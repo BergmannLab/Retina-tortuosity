@@ -17,7 +17,7 @@ limit=1000
 gpuid=-1
 
 # backups
-archive=/archive/unilcbg/mtomason/ 
+archive=/stornext/CHUV1/archive/unilcbg/mtomason/
 # location of raw data, software, and permanent pipeline outputs
 data=/data/FAC/FBM/DBC/sbergman/
 # location of scratch folder (all pipeline outputs and code)

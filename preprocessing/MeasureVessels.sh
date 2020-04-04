@@ -10,7 +10,7 @@
 #SBATCH --time 00-00:35:00
 #SBATCH --partition normal
 ####### --array=1-582 for full ingestion
-#SBATCH --array=1-1
+#SBATCH --array=1-36
 
 source $HOME/retina/config.sh
 begin=$(date +%s)
@@ -23,7 +23,8 @@ chunk_size=$(echo $PARAM | cut -d" " -f2)
 
 # run vessels measurements with ARIA
 script_dir=$PWD/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/
-script_parmeters="0 REVIEW $ARIA_data_dir $script_dir $chunk_start $chunk_size $quality_thr"
+path_to_output=$scratch/retina/preprocessing/output/MeasureVessels/
+script_parmeters="0 REVIEW $ARIA_data_dir $script_dir $chunk_start $chunk_size $quality_thr $path_to_output"
 
 # OPTION 1: if FULL MATLAB IS AVAILABLE
 #cd $script_dir && matlab -nodisplay -nosplash -nodesktop -r "addpath(genpath('"$script_dir"/..'));ARIA_run_tests $script_parmeters ;quit;"

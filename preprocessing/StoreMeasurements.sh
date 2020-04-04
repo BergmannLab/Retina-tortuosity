@@ -13,27 +13,20 @@
 source $HOME/retina/config.sh
 begin=$(date +%s)
 
-data_output_dir=$data/retina/preprocessing/output/MeasureVessels/
-scratch_output_dir=$scratch/retina/preprocessing/output/MeasureVessels/
-
-# clear previous run
-#rm -f $data_output_dir/*.mat
-#rm -f $scratch_output_dir/*.mat
+input_dir=$scratch/retina/preprocessing/output/MeasureVessels/
+backup_dir=$archive/retina/preprocessing/output/StoreMeasurements/$(date +%Y_%m_%d__%H_%M_%S)
+mkdir $backup_dir
 
 tot_png_files=$(find $raw_data_dir -name *png | wc -l) # count the number of raw input inputs
-tot_mat_files=$(find $raw_data_dir -name *mat | wc -l) # count the number of measured images
+tot_mat_files=$(find $input_dir -name *mat | wc -l) # count the number of measured images
 echo "$tot_mat_files measurements"
 echo "$tot_png_files original raw images"
 
-# copy generated files to output folder
-cp $raw_data_dir/*.mat $data_output_dir # store a copy in data
-cp $raw_data_dir/*.tsv $data_output_dir
-cp $data_output_dir*.mat $scratch_output_dir # story a copy in scratch
-cp $data_output_dir*.tsv $scratch_output_dir 
+# back up
+cp $input_dir/*.mat $input_dir/*.tsv $backup_dir
 
-echo FINISHED: output has been written to:
-echo - data: $data_output_dir
-echo - scratch: $scratch_output_dir
+echo FINISHED: output has been written to: backup_dir
+
 end=$(date +%s) # calculate execution time
 tottime=$(expr $end - $begin)
 echo "execution time: $tottime sec"

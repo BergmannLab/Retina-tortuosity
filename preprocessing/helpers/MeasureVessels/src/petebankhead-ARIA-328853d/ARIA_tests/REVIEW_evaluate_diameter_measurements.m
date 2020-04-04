@@ -1,4 +1,4 @@
-function [results, images] = REVIEW_evaluate_diameter_measurements(image_set, processor, chunk_start, chunk_size, quality_thr, path_to_raw) % mattia: added parameters: chunk_start, chunk_size, quality_thr, path_to_raw
+function [results, images] = REVIEW_evaluate_diameter_measurements(image_set, processor, chunk_start, chunk_size, quality_thr, path_to_raw, path_to_output) % mattia: added parameters
 % Apply an ARIA vessel processor to a set of images in the REVIEW database
 % (see http://reviewdb.lincoln.ac.uk/), and compare the diameter
 % measurements with those of manual observers.
@@ -122,7 +122,7 @@ for ii = chunk_end:-1:chunk_start  %mattia: updating for loop accordingly
     file_name = [dir_images, fn_im(ii).name];
 	try
         disp(strcat("processing: ", fn_im(ii).name))
-    	[vd_algorithm, processing_time(ii)] = Vessel_Data_IO.load_from_file(file_name, processor, settings, quality_thr);
+    	[vd_algorithm, processing_time(ii)] = Vessel_Data_IO.load_from_file(file_name, processor, settings, quality_thr, path_to_output);
 	catch ME
         % mattia: skipping on exception
 		disp(strcat("  SKIPPING IMAGE: No vessels found"))

@@ -6,9 +6,11 @@
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1
-#SBATCH --mem 15G
+#SBATCH --mem 1G
 #SBATCH --time 00-00:01:00
 #SBATCH --partition normal
+echo
+echo WARNING: SBATCH --mem --time not optimized
 
 source $HOME/retina/config.sh
 
@@ -25,7 +27,7 @@ module purge
 module load gcc/8.3.0
 module load python/3.7.6
 module load py-biopython
-python3.8 $PWD/helpers/VesselStatsToPhenofile/run.py $output_dir $sample_file $stats_dir
+python3.7 $PWD/helpers/VesselStatsToPhenofile/run.py $output_dir $sample_file $stats_dir
 module purge
 
 echo FINISHED: output has been written to $output_dir

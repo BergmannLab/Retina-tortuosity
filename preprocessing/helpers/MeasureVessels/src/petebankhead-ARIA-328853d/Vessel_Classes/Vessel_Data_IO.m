@@ -10,18 +10,18 @@ classdef Vessel_Data_IO
        
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        % MATTIA: Save VESSEL OBJECT to a MATLAB (.m) file
-       function ARIA_object_file = save_vessel_object_to_file(fpath, fname, vessel_data)
-           ARIA_object_file = fullfile(fpath, strcat(fname,"_ARIA.mat"));
+       function ARIA_object_file = save_vessel_object_to_file(fname, vessel_data, path_to_output)
+           ARIA_object_file = fullfile(path_to_output, strcat(fname,"_ARIA.mat"));
            save(ARIA_object_file, 'vessel_data');
        end
       
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        % MATTIA: Save VESSEL STATS and MEASUREMTNS to a TEXT file
-       function [stats_file, measurements_file, quality_measure] = save_vessel_data_to_text(fpath, fname, vessel_data)
+       function [stats_file, measurements_file, quality_measure] = save_vessel_data_to_text(fname, vessel_data, path_to_output)
            
             % names of output files
-            stats_file = fullfile(fpath, strcat(fname,"_stats.tsv"));
-            measurements_file = fullfile(fpath, strcat(fname,"_measurements.tsv"));
+            stats_file = fullfile(path_to_output, strcat(fname,"_stats.tsv"));
+            measurements_file = fullfile(path_to_output, strcat(fname,"_measurements.tsv"));
             
             % data structure to contain stats
             stats_names="length__TOT \t max_diameter \t min_diameter \t median_diameter \t median_tortuosity \t std_tortuosity \n";
@@ -74,7 +74,7 @@ classdef Vessel_Data_IO
        % MATTIA: apply quality filter
        % remove generated files for images with "quality_data" (i.e. tot 
        % length of vasculature system) < then "threshold"
-       function filter_quality(stats_file, measurements_file, ARIA_object_file, quality_thr, quality_measure)
+       function filter_quality(stats_file, measurements_file, ARIA_object_file, quality_thr, quality_measure, path_to_output)
            if (quality_measure < str2double(quality_thr))
                 disp(strcat("  SKIPPING IMAGE: tot amount of vasculature (", num2str(quality_measure), ") < quality threshold "))
                 delete(stats_file);
@@ -92,7 +92,7 @@ classdef Vessel_Data_IO
        % processor name to be loaded with VESSEL_DATA_IO.
        % PROCESS_TIME gives the time spent processing an image, if
        % relevant.  Otherwise it is NaN.
-        function [vessel_data, process_time] = load_from_file(filename, processor, settings, quality_thr)
+        function [vessel_data, process_time] = load_from_file(filename, processor, settings, quality_thr, path_to_output)
                         
             % Full file name
             [fpath, fname, ext] = fileparts(filename);
@@ -184,11 +184,11 @@ classdef Vessel_Data_IO
                          throw(MException('Vessel_Data_IO:Open', 'No vessels found in the chosen file.'));
                     else
                         % mattia: save data (measurements and stats) and store object to .m file 
-                        [stats_file, measurements_file, quality_measure] = Vessel_Data_IO.save_vessel_data_to_text(fpath, fname, vessel_data); % mattia
-                        ARIA_object_file = Vessel_Data_IO.save_vessel_object_to_file(fpath, fname, vessel_data); % mattia
+                        [stats_file, measurements_file, quality_measure] = Vessel_Data_IO.save_vessel_data_to_text(fname, vessel_data, path_to_output); % mattia
+                        ARIA_object_file = Vessel_Data_IO.save_vessel_object_to_file(fname, vessel_data, path_to_output); % mattia
                         % mattia: apply quality filter to appropriate
                         % files, if needed
-                        Vessel_Data_IO.filter_quality(stats_file, measurements_file, ARIA_object_file, quality_thr, quality_measure)
+                        Vessel_Data_IO.filter_quality(stats_file, measurements_file, ARIA_object_file, quality_thr, quality_measure, path_to_output)
                     end
 
                     
