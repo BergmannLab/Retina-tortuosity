@@ -10,10 +10,10 @@
 #SBATCH --time 00-00:01:00
 #SBATCH --partition normal
 
-source $HOME/retina/config.sh
+source $HOME/retina/configs/config.sh
 
 # clear previous run
-output_dir=$PWD/output/
+output_dir=$scratch/retina/GWAS/helpers/utils/Extract_SBP_Phenotypes/output/
 rm -f $output_dir/*
 
 pheno_file=$data/retina/UKBiob/phenotypes/ukb34181.csv

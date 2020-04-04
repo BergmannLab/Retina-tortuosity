@@ -11,7 +11,7 @@
 #SBATCH --time 01-0:00:00
 #SBATCH --partition normal
 
-source $HOME/retina/config.sh
+source $HOME/retina/configs/config.sh
 begin=$(date +%s)
 
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample

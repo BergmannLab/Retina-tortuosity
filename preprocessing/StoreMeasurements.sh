@@ -10,7 +10,7 @@
 #SBATCH --time 00-01:00:00
 #SBATCH --partition normal  
 
-source $HOME/retina/config.sh
+source $HOME/retina/configs/config.sh
 begin=$(date +%s)
 
 input_dir=$scratch/retina/preprocessing/output/MeasureVessels/

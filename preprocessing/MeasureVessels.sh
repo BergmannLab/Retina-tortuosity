@@ -12,7 +12,7 @@
 ####### --array=1-582 for full ingestion
 #SBATCH --array=1-36
 
-source $HOME/retina/config.sh
+source $HOME/retina/configs/config.sh
 begin=$(date +%s)
 
 # job array

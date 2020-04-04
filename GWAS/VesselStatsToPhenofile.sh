@@ -12,7 +12,7 @@
 echo
 echo WARNING: SBATCH --mem --time not optimized
 
-source $HOME/retina/config.sh
+source $HOME/retina/configs/config.sh
 
 # clear previous run
 output_dir=$scratch/retina/GWAS/output/VesselStatsToPhenofile/

@@ -2,7 +2,7 @@
 #SBATCH --account=sbergman_retina
 #SBATCH --job-name=04__BuildTestDatasetHypertension
 
-source $HOME/retina/config.sh
+source $HOME/retina/configs/config.sh
 
 # clear previous run
 output_dir=$scratch/DL/helpers/BuildTestDatasetHypertension/output/

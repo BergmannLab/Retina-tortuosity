@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $HOME/retina/config.sh
+source $HOME/retina/configs/config.sh
 
 set +x
 
