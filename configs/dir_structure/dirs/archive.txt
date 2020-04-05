@@ -2,4 +2,5 @@
 /stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing
 /stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output
 /stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements
+/stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements/2020_04_04__15_42_40
 /stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements/2020_04_04__11_39_03
