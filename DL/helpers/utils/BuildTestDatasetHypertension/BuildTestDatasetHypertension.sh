@@ -5,7 +5,7 @@
 source $HOME/retina/configs/config.sh
 
 # clear previous run
-output_dir=$scratch/DL/helpers/BuildTestDatasetHypertension/output/
+output_dir=$scratch/DL/output/utils/BuildTestDatasetHypertension/
 output_dir_hypertense=$output_dir/hypertense/
 output_dir_normal=$output_dir/control/
 output_file_hypertense=$output_dir/hypertense.csv

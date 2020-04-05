@@ -22,9 +22,9 @@ tot_mat_files=$(find $input_dir -name *mat | wc -l) # count the number of measur
 echo "$tot_mat_files measurements"
 echo "$tot_png_files original raw images"
 
-# back up
-cp $input_dir/*.mat $backup_dir
-cp $input_dir/*.tsv $backup_dir
+# back up (cannot use cp: list of file too long)
+rsync -r --include='*.mat' --exclude='*' $input_dir $backup_dir
+rsync -r --include='*.tsv' --exclude='*' $input_dir $backup_dir
 
 echo FINISHED: output has been written to: backup_dir
 

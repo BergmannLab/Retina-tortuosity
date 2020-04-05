@@ -26,6 +26,8 @@ scratch=/scratch/beegfs/FAC/FBM/DBC/sbergman/
 matlab_runtime=/software/Development/Languages/Matlab_Compiler_Runtime/96
 # BGENIE
 bgenie_dir=$data/retina/software/bgenie
+# BGENIX
+bgenix_dir=$data/retina/software/bgenix/gavinband-bgen-407eaf355425/build/apps/
 # ARIA (compiled)
 ARIA_dir=$data/retina/software/ARIA
 
