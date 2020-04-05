@@ -1,0 +1,17 @@
+------------------------------------------
+Setting up environment variables
+---
+LD_LIBRARY_PATH is .:/software/Development/Languages/Matlab_Compiler_Runtime/96/runtime/glnxa64:/software/Development/Languages/Matlab_Compiler_Runtime/96/bin/glnxa64:/software/Development/Languages/Matlab_Compiler_Runtime/96/sys/os/glnxa64:/software/Development/Languages/Matlab_Compiler_Runtime/96/sys/opengl/lib/glnxa64
+Running vessel measurements...
+processing: 1018948_21015_0_0.png
+processing: 1018901_21016_0_0.png
+processing: 1018901_21015_0_0.png
+processing: 1018862_21016_0_0.png
+processing: 1018862_21015_0_0.png
+processing: 1018843_21016_1_0.png
+processing: 1018843_21015_1_0.png
+processing: 1018804_21016_0_0.png
+processing: 1018804_21015_0_0.png
+processing: 1018771_21016_0_0.png
+FINISHED: .mat files have been written to: /data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW//CLRIS/
+execution time: 120 sec

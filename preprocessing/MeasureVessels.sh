@@ -7,10 +7,14 @@
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1
 #SBATCH --mem 6GB
-#SBATCH --time 00-00:35:00
 #SBATCH --partition normal
+
+####### --time 00-01:00:00
+#SBATCH --time 00-02:00:00
+
 ####### --array=1-582 for full ingestion
-#SBATCH --array=1-36
+####### --array=1-36 for 7k sample
+#SBATCH --array=1-582
 
 source $HOME/retina/configs/config.sh
 begin=$(date +%s)

@@ -1,0 +1,161 @@
+------------------------------------------
+Setting up environment variables
+---
+LD_LIBRARY_PATH is .:/software/Development/Languages/Matlab_Compiler_Runtime/96/runtime/glnxa64:/software/Development/Languages/Matlab_Compiler_Runtime/96/bin/glnxa64:/software/Development/Languages/Matlab_Compiler_Runtime/96/sys/os/glnxa64:/software/Development/Languages/Matlab_Compiler_Runtime/96/sys/opengl/lib/glnxa64
+Running vessel measurements...
+processing: 4274548_21015_0_0.png
+processing: 4274536_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (6778.7187) < quality threshold 
+processing: 4274536_21015_0_1.png
+  SKIPPING IMAGE: tot amount of vasculature (3189.2368) < quality threshold 
+processing: 4274536_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (8850.8104) < quality threshold 
+processing: 4274524_21016_0_0.png
+processing: 4274524_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (8217.5132) < quality threshold 
+processing: 4274501_21016_0_0.png
+processing: 4274501_21015_0_0.png
+processing: 4274474_21016_0_0.png
+processing: 4274474_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (10498.8745) < quality threshold 
+processing: 4274389_21016_0_0.png
+processing: 4274389_21015_0_0.png
+processing: 4274317_21016_0_0.png
+processing: 4274317_21015_0_0.png
+processing: 4274300_21016_0_0.png
+processing: 4274300_21015_0_0.png
+processing: 4274160_21016_1_0.png
+processing: 4274160_21015_1_0.png
+processing: 4274134_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (7438.2367) < quality threshold 
+processing: 4274134_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (10350.4152) < quality threshold 
+processing: 4274128_21016_0_0.png
+processing: 4274128_21015_0_0.png
+processing: 4274062_21016_0_0.png
+processing: 4274062_21015_0_0.png
+processing: 4274050_21016_1_0.png
+processing: 4274050_21015_1_0.png
+processing: 4274043_21016_0_0.png
+processing: 4274004_21016_0_0.png
+processing: 4274004_21015_0_0.png
+processing: 4273970_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (8330.2033) < quality threshold 
+processing: 4273970_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (9618.6469) < quality threshold 
+processing: 4273966_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (8165.045) < quality threshold 
+processing: 4273937_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (431.4048) < quality threshold 
+processing: 4273937_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (5931.0116) < quality threshold 
+processing: 4273860_21016_1_0.png
+processing: 4273860_21015_1_0.png
+processing: 4273828_21016_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (9265.8378) < quality threshold 
+processing: 4273828_21015_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (8875.7731) < quality threshold 
+processing: 4273793_21016_0_0.png
+processing: 4273793_21015_0_0.png
+processing: 4273754_21016_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (22.061) < quality threshold 
+processing: 4273754_21015_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (54.5245) < quality threshold 
+processing: 4273722_21016_0_0.png
+processing: 4273722_21015_0_0.png
+processing: 4273700_21016_0_0.png
+processing: 4273700_21015_0_0.png
+processing: 4273669_21016_0_0.png
+processing: 4273669_21015_0_0.png
+processing: 4273644_21016_1_0.png
+processing: 4273644_21015_1_0.png
+processing: 4273543_21016_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (105.023) < quality threshold 
+processing: 4273543_21015_1_0.png
+processing: 4273471_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (9383.6515) < quality threshold 
+processing: 4273471_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (6396.2628) < quality threshold 
+processing: 4273468_21016_0_0.png
+processing: 4273468_21015_0_0.png
+processing: 4273274_21016_1_0.png
+processing: 4273274_21015_1_0.png
+processing: 4273256_21016_0_0.png
+processing: 4273256_21015_0_0.png
+processing: 4273157_21016_0_0.png
+processing: 4273157_21015_0_0.png
+processing: 4273123_21016_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (4116.8433) < quality threshold 
+processing: 4273123_21015_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (4761.1998) < quality threshold 
+processing: 4273114_21016_0_0.png
+processing: 4273114_21015_0_0.png
+processing: 4273055_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (7935.6873) < quality threshold 
+processing: 4273055_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (5109.3954) < quality threshold 
+processing: 4273036_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (8358.5282) < quality threshold 
+processing: 4273036_21015_0_0.png
+processing: 4273001_21016_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (7710.2718) < quality threshold 
+processing: 4273001_21015_1_0.png
+processing: 4272974_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (148.4261) < quality threshold 
+processing: 4272974_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (6156.7789) < quality threshold 
+processing: 4272942_21016_0_0.png
+processing: 4272942_21015_0_0.png
+processing: 4272938_21016_1_0.png
+processing: 4272938_21015_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (8802.9759) < quality threshold 
+processing: 4272919_21016_0_0.png
+processing: 4272919_21015_0_0.png
+processing: 4272777_21016_0_0.png
+processing: 4272777_21015_0_0.png
+processing: 4272743_21016_1_0.png
+processing: 4272743_21015_1_0.png
+processing: 4272721_21016_0_0.png
+processing: 4272721_21015_0_0.png
+processing: 4272606_21016_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (3582.7489) < quality threshold 
+processing: 4272606_21016_0_0.png
+processing: 4272606_21015_1_0.png
+processing: 4272606_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (10189.3842) < quality threshold 
+processing: 4272554_21016_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (6376.4486) < quality threshold 
+processing: 4272554_21015_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (6135.0899) < quality threshold 
+processing: 4272472_21016_1_0.png
+processing: 4272472_21015_1_0.png
+  SKIPPING IMAGE: tot amount of vasculature (9161.281) < quality threshold 
+processing: 4272401_21016_0_0.png
+processing: 4272401_21015_0_0.png
+processing: 4272360_21016_0_0.png
+processing: 4272360_21015_0_0.png
+processing: 4272253_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (8324.7995) < quality threshold 
+processing: 4272253_21015_0_0.png
+processing: 4272144_21016_0_0.png
+processing: 4272144_21015_0_0.png
+processing: 4271962_21016_0_0.png
+processing: 4271962_21015_0_0.png
+processing: 4271899_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (514.987) < quality threshold 
+processing: 4271899_21015_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (1305.0681) < quality threshold 
+processing: 4271763_21016_0_0.png
+processing: 4271763_21015_0_0.png
+processing: 4271719_21016_0_0.png
+  SKIPPING IMAGE: tot amount of vasculature (6301.317) < quality threshold 
+processing: 4271719_21015_0_0.png
+Warning: No vessels found in 4271719_21015_0_0
+> In Vessel_Data_IO.load_from_file (line 183)
+  In REVIEW_evaluate_diameter_measurements (line 125)
+  In ARIA_run_tests (line 209)
+  SKIPPING IMAGE: No vessels found
+processing: 4271707_21016_0_0.png
+processing: 4271707_21015_0_0.png
+processing: 4271661_21016_0_0.png
+processing: 4271654_21016_0_0.png

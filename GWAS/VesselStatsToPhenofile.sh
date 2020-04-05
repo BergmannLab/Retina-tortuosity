@@ -7,10 +7,8 @@
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1
 #SBATCH --mem 1G
-#SBATCH --time 00-00:01:00
+#SBATCH --time 00-00:10:00
 #SBATCH --partition normal
-echo
-echo WARNING: SBATCH --mem --time not optimized
 
 source $HOME/retina/configs/config.sh
 
@@ -19,7 +17,9 @@ output_dir=$scratch/retina/GWAS/output/VesselStatsToPhenofile/
 rm -f $output_dir/*
 
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
-stats_dir=$scratch/retina/preprocessing/output/MeasureVessels/
+stats_dir=$archive/retina/preprocessing/output/StoreMeasurements/2020_04_04__15_42_40
+
+echo "Producing phenofile for vessel statistics for run: ${stats_dir: -20}"
 
 # extract vessel stats phenotypes
 source /dcsrsoft/spack/bin/setup_dcsrsoft

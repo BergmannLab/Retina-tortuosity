@@ -23,7 +23,8 @@ echo "$tot_mat_files measurements"
 echo "$tot_png_files original raw images"
 
 # back up
-cp $input_dir/*.mat $input_dir/*.tsv $backup_dir
+cp $input_dir/*.mat $backup_dir
+cp $input_dir/*.tsv $backup_dir
 
 echo FINISHED: output has been written to: backup_dir
 
