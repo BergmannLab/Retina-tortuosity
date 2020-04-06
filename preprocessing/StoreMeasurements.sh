@@ -8,7 +8,16 @@
 #SBATCH --cpus-per-task 1
 #SBATCH --mem 1GB
 #SBATCH --time 00-01:00:00
-#SBATCH --partition normal  
+#SBATCH --partition normal
+
+
+# prevent running via SBATCH
+if [ ! $SLURM_JOB_ID == "" ]; then
+  echo "ERROR: this script cannot be run via sbatch."
+  echo "       (/archive is not mounted on cpt nodes)"
+  echo "Please, run on FRONT NODE (consider using SCREEN)"
+  exit 1 # erorr status
+fi
 
 source $HOME/retina/configs/config.sh
 begin=$(date +%s)
