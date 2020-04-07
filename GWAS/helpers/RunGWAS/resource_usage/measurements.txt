@@ -1,0 +1,9 @@
+- samples: 3835
+- chromosomes: 1 (ch15)
+time: 15 hrs
+RAM: 6.3 GB
+
+- samples: 3835
+- chromosomes: all
+time:
+RAM:

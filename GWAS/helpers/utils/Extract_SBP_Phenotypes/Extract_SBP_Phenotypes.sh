@@ -14,7 +14,6 @@ source $HOME/retina/configs/config.sh
 
 # clear previous run
 output_dir=$scratch/retina/GWAS/output/utils/Extract_SBP_Phenotypes/output/
-rm -f $output_dir/*
 
 pheno_file=$data/retina/UKBiob/phenotypes/ukb34181.csv
 phenos_to_extract="4080-0.0,4080-0.1"

@@ -14,7 +14,6 @@ source $HOME/retina/configs/config.sh
 
 # clear previous run
 output_dir=$scratch/retina/GWAS/output/VesselStatsToPhenofile/
-rm -f $output_dir/*
 
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
 stats_dir=$archive/retina/preprocessing/output/StoreMeasurements/2020_04_04__15_42_40
