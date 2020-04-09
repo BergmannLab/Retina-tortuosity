@@ -4,12 +4,12 @@
 #SBATCH --output=helpers/RunGWAS/slurm_runs/slurm-%x_%j.out
 #SBATCH --error=helpers/RunGWAS/slurm_runs/slurm-%x_%j.err
 #SBATCH --nodes 1
-#SBATCH --ntasks 11
+#SBATCH --ntasks 1
 #SBATCH --cpus-per-task 8
 #SBATCH --mem 16G
 #SBATCH --time 01-00:00:00
 #SBATCH --partition normal
-#SBATCH --array=1-22
+#SBATCH --array=15-15
 
 source $HOME/retina/configs/config.sh
 begin=$(date +%s)
@@ -19,10 +19,10 @@ PARAM=$(sed "${SLURM_ARRAY_TASK_ID}q;d" $j_array_params)
 chromosome_number=$(echo $PARAM | cut -d" " -f1)
 
 chromosome_name=ukb_imp_chr"$chromosome_number"_v3
-chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"
+chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset.bgen
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
-pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/2020_04_04__3835/VesselStatsPhenofile.csv
-covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/21022-0.0,31-0.0,4080-0.0_age,sex,SBP.csv
+pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/2020_04_04__3835qqnorm/phenofile_qqnorm.csv
+covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/age,sex,SBP,5PCs.csv
 output_file=$scratch/retina/GWAS/output/RunGWAS/output_"$chromosome_name".txt
 
 # prepare output dir

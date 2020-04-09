@@ -12,12 +12,15 @@
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/VesselStatsToPhenofile
-/scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/VesselStatsToPhenofile/3835_samples_2020_04_04
+/scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/VesselStatsToPhenofile/2020_04_04__3835
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/utils
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/utils/GWAS_test
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/utils/GWAS_test/output
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/utils/Extract_SBP_Phenotypes
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/utils/Extract_SBP_Phenotypes/output
+/scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/ExtractCovariatePhenotypes
+/scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/RunGWAS
+/scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/RunGWAS/2020_04_06__3835_ch15
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/preprocessing
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/preprocessing/output
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/preprocessing/output/MeasureVessels

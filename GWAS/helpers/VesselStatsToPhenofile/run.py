@@ -18,7 +18,7 @@ def read_samples(sample_file):
 def calculate_average(stats_i, stats_collision):
     return (stats_i.values + stats_collision.values) / 2
     
-def VesselStats_to_phenofile(output_dir, sample_file, stats_dir):
+def VesselStats_to_phenofile(output, sample_file, stats_dir):
     
     # create an empty dataframe to hold stats
     # index = eid from sample file (to respect UKBB ordering)
@@ -66,20 +66,19 @@ def VesselStats_to_phenofile(output_dir, sample_file, stats_dir):
     print(str(len(not_in_sample)) + " were omitted (not in sample file)")
     stats_phenotypes.fillna(-999, inplace=True)
     # output
-    output_file  = output_dir + "/VesselStatsPhenofile.csv"
-    stats_phenotypes.to_csv(output_file, sep=' ', index = False)
-    omitted_file = output_dir + "/NotInSampleFile.csv"
+    stats_phenotypes.to_csv(output, sep=' ', index = False)
+    omitted_file = output[:-4] + "_NotInSamplefile.csv"
     with open(omitted_file, "w") as outfile:
         outfile.write("\n".join(not_in_sample))
 
 
 def main():
-    output_dir = os.sys.argv[1]
+    output = os.sys.argv[1]
     sample_file = os.sys.argv[2]
     stats_dir = os.sys.argv[3]
     print("Turning Vessel Stats (ARIA) to GWAS phenofile")
     print("using sample file: " + sample_file + "\n")
-    VesselStats_to_phenofile(output_dir, sample_file, stats_dir)
+    VesselStats_to_phenofile(output, sample_file, stats_dir)
     print("DONE")
   
 if __name__== "__main__":

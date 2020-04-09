@@ -16,7 +16,7 @@ def read_samples(sample_file):
     samples.rename(columns = {'ID_1':'eid'}, inplace = True)
     return samples
     
-def Extract_GWAS_Phenotypes(output_dir, UKBB_pheno_file, phenos_to_extract, sample_file):
+def Extract_GWAS_Phenotypes(output, UKBB_pheno_file, phenos_to_extract, sample_file):
     
     # read phenotypes and samples
     UKBB_phenotypes = pd.read_csv(UKBB_pheno_file)
@@ -33,18 +33,17 @@ def Extract_GWAS_Phenotypes(output_dir, UKBB_pheno_file, phenos_to_extract, samp
     # replace NAs according to BGENIE convention
     extracted_phenos.fillna(-999, inplace=True)
     # output
-    output_file  = output_dir + "/" + phenos_to_extract + ".csv"
-    extracted_phenos.to_csv(output_file, sep=' ', index = False)
+    extracted_phenos.to_csv(output, sep=' ', index = False)
 
 def main():
-    output_dir = os.sys.argv[1]
+    output = os.sys.argv[1]
     UKBB_pheno_file = os.sys.argv[2]
     phenos_to_extract = os.sys.argv[3]
     sample_file = os.sys.argv[4]
     print("Starting Extraction of phenotypes: " + phenos_to_extract)
     print("from UKBB phenotype file: " + UKBB_pheno_file)
     print("using sample file: " + sample_file)
-    Extract_GWAS_Phenotypes(output_dir, UKBB_pheno_file, phenos_to_extract, sample_file)
+    Extract_GWAS_Phenotypes(output, UKBB_pheno_file, phenos_to_extract, sample_file)
     print("done")
   
 if __name__== "__main__":

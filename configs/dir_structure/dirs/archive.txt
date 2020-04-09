@@ -2,5 +2,6 @@
 /stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing
 /stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output
 /stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements
-/stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements/2020_04_04__15_42_40
-/stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements/2020_04_04__11_39_03
+/stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements/2020_04_05__19_45_00__120363
+/stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements/2020_04_04__11_39_03__10
+/stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements/2020_04_04__15_42_40__7194
