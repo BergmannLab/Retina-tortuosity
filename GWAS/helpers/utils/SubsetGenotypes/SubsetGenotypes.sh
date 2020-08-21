@@ -18,7 +18,7 @@ begin=$(date +%s)
 genotypes_dir=$data/retina/UKBiob/genotypes/
 filtered_SNP_list=$genotypes_dir/rs.list
 
-for number in {1..22}  #TODO could make parallel by forking
+for number in {13..13}  #TODO could make parallel by forking
 do 
 
 	chromosome=ukb_imp_chr"$number"_v3

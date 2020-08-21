@@ -3,7 +3,7 @@ classdef Vessel < handle
     % to a vessel or vessel segment.
     %
     %
-    % Copyright © 2011 Peter Bankhead.
+    % Copyright ï¿½ 2011 Peter Bankhead.
     % See the file : Copyright.m for further details.
     
     
@@ -16,6 +16,7 @@ classdef Vessel < handle
         prop_side2;          % Edge points (second side)
         prop_angles;         % Angles of the vessel, as determined at each centre points (in form of unit vectors giving directions)
         prop_keep_inds;      % Indices of 'good' measurements, i.e. measurements to be output
+        prop_AV_score;       % Score indicating whether vessel is artery or vein
         
         prop_dark = [];      % TRUE if vessel is dark, i.e. represented by a 'valley' rather than a 'hill'
     end
@@ -27,6 +28,8 @@ classdef Vessel < handle
         side2;          % Edge points (second side)
         angles;         % Angles of the vessel, as determined at each centre points
         keep_inds;      % Indices of 'good' measurements, i.e. to be output
+        AV_score;       % Score indicating whether vessel is artery or vein
+                        % (positive for artery, negative for vein)
         
         dark = [];      % TRUE if vessel is dark, i.e. represented by a 'valley' rather than a 'hill'
     end
@@ -51,7 +54,7 @@ classdef Vessel < handle
         
         % Scale properties are obtained from VESSEL_SETTINGS calibration if available
         scale_value; % The scale value (for multiplication)
-        scale_unit;  % The unit (e.g. 'pixels', 'µm')
+        scale_unit;  % The unit (e.g. 'pixels', 'ï¿½m')
     end
     
     % General properties
@@ -235,8 +238,13 @@ classdef Vessel < handle
             end
         end
         
-        
-               
+        function set.AV_score(obj, val)
+            obj.prop_AV_score = val;
+        end
+        function val = get.AV_score(obj)
+            val = obj.prop_AV_score;
+        end
+           
         function val = get.length_cumulative(obj)
             % Cannot determine diameters
             if isempty(obj.centre)
@@ -740,7 +748,24 @@ classdef Vessel < handle
             end
         end
         
-        
+        % Michael's funciton to call vessels
+        function call_vessel(obj)
+            av_map = obj.vessel_data.artery_vein_map;
+            vessel_positions = round(obj.centre);
+            % get the RGB value from the classified AV map
+            raw_scores = [av_map(sub2ind(size(av_map),vessel_positions(:,1),vessel_positions(:,2),ones(length(vessel_positions),1)*1))...
+                av_map(sub2ind(size(av_map),vessel_positions(:,1),vessel_positions(:,2),ones(length(vessel_positions),1)*2))...
+                av_map(sub2ind(size(av_map),vessel_positions(:,1),vessel_positions(:,2),ones(length(vessel_positions),1)*3))];
+            raw_scores = double(raw_scores); % cast to double
+            raw_scores(raw_scores==0)=0.1; % remove hard 0: limit fo log goes to inf
+            ratio = raw_scores(:,1)./raw_scores(:,3);
+            log_p_ratio = log(ratio);
+            %%%log_p_ratio_adjusted = log_p_ratio .* double(raw_scores(:,1) + raw_scores(:,3)) / 255; % unused for now, but might be useful
+            % normalized way
+            num_centerlilne_pixels = size(raw_scores,1);
+            obj.AV_score = sum(log_p_ratio) / num_centerlilne_pixels;
+        end
+
     end
     
     
@@ -759,6 +784,7 @@ classdef Vessel < handle
                 new_obj.prop_side2       = obj.side2;
                 new_obj.prop_angles      = obj.angles;
                 new_obj.prop_keep_inds   = obj.keep_inds;
+                new_obj.prop_AV_score      = obj.AV_score;
                 new_obj.prop_dark        = obj.prop_dark;
                 new_obj.im_profiles       = obj.im_profiles;
                 new_obj.im_profiles_rows  = obj.im_profiles_rows;
@@ -784,6 +810,7 @@ classdef Vessel < handle
                 new_obj.prop_side2       = obj.prop_side2;
                 new_obj.prop_angles      = obj.prop_angles;
                 new_obj.prop_keep_inds   = obj.prop_keep_inds;
+                new_obj.prop_AV_score      = obj.AV_score;
                 new_obj.prop_dark        = obj.prop_dark;
                 new_obj.im_profiles       = obj.im_profiles;
                 new_obj.im_profiles_rows  = obj.im_profiles_rows;
@@ -803,6 +830,7 @@ classdef Vessel < handle
             s.side2       = obj.prop_side2;
             s.angles      = obj.prop_angles;
             s.keep_inds   = obj.prop_keep_inds;
+            s.prop_AV_score      = s.AV_score;
             s.prop_dark   = obj.prop_dark;
             s.im_profiles = obj.im_profiles;
             s.im_profiles_rows  = obj.im_profiles_rows;

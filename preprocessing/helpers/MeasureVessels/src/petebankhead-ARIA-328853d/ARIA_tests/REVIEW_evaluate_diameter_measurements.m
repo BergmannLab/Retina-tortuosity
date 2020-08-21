@@ -1,4 +1,4 @@
-function [results, images] = REVIEW_evaluate_diameter_measurements(image_set, processor, chunk_start, chunk_size, quality_thr, path_to_raw, path_to_output) % mattia: added parameters
+function [results, images] = REVIEW_evaluate_diameter_measurements(image_set, processor, chunk_start, chunk_size, AV_option, AV_thr, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, path_to_raw, path_to_AV_classified, path_to_output) % mattia: added parameters
 % Apply an ARIA vessel processor to a set of images in the REVIEW database
 % (see http://reviewdb.lincoln.ac.uk/), and compare the diameter
 % measurements with those of manual observers.
@@ -119,13 +119,14 @@ chunk_end = chunk_start+chunk_size-1; % mattia: adding logic to break down into 
 for ii = chunk_end:-1:chunk_start  %mattia: updating for loop accordingly
 
     % Apply the automated detection & measurement processing
-    file_name = [dir_images, fn_im(ii).name];
+    file_name = [dir_images, fn_im(ii).name]; % raw get image
+    AV_file_name = [path_to_AV_classified, fn_im(ii).name]; % raw AV uncertain map image
 	try
         disp(strcat("processing: ", fn_im(ii).name))
-    	[vd_algorithm, processing_time(ii)] = Vessel_Data_IO.load_from_file(file_name, processor, settings, quality_thr, path_to_output);
+    	[vd_algorithm, processing_time(ii)] = Vessel_Data_IO.load_from_file(file_name, AV_file_name, processor, settings, AV_option, AV_thr, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, path_to_output);
 	catch ME
         % mattia: skipping on exception
-		disp(strcat("  SKIPPING IMAGE: No vessels found"))
+		disp(strcat("  SKIPPING IMAGE: No vessels found (exception: ", ME.identifier, ")"))
 		continue % skip this image pass control to next iteration
     end
     

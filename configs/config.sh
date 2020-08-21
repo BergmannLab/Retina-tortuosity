@@ -1,11 +1,22 @@
 # CONFIG FILE for Retina pipeline
 
 # RAW IMAGE DATA
-ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/
+ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/ # UKBB
+###ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/SkiPOGH/fundus/REVIEW/ # SkiPOGH
 raw_data_dir=$ARIA_data_dir/CLRIS/
+raw_data_dir_av_test=$ARIA_data_dir/CLRIS_AV_test/
 
-# empirically determined quality threshold relative to vessel stat "length__TOT"
-quality_thr=11000
+# quality thresholds for ARIA
+min_QCthreshold_1=11000 
+max_QCthreshold_1=20000
+min_QCthreshold_2=100
+max_QCthreshold_2=250
+
+# AV CLASSIFICATION IMAGE DATA
+AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/uncertainty/ # UKBB
+
+# quality thresholds for AVUncertain
+AVUncertain_threshold=0.79
 
 # BuildTestDatasetHypertension
 # number of hypertension cases in dataset 
@@ -30,4 +41,8 @@ bgenie_dir=$data/retina/software/bgenie
 bgenix_dir=$data/retina/software/bgenix/gavinband-bgen-407eaf355425/build/apps/
 # ARIA (compiled)
 ARIA_dir=$data/retina/software/ARIA
+# conda
+conda_dir=/data/FAC/FBM/DBC/sbergman/retina/software/miniconda3/
+# AV classification
+av_uncertain_dir=/data/FAC/FBM/DBC/sbergman/retina/software/a_v_uncertain-master/
 

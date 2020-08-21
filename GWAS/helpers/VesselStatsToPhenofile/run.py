@@ -24,12 +24,13 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     # index = eid from sample file (to respect UKBB ordering)
     stats_phenotypes = read_samples(sample_file)
     # add stats columns to dataframe
-    stats_phenotypes['max_diameter'] = None
-    stats_phenotypes['min_diameter'] = None
     stats_phenotypes['median_diameter'] = None
+    stats_phenotypes['D9_diameter'] = None
     stats_phenotypes['median_tortuosity'] = None
-    stats_phenotypes['std_tortuosity'] = None
-    
+    stats_phenotypes['short_tortuosity'] = None
+    stats_phenotypes['D9_tortuosity'] = None
+    stats_phenotypes['D95_tortuosity'] = None
+
     # import stats for each input file
     add_once=0
     replace=0
@@ -40,9 +41,8 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
             continue # process stats files only
         # import file stats to dataframe
         stats_i = pd.read_csv(stats_dir+"/"+i, sep="\t").iloc[0]
-        # remove first element (it is a quality measure, not needed now)
-        stats_i = stats_i.drop(stats_i.index[0])
-        eid_i = float(i[0:7]) # i.split("_")[0]
+        #eid_i = float(i[0:6]) # SkiPOGH
+        eid_i = float(i[0:7]) # loat(i.split("_")[0]) 
         try: # eid might not be present in stats_phenotypes
             collision = stats_phenotypes.loc[eid_i] 
             not_present = collision[0] == None

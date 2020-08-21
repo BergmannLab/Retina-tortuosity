@@ -1,0 +1,6 @@
+For now, this is prototype code, which I run on my laptop (better to debug it each time!).
+
+Once mature (i.e. the names of the phenotypes to run GWAS on will be fixed)...
+An sbatch shell script should be place in /home/mtomason/retina/GWAS
+which calls the R code in this folder.
+The R code should be appropriately parametrized.

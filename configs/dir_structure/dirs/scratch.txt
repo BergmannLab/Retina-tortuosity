@@ -13,6 +13,7 @@
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/VesselStatsToPhenofile
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/VesselStatsToPhenofile/2020_04_04__3835
+/scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/VesselStatsToPhenofile/2020_04_08__3835qqnorm
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/utils
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/utils/GWAS_test
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/utils/GWAS_test/output
@@ -21,6 +22,8 @@
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/ExtractCovariatePhenotypes
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/RunGWAS
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/RunGWAS/2020_04_06__3835_ch15
+/scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/RunGWAS/2020_04_08__3835_ch15_PCs
+/scratch/beegfs/FAC/FBM/DBC/sbergman//retina/GWAS/output/RunGWAS/2020_04_08__19_25_57
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/preprocessing
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/preprocessing/output
 /scratch/beegfs/FAC/FBM/DBC/sbergman//retina/preprocessing/output/MeasureVessels
