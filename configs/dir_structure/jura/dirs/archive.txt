@@ -1,0 +1,6 @@
+/stornext/CHUV1/archive/unilcbg/mtomason//retina
+/stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing
+/stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output
+/stornext/CHUV1/archive/unilcbg/mtomason//retina/preprocessing/output/StoreMeasurements
+
+

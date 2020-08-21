@@ -1,0 +1,4 @@
+120363 measurements
+173855 original raw images
+execution time: 16364 sec (4.5hrs)
+minimal RAM
