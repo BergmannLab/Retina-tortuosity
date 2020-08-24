@@ -14,7 +14,7 @@
 
 ####### --array=1-582 for full ingestion
 ####### --array=1-36 for 7k sample
-#SBATCH --array=1-1
+#SBATCH --array=1-582
 
 ############################################################################### 
 ARIA_target="all" # [artery|vein|all]
