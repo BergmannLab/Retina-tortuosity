@@ -24,7 +24,7 @@ classdef Vessel_Data_IO
             measurements_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_measurements.tsv"));
             
             % data structure to contain stats
-            stats_names="median_diameter \t D9_diameter \t median_tortuosity \t short_tortuosity \t D9_tortuosity \t D95_tortuosity\n";
+            stats_names="median_diameter \t D9_diameter \t median_tortuosity \t weighted_median_tortuosity \t mean_tortuosity \t weighted_mean_tortuosity\n";
             stats_names = strrep(stats_names,' ','');
             stats_array = zeros(1,6);
             num_vessels = numel(vessel_data.vessel_list());
@@ -69,7 +69,9 @@ classdef Vessel_Data_IO
             % remove hard zeros (they correspond to vessels that have been
             % filtered out as part of the artery/vein processing)
             median_diameters = nonzeros(median_diameters);
-            tortuosities = nonzeros(tortuosities);
+            % MICHAEL: finding not_zero tortuosities
+            % the 2nd element of find gives us not-zero elements
+            not_zero_idx = find(tortuosities);
             short_tortuosities = nonzeros(short_tortuosities);
             
             % calculate stats: median_diameter
@@ -80,18 +82,18 @@ classdef Vessel_Data_IO
             D9_diameter = sorted_diameters(D9_dia_index);
             stats_array(2) = D9_diameter;
             % calculate stats: median tortuosity
-            stats_array(3) = median(tortuosities);
-            % calculate stats: median tortuosity (only considering short vessels)
-            stats_array(4) = median(nonzeros(short_tortuosities));
-            % calculate stats: 9th decile of tortuosity
-            sorted_tortuosities = sort(tortuosities);
-            D9_tort_index = floor(0.90*numel(sorted_tortuosities));
-            D9_tortuosity = sorted_tortuosities(D9_tort_index);
-            stats_array(5) = D9_tortuosity;
-            % calculate stats: 95 percentile of tortuosity
-            D95_tort_index = floor(0.95*numel(sorted_tortuosities));
-            D95_tortuosity = sorted_tortuosities(D95_tort_index);
-            stats_array(6) = D95_tortuosity;
+            stats_array(3) = median(tortuosities(not_zero_idx));
+            % calculate stats: Michael: weighted median tortuosity
+            weighted_tortuosities_list = [];
+            for idx = 1:length(not_zero_idx)
+                weighted_tortuosities_list = [weighted_tortuosities_list ...
+                    repelem(tortuosities(not_zero_idx(idx)), round(lengths(not_zero_idx(idx))))];
+            end
+            stats_array(4) = median(weighted_tortuosities_list);
+            % calculate stats: Michael: mean tortuosity
+            stats_array(5) = mean(tortuosities(not_zero_idx));
+            % calculate stats: Michael: weighted mean tortuosity
+            stats_array(6) = sum(tortuosities(not_zero_idx) .* lengths(not_zero_idx)) / sum(lengths(not_zero_idx));
             
             % save stats to tile
             fid = fopen(stats_file,'wt');
