@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --account=sbergman_retina
 #SBATCH --job-name=MeasureVessels
-#SBATCH --output=helpers/MeasureVessels/slurm_runs/slurm-%x_%j.out
-#SBATCH --error=helpers/MeasureVessels/slurm_runs/slurm-%x_%j.err
+#SBATCH --output=helpers/MeasureVessels/slurm_runs_all/slurm-%x_%j.out
+#SBATCH --error=helpers/MeasureVessels/slurm_runs_all/slurm-%x_%j.err
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1
