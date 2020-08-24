@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --account=sbergman_retina
 #SBATCH --job-name=MeasureVessels
-#SBATCH --output=helpers/MeasureVessels_all/slurm_runs/slurm-%x_%j.out
-#SBATCH --error=helpers/MeasureVessels_all/slurm_runs/slurm-%x_%j.err
+#SBATCH --output=helpers/MeasureVessels/slurm_runs/slurm-%x_%j.out
+#SBATCH --error=helpers/MeasureVessels/slurm_runs/slurm-%x_%j.err
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1
@@ -14,7 +14,7 @@
 
 ####### --array=1-582 for full ingestion
 ####### --array=1-36 for 7k sample
-#SBATCH --array=1-582
+#SBATCH --array=1-1
 
 ############################################################################### 
 ARIA_target="all" # [artery|vein|all]
