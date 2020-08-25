@@ -29,9 +29,18 @@ PARAM=$(sed "${SLURM_ARRAY_TASK_ID}q;d" $j_array_params)
 chunk_start=$(echo $PARAM | cut -d" " -f1)
 chunk_size=$(echo $PARAM | cut -d" " -f2)
 
+# prepare output folder
+path_to_output=$scratch/retina/preprocessing/output/MeasureVessels_"$ARIA_target"/
+mkdir -p $path_to_output # create, if it does not exist
+if [ "$(ls -A $path_to_output)" ]; then # error, if folder not empty
+  >&2 echo "ERROR: the output dir contains file from a previous run."
+  >&2 echo "       Folder: $path_to_output"
+  >&2 echo "       Please, run the StoreMeasurement scripts or erase files manually."
+  exit 0
+fi
+
 # run vessels measurements with ARIA
 script_dir=$PWD/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/
-path_to_output=$scratch/retina/preprocessing/output/MeasureVessels_"ARIA_target"/
 script_parmeters="0 REVIEW $ARIA_data_dir $AV_data_dir $ARIA_target $AVUncertain_threshold $script_dir $chunk_start $chunk_size $min_QCthreshold_1 $max_QCthreshold_1 $min_QCthreshold_2 $max_QCthreshold_2 $path_to_output"
 
 # OPTION 1: if FULL MATLAB IS AVAILABLE
