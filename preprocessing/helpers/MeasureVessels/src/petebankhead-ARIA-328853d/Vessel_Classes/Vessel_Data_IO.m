@@ -41,8 +41,15 @@ classdef Vessel_Data_IO
                 diameters = all_segment_diameters(valid);
                 lengths(segmement_index,1) = segment.length_cumulative;
 
-                % only process vessels with a artery/vein classificationscore > user-defined threshold
+                % only process vessels with a artery/vein classification score > user-defined threshold
                 av_score = segment.AV_score();
+                
+                % uncomment to perform random AV calling (as a test)
+                %%%heads=(rand(1,1)>0.5);
+                %%%if heads
+                %%%    av_score = -av_score;
+                %%%end
+
                 if strcmp(AV_option,"artery") && av_score < str2double(AV_thr) % skip all arteries with score
                     continue;  
                 elseif strcmp(AV_option,"vein") && av_score > -str2double(AV_thr) % skip all arteries with score
