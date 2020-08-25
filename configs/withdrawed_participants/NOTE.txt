@@ -1,0 +1,4 @@
+The files containing eids are distributed yearly by the UKB.
+They are probably being generated on a windows system, so each line contains an “/r”.
+To avoid problems, run:
+$ dos2unix w43805_xxxxxxxx.csv
