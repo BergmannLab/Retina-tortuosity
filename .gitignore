@@ -4,3 +4,4 @@
 .project
 .pyc
 preprocessing/**/ARIA_run_tests
+*~
