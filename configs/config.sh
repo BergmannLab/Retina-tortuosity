@@ -41,6 +41,8 @@ bgenie_dir=$data/retina/software/bgenie
 bgenix_dir=$data/retina/software/bgenix/gavinband-bgen-407eaf355425/build/apps/
 # ARIA (compiled)
 ARIA_dir=$data/retina/software/ARIA
+# ARIA with random AV calling (compiled)
+ARIA_rndAVcalling_dir=$data/retina/software/ARIA_rndAVcalling
 # conda
 conda_dir=/data/FAC/FBM/DBC/sbergman/retina/software/miniconda3/
 # AV classification
