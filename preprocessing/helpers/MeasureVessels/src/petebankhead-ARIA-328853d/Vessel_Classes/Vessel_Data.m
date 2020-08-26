@@ -547,10 +547,19 @@ classdef Vessel_Data < hgsetget
         
         % Call arteries and veins
         function call_vessels(obj)
+            vessel_scores(obj.num_vessels) = 0;
             for ii = 1:obj.num_vessels
                 vessel = obj.vessel_list(ii);
                 vessel.call_vessel();
+                vessel_scores(ii) = vessel.AV_score;
             end
+            % uncomment to perform random AV calling (as a test)
+            % by reshuffling the vessel scores
+            %%%reshuffled_scores = vessel_scores(randperm(obj.num_vessels));
+            %%%for ii = 1:obj.num_vessels
+            %%%    vessel = obj.vessel_list(ii);
+            %%%    vessel.AV_score = reshuffled_scores(ii);
+            %%%end
         end
         
     end
