@@ -17,7 +17,7 @@
 #SBATCH --array=1-582
 
 ############################################################################### 
-ARIA_target="artery" # [artery|vein|all] # note, thoguht, that I am invoking ARIA with random AV calling
+ARIA_target="vein" # [artery|vein|all] # note, thoguht, that I am invoking ARIA with random AV calling
 ###############################################################################
 
 source $HOME/retina/configs/config.sh
