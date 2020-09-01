@@ -16,6 +16,10 @@
 ####### --array=1-36 for 7k sample
 #SBATCH --array=1-582
 
+mcr_cache_root=/tmp/$USER/MCR_CACHE_ROOT${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}
+mkdir -pv $mcr_cache_root
+export MCR_CACHE_ROOT=$mcr_cache_root
+
 ############################################################################### 
 ARIA_target="vein" # [artery|vein|all]
 ###############################################################################
@@ -40,6 +44,8 @@ script_parmeters="0 REVIEW $ARIA_data_dir $AV_data_dir $ARIA_target $AVUncertain
 # OPTION 2: if only INTERPRETER IS AVAILABLE
 # (after compiling using the compileMAT.sh in the ARIA_tests folder)
 $ARIA_dir/run_ARIA_run_tests.sh $matlab_runtime $script_parmeters
+
+rm -rv $mcr_cache_root 2>&1 >/dev/null # clear cache
 
 echo FINISHED: files have been written to: $path_to_output
 end=$(date +%s) # calculate execution time
