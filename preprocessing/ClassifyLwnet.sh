@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=sbergman_retina
-#SBATCH --job-name=ClassifyAVUncertain
+#SBATCH --job-name=⚡lwnet⚡
 #SBATCH --output=helpers/ClassifyAVUncertain/slurm_runs/slurm-%x_%j.out
 #SBATCH --error=helpers/ClassifyAVUncertain/slurm_runs/slurm-%x_%j.err
 #SBATCH --nodes 1
