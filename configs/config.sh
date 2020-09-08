@@ -3,7 +3,7 @@
 # RAW IMAGE DATA
 ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/ # UKBB
 ###ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/SkiPOGH/fundus/REVIEW/ # SkiPOGH
-raw_data_dir=$ARIA_data_dir/CLRIS/
+raw_data_dir=$ARIA_data_dir"CLRIS/"
 raw_data_dir_av_test=$ARIA_data_dir/CLRIS_AV_test/
 
 # quality thresholds for ARIA
@@ -45,4 +45,4 @@ ARIA_dir=$data/retina/software/ARIA
 conda_dir=/data/FAC/FBM/DBC/sbergman/retina/software/miniconda3/
 # AV classification
 av_uncertain_dir=/data/FAC/FBM/DBC/sbergman/retina/software/a_v_uncertain-master/
-
+lwnet_dir=/data/FAC/FBM/DBC/sbergman/retina/software/lwnet/
