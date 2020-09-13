@@ -18,6 +18,19 @@ function ARIA_run_tests(f_name, test_name, path_to_raw, path_to_AV_classified, A
 % Copyright � 2011 Peter Bankhead.
 % See the file : Copyright.m for further details.
 
+% process inputs: 
+
+function path = fix_trailing_slash(path)
+    last_letter = path(end);
+    if not(strcmp(last_letter,"/"))
+        path = char(path + "/");
+    end
+end
+path_to_raw = fix_trailing_slash(path_to_raw);
+path_to_AV_classified = fix_trailing_slash(path_to_AV_classified);
+script_dir = fix_trailing_slash(script_dir);
+path_to_output = fix_trailing_slash(path_to_output);
+
 %EO: export script_dir
 setenv('SCRIPT_DIR', script_dir)
 
@@ -245,3 +258,4 @@ if do_file
     fclose(fid);
 end
 %}
+end
