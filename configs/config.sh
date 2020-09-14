@@ -13,10 +13,12 @@ min_QCthreshold_2=100
 max_QCthreshold_2=250
 
 # AV CLASSIFICATION IMAGE DATA
-AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/uncertainty/ # UKBB
+###AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/uncertainty/ # AVUncertain UKBB
+AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/ClassifyAVLwnet/ # Lwnet UKBB
 
-# quality thresholds for AVUncertain
-AVUncertain_threshold=0.79
+# quality thresholds of artery/vein classification
+###AV_threshold=0.75 # A/V classification AUC around 0.95 (discard 30% of vessels with lowest classification score)
+AV_threshold=0.0 # A/V classification AUC around 0.88 (consider all classified vessels)
 
 # BuildTestDatasetHypertension
 # number of hypertension cases in dataset 
