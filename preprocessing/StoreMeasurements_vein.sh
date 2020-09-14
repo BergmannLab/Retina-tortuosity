@@ -35,7 +35,7 @@ echo "$tot_png_files original raw images"
 rsync -r --include='*.mat' --exclude='*' $input_dir $backup_dir
 rsync -r --include='*.tsv' --exclude='*' $input_dir $backup_dir
 
-echo FINISHED: output has been written to: backup_dir
+echo FINISHED: output has been written to: $backup_dir
 
 end=$(date +%s) # calculate execution time
 tottime=$(expr $end - $begin)
