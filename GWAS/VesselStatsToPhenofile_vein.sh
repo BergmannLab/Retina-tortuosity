@@ -7,18 +7,18 @@
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1
 #SBATCH --mem 1G
-#SBATCH --time 00-02:00:00
+#SBATCH --time 00-06:00:00
 #SBATCH --partition normal
 
 source $HOME/retina/configs/config.sh
 
 # define inputs and outputs
 output_dir=$scratch/retina/GWAS/output/VesselStatsToPhenofile/
-output=$output_dir/phenofile_vein75.csv
+output=$output_dir/phenofile_vein00.csv
 
 #UKBB
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
-stats_dir=$scratch/retina/preprocessing/output/backup/2020_09_13__18_16_17_lwnet75_vein/
+stats_dir=$scratch/retina/preprocessing/output/backup/2020_09_14__10_52_32_lwnet00_vein/
 
 #SkiPOGH
 #sample_file=$data/retina/SkiPOGH/genotypes/SkiPOGH.sample
