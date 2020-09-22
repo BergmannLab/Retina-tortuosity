@@ -10,14 +10,6 @@
 #SBATCH --time 00-02:00:00
 #SBATCH --partition normal
 
-# prevent running via SBATCH
-if [ ! $SLURM_JOB_ID == "" ]; then
-  echo "ERROR: (for now) this script cannot be run via sbatch."
-  echo "       (/archive is not mounted on cpt nodes)"
-  echo "Please, run on FRONT NODE (consider using SCREEN)"
-  exit 1 # erorr status
-fi
-
 source $HOME/retina/configs/config.sh
 
 # define inputs and outputs
@@ -26,11 +18,11 @@ output=$output_dir/phenofile.csv
 
 #UKBB
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
-stats_dir=$archive/retina/preprocessing/output/StoreMeasurements/2020_08_10__18_33_09__116639_D9/
+stats_dir=$scratch/retina/preprocessing/output/backup/2020_08_10__18_33_09__116639_D9/
 
 #SkiPOGH
 #sample_file=$data/retina/SkiPOGH/genotypes/SkiPOGH.sample
-#stats_dir=$archive/retina/preprocessing/output/StoreMeasurements/2020_04_16__20_56_55__1133_SkiPOGH/
+#stats_dir=$scratch/retina/preprocessing/output/backup/2020_04_16__20_56_55__1133_SkiPOGH/
 
 echo "Producing phenofile for vessel statistics for run: ${stats_dir: -22}"
 
