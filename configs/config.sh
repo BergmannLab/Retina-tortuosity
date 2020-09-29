@@ -30,7 +30,7 @@ limit=1000
 gpuid=-1
 
 # backups
-archive=/stornext/CHUV1/archive/unilcbg/mtomason/
+archive=/archive/FAC/FBM/DBC/sbergman/retina/mtomason
 # location of raw data, software, and permanent pipeline outputs
 data=/data/FAC/FBM/DBC/sbergman/
 # location of scratch folder (all pipeline outputs and code)
