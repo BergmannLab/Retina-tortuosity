@@ -23,7 +23,7 @@ chromosome_name=ukb_imp_chr"$chromosome_number"_v3
 chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset.bgen # for full rslist, use _subset instead of _subset_mini
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
 
-experiment_id=2020_08_16__115820_rsid_qqnorm_D9_artery # RENAME EXPERIMENT APPROPRIATELY
+experiment_id=2020_09_15__62660_artery00 # RENAME EXPERIMENT APPROPRIATELY
 pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_resid_qqnorm.csv
 
 output_file_name=output_"$chromosome_name".txt

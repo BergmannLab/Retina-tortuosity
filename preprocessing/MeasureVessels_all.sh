@@ -10,7 +10,7 @@
 #SBATCH --partition normal
 
 ####### --time 00-01:00:00
-#SBATCH --time 00-02:30:00
+#SBATCH --time 00-03:30:00
 
 ####### --array=1-582 for full ingestion
 ####### --array=1-36 for 7k sample
@@ -36,7 +36,7 @@ chunk_size=$(echo $PARAM | cut -d" " -f2)
 # run vessels measurements with ARIA
 script_dir=$PWD/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/
 path_to_output=$scratch/retina/preprocessing/output/MeasureVessels_"$ARIA_target"/
-script_parmeters="0 REVIEW $ARIA_data_dir $AV_data_dir $ARIA_target $AVUncertain_threshold $script_dir $chunk_start $chunk_size $min_QCthreshold_1 $max_QCthreshold_1 $min_QCthreshold_2 $max_QCthreshold_2 $path_to_output"
+script_parmeters="0 REVIEW $ARIA_data_dir $AV_data_dir $ARIA_target $AV_threshold $script_dir $chunk_start $chunk_size $min_QCthreshold_1 $max_QCthreshold_1 $min_QCthreshold_2 $max_QCthreshold_2 $path_to_output"
 
 # OPTION 1: if FULL MATLAB IS AVAILABLE
 #cd $script_dir && matlab -nodisplay -nosplash -nodesktop -r "addpath(genpath('"$script_dir"/..'));ARIA_run_tests $script_parmeters ;quit;"
