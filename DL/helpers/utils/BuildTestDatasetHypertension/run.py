@@ -40,8 +40,8 @@ def BuildTestHypertenseDataset(output_file_hypertense, output_file_control, outp
     rmtree(output_dir_control); os.makedirs(output_dir_control)
     # hypertension cases (number determined by limit param)
     copyFileList(hypertrense_eid, images_dir, output_dir_hypertense, limit)
-    # include (twice) as many controls (normal/low SBP)
-    copyFileList(normal_eid, images_dir, output_dir_control, 2*limit)
+    # include as many controls (normal/low SBP)
+    copyFileList(normal_eid, images_dir, output_dir_control, limit)
 
 def main():
 	print("Starting to build Hypertension Dataset")

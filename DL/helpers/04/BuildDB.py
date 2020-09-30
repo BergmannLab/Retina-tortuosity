@@ -85,7 +85,6 @@ def buildDB(images_dir, input_list, pheno_file, output_dir):
             #eid = float(fname[103:110]) # UKBiob participant id # ECLIPSE
             
             classid=setClassIdFromPheno(eid, phenotypes) #classid:0->"hypertense", classid:1->"normal"
-            #TODO ADD A COUNTER OF HYPERTENSE CASES. MAYBE EVEN MAKE IT BALANCED? CONTINUE WHEN U HAVE ENOUGH NORMAL CONTROLS
             
             totals[classid]+=1
     

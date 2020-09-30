@@ -13,6 +13,12 @@ rm -f $output_dir/*
 db_dir=$scratch/output/04_DB/
 
 # Train DL model
-python3 helpers/05/TrainDL.py $db_dir $gpuid $output_dir
+source /dcsrsoft/spack/bin/setup_dcsrsoft
+module purge
+module load gcc/8.3.0
+module load python/3.7.6
+module load py-biopython
+python3.7 helpers/05/TrainDL.py $db_dir $gpuid $output_dir
+module purge
 
 echo FINISHED: output has been written to $output_dir
