@@ -1,6 +1,14 @@
-#!/bin/bash
+#!/bin/bash -l
 #SBATCH --account=sbergman_retina
-#SBATCH --job-name=04__BuildTestDatasetHypertension
+#SBATCH --job-name=BuildTestDatasetHypertension
+#SBATCH --output=slurm-%x_%j.out
+#SBATCH --error=slurm-%x_%j.err
+#SBATCH --nodes 1
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 1
+#SBATCH --mem 5G
+#SBATCH --time 00-06:00:00
+#SBATCH --partition normal
 
 source $HOME/retina/configs/config.sh
 
@@ -8,11 +16,11 @@ source $HOME/retina/configs/config.sh
 limit=10000
 
 # clear previous run
-output_dir=$scratch/DL/output/utils/BuildTestDatasetHypertension/
+output_dir=$scratch/retina/DL/output/utils/BuildTestDatasetHypertension/
 output_dir_hypertense=$output_dir/hypertense/
-output_dir_normal=$output_dir/control/
+output_dir_control=$output_dir/normal/
 output_file_hypertense=$output_dir/hypertense.csv
-output_file_normal=$output_dir/control.csv
+output_file_control=$output_dir/normal.csv
 rm -f $output_file_hypertense $output_file_control
 rm -f $output_dir_hypertense/*
 rm -f $output_dir_control/*
