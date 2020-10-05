@@ -6,15 +6,11 @@
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 8
-
 #SBATCH --mem 16G
-####### #SBATCH --mem 1G
-
-#SBATCH --time 01-00:00:00
-####### #SBATCH --time 00-00:05:00
-
+#SBATCH --time 01-10:00:00
+#######SBATCH --time 00-04:00:00
 #SBATCH --partition normal
-#SBATCH --array=15-15
+#SBATCH --array=1-22
 
 source $HOME/retina/configs/config.sh
 begin=$(date +%s)
@@ -24,14 +20,16 @@ PARAM=$(sed "${SLURM_ARRAY_TASK_ID}q;d" $j_array_params)
 chromosome_number=$(echo $PARAM | cut -d" " -f1)
 
 chromosome_name=ukb_imp_chr"$chromosome_number"_v3
-chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_mini.bgen
+chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset.bgen # for full rslist, use _subset instead of _subset_mini
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
-pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/2020_04_08__3835qqnorm/phenofile_qqnorm.csv
-covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/age,sex,SBP,5PCs.csv
+
+experiment_id=2020_10_03__62751_trait_qqnorm_artery00 # RENAME EXPERIMENT APPROPRIATELY
+pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_trait_qqnorm_artery00_tortuosityonly.csv
+covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar.csv
 output_file_name=output_"$chromosome_name".txt
 
 # prepare output dir
-output_dir=$scratch/retina/GWAS/output/RunGWAS/$(date +%Y_%m_%d__%H_%M_%S)/
+output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"
 mkdir -p $output_dir
 
 function validate_inputs(){ # check input files have matching number of samples

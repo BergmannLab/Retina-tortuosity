@@ -23,9 +23,9 @@ chromosome_name=ukb_imp_chr"$chromosome_number"_v3
 chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset.bgen # for full rslist, use _subset instead of _subset_mini
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
 
-experiment_id=2020_09_15__62660_artery00 # RENAME EXPERIMENT APPROPRIATELY
-pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_resid_qqnorm.csv
-
+experiment_id=2020_10_03__62751_trait_qqnorm # RENAME EXPERIMENT APPROPRIATELY
+pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_trait_qqnorm_tortuosityonly.csv
+covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar.csv
 output_file_name=output_"$chromosome_name".txt
 
 # prepare output dir
@@ -36,6 +36,7 @@ function validate_inputs(){ # check input files have matching number of samples
 	sample_file=$1
 	chromosome_file=$2
 	pheno_file=$3
+	covar_file=$4
 
 	# how many entries in sample file?
 	echo "Sample file:"
@@ -56,6 +57,13 @@ function validate_inputs(){ # check input files have matching number of samples
 	# num lines in pheno file (minus 1 for the header)
 	n_pheno=$(($n_lines-1)) 
 	echo "Number of samples in input file(s):  " $n_pheno.
+
+	# how many entries in covar file?
+	echo "Covariates file:"
+	n_lines=$(cat $covar_file | wc -l)
+	# num lines in covar file (minus 1 for the header)
+	n_covar=$(($n_lines-1)) 
+	echo "Number of samples in input file(s):  " $n_covar.
 }
 
 function run_BGENIE() {
@@ -71,14 +79,15 @@ echo covars: $covar_file
 $bgenie_dir/bgenie_v1.3_static2 \
 --bgen $chromosome_file \
 --pheno $pheno_file \
+--covar $covar_file \
 --out $output_file \
 --thread 8 \
 --pvals
 }
 
 # RUN GWAS
-validate_inputs $sample_file $chromosome_file $pheno_file
-run_BGENIE $chromosome_file $pheno_file "none" $output_dir/$output_file_name
+validate_inputs $sample_file $chromosome_file $pheno_file $covar_file
+run_BGENIE $chromosome_file $pheno_file $covar_file $output_dir/$output_file_name
 
 echo
 echo FINISHED: output has been written to:
