@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=sbergman_retina
+##SBATCH --account=sbergman_retina
 #SBATCH --job-name=BuildDB
 #SBATCH --output=helpers/04/slurm_runs/slurm-%x_%j.out
 #SBATCH --error=helpers/04/slurm_runs/slurm-%x_%j.err
@@ -17,7 +17,7 @@ output_dir=$scratch/retina/DL/output/04_DB/
 rm -f $output_dir/*pytable
 
 input_list=$data/retina/UKBiob/fundus/quality_filtered__2020_09_14__10_52_32_lwnet00_artery.csv
-pheno_file=$data/retina/UKBiob/phenotypes/1_data__extraction/ukb34181.csv
+pheno_file=$data/retina/UKBiob/phenotypes/1_data_extraction/ukb34181.csv
 
 # build Digital Pathology DB
 source /dcsrsoft/spack/bin/setup_dcsrsoft
