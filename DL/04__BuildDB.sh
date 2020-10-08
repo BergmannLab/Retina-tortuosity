@@ -10,6 +10,20 @@
 #SBATCH --time 00-01:00:00
 #SBATCH --partition normal
 
+"""
+To install the Python3 libraries tables, opencv_python, Pillow and sklearn:
+
+$ source /dcsrsoft/spack/bin/setup_dcsrsoft
+
+$ module load gcc python/3.7.6
+
+$ cd /scratch/beegfs/FAC/FBM/DBC/sbergman/retina/
+
+$ tar -zxvf pk.tar.gz
+
+$ pip install --user --no-index --find-links=pk tables opencv_python Pillow sklearn
+"""
+
 source $HOME/retina/configs/config.sh
 
 # clear previous run
