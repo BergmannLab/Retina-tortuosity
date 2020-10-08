@@ -1,8 +1,7 @@
 import os
 import tables
 import sys
-import PIL
-from PIL import Image
+import PIL.Image
 import numpy as np
 import cv2
 from sklearn import model_selection
