@@ -29,11 +29,11 @@ $ pip install --user --no-index --find-links=torch torch torchvision tensorboard
 source $HOME/retina/configs/config.sh
 
 # clear previous run
-output_dir=$scratch/DL/output/05_DL/
+output_dir=$scratch/retina/DL/output/05_DL/
 rm -f $output_dir/*
 
 # Digital Pathology DB
-db_dir=$scratch/output/04_DB/
+db_dir=$scratch/retina/DL/output/04_DB/
 
 # Train DL model
 source /dcsrsoft/spack/bin/setup_dcsrsoft
