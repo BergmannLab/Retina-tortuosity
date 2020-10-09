@@ -12,6 +12,20 @@
 #SBATCH --time 00-24:00:00
 #SBATCH --partition normal
 
+"""
+To install the Python3 libraries torch, torchvision and tensorboardX:
+
+$ source /dcsrsoft/spack/bin/setup_dcsrsoft
+
+$ module load gcc python/3.7.6
+
+$ cd /scratch/beegfs/FAC/FBM/DBC/sbergman/retina/
+
+$ tar -zxvf torch.tar.gz
+
+$ pip install --user --no-index --find-links=torch torch torchvision tensorboardX
+"""
+
 source $HOME/retina/configs/config.sh
 
 # clear previous run
