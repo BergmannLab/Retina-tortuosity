@@ -67,12 +67,12 @@ def TrainDL(db_dir, gpuid, output_dir):
     # --- training params
     batch_size=128
     patch_size=224 #currently, this needs to be 224 due to densenet architecture
-    num_epochs = 100
+    num_epochs = 2
     phases = ["train","val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
     validation_phases= ["val"]
-    
+
     def asMinutes(s):
         m = math.floor(s / 60)
         s -= m * 60
@@ -83,16 +83,16 @@ def TrainDL(db_dir, gpuid, output_dir):
         es = s / (percent+.00001)
         rs = es - s
         return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
-    
-    
+
+
     #torch.cuda.set_device(gpuid) #jupyter
     #device = torch.device(f'cuda:{gpuid}' if torch.cuda.is_available() else 'cpu') #jupyter
     #torch.cuda.set_device("cpu")
     device = torch.device(f'cuda:{gpuid}' if torch.cuda.is_available() else 'cpu')
-    
+
     #print(torch.cuda.get_device_properties(device))
     print(device)
-    
+
     #build the model according to the paramters specified above and copy it to the GPU. finally print out the number of trainable parameters
     model = DenseNet(growth_rate=growth_rate, block_config=block_config,
                      num_init_features=num_init_features, bn_size=bn_size, drop_rate=drop_rate, num_classes=num_classes).to(device)
@@ -114,12 +114,12 @@ def TrainDL(db_dir, gpuid, output_dir):
     dataLoader={}
     for phase in phases: #now for each of the phases, we're creating the dataloader
                          #interestingly, given the batch size, i've not seen any improvements from using a num_workers>0
-    
+
         dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=img_transform)
         dataLoader[phase]=DataLoader(dataset[phase], batch_size=batch_size,
                                     shuffle=True, num_workers=8,pin_memory=True)
         print(f"{phase} dataset size:\t{len(dataset[phase])}")
-        
+
     optim = torch.optim.Adam(model.parameters()) #adam is going to be the most robust, though perhaps not the best performing, typically a good place to start
     nclasses = dataset["train"].classsizes.shape[0]
     class_weight=dataset["train"].classsizes
@@ -127,55 +127,55 @@ def TrainDL(db_dir, gpuid, output_dir):
     print(class_weight)
     print(class_weight) #show final used weights, make sure that they're reasonable before continouing
     criterion = nn.CrossEntropyLoss(weight = class_weight)
-    
+
     def trainnetwork():
         writer=SummaryWriter() #open the tensorboard visualiser
         best_loss_on_test = np.Infinity
-    
+
         start_time = time.time()
         for epoch in range(num_epochs):
-            #zero out epoch based performance variables 
+            #zero out epoch based performance variables
             all_acc = {key: 0 for key in phases}
             all_loss = {key: torch.zeros(0).to(device) for key in phases} #keep this on GPU for greatly improved performance
             cmatrix = {key: np.zeros((n_classes,n_classes)) for key in phases}
-    
+
             for phase in phases: #iterate through both training and validation states
-    
+
                 if phase == 'train':
                     model.train()  # Set model to training mode
                 else: #when in eval mode, we don't want parameters to be updated
                     model.eval()   # Set model to evaluate mode
-    
+
                 for ii , (X, label, img_orig) in enumerate(dataLoader[phase]): #for each of the batches
                     X = X.to(device)  # [Nbatch, 3, H, W]
                     label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
-    
+
                     with torch.set_grad_enabled(phase == 'train'): #dynamically set gradient computation, in case of validation, this isn't needed
                                                                     #disabling is good practice and improves inference time
-    
+
                         prediction = model(X)  # [N, Nclass]
                         loss = criterion(prediction, label)
-    
-    
+
+
                         if phase=="train": #in case we're in train mode, need to do back propogation
                             optim.zero_grad()
                             loss.backward()
                             optim.step()
                             train_loss = loss
-    
-    
+
+
                         all_loss[phase]=torch.cat((all_loss[phase],loss.detach().view(1,-1)))
-    
+
                         if phase in validation_phases: #if this phase is part of validation, compute confusion matrix
                             p=prediction.detach().cpu().numpy()
                             cpredflat=np.argmax(p,axis=1).flatten()
                             yflat=label.cpu().numpy().flatten()
-    
+
                             cmatrix[phase]=cmatrix[phase]+confusion_matrix(yflat,cpredflat, labels=range(nclasses))
-    
+
                 all_acc[phase]=(cmatrix[phase]/cmatrix[phase].sum()).trace()
                 all_loss[phase] = all_loss[phase].cpu().numpy().mean()
-    
+
                 #save metrics to tensorboard
                 writer.add_scalar(f'{phase}/loss', all_loss[phase], epoch)
                 if phase in validation_phases:
@@ -183,10 +183,10 @@ def TrainDL(db_dir, gpuid, output_dir):
                     for r in range(nclasses):
                         for c in range(nclasses): #essentially write out confusion matrix
                             writer.add_scalar(f'{phase}/{r}{c}', cmatrix[phase][r][c],epoch)
-    
+
             print('%s ([%d/%d] %d%%), train loss: %.4f test loss: %.4f' % (timeSince(start_time, (epoch+1) / num_epochs),
                                                          epoch+1, num_epochs ,(epoch+1) / num_epochs * 100, all_loss["train"], all_loss["val"]),end="")
-            
+
             #if current loss is the best we've seen, save model state with all variables
             #necessary for recreation
             if all_loss["val"] < best_loss_on_test:
@@ -204,24 +204,24 @@ def TrainDL(db_dir, gpuid, output_dir):
                  'bn_size':bn_size,
                  'drop_rate':drop_rate,
                  'num_classes':num_classes}
-    
-    
+
+
                 torch.save(state, f"{output_dir}/{dataname}_densenet_best_model.pth")
             else:
                 print("")
 
-    # EXECUTE TRAINING            
+    # EXECUTE TRAINING
     trainnetwork()
-    
-    
+
+
 def main():
     db_dir = sys.argv[1]
     gpuid = sys.argv[2];
     output_dir = sys.argv[3];
     TrainDL(db_dir, gpuid, output_dir)
     print("done")
-  
+
 if __name__== "__main__":
     main()
-  
+
 

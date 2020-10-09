@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=sbergman_retina
+##SBATCH --account=sbergman_retina
 #SBATCH --job-name=TrainDL
 #SBATCH --nodelist=cpt03,cpt04,cpt05,cpt06 # Xeon Phi available on some cpts to train DL
 #SBATCH --output=helpers/05/slurm_runs/slurm-%x_%j.out
@@ -8,7 +8,7 @@
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1
 #SBATCH --mem 5G
-#SBATCH --time 00-01:00:00
+#SBATCH --time 00-24:00:00
 #SBATCH --partition normal
 
 source $HOME/retina/configs/config.sh
