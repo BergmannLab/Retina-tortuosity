@@ -13,7 +13,7 @@
 source $HOME/retina/configs/config.sh
 
 #number of cases/controls
-limit=10000
+limit=100
 
 # clear previous run
 output_dir=$scratch/retina/DL/output/utils/BuildTestDatasetHypertension/
