@@ -1,5 +1,5 @@
 #!/bin/bash -l
-#SBATCH --account=sbergman_retina
+##SBATCH --account=sbergman_retina
 #SBATCH --job-name=BuildTestDatasetHypertension
 #SBATCH --output=slurm-%x_%j.out
 #SBATCH --error=slurm-%x_%j.err
