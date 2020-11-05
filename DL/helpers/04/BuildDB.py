@@ -63,7 +63,7 @@ def buildDB(normal_dir, normal_list, hypertense_dir, hypertense_list, output_dir
 
 
         for filei in phases_normal[phase]: #now for each of the files
-            fname=files[filei]
+            fname=files_normal[filei]
 
             classid = 1 # normal class
 
@@ -87,7 +87,7 @@ def buildDB(normal_dir, normal_list, hypertense_dir, hypertense_list, output_dir
 
 
         for filei in phases_hypertense[phase]: #now for each of the files
-            fname=files[filei]
+            fname=files_hypertense[filei]
 
             classid = 0 # hypertense class
 
