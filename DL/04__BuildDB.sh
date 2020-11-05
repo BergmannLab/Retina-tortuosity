@@ -33,16 +33,13 @@ input_dir=$scratch/retina/DL/output/utils/BuildTestDatasetHypertension/
 normal_dir=$input_dir/normal/
 hypertense_dir=$input_dir/hypertense/
 
-normal_list=$input_dir/normal.csv
-hypertense_list=$input_dir/hypertense.csv
-
 # build Digital Pathology DB
 source /dcsrsoft/spack/bin/setup_dcsrsoft
 module purge
 module load gcc/8.3.0
 module load python/3.7.6
 module load py-biopython
-python3.7 helpers/04/BuildDB.py $normal_dir $normal_list $hypertense_dir $hypertense_list $output_dir
+python3.7 helpers/04/BuildDB.py $normal_dir $hypertense_dir $output_dir
 module purge
 
 echo FINISHED: output has been written to $output_dir

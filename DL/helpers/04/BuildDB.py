@@ -7,15 +7,13 @@ import cv2
 from sklearn import model_selection
 import sklearn.feature_extraction.image
 import random
-import pandas as pd
+import glob
 
-def loadImages(images_dir, input_list):
-    df = pd.read_csv(input_list); df.columns = ['file_name']
-    df['file_name'] = images_dir + df['file_name'].astype(str) + ".png" # add full path
-    files = df.values.flatten().tolist()
+def loadImages(images_dir):
+    files = glob.glob(images_dir+'*.png')
     return files;
 
-def buildDB(normal_dir, normal_list, hypertense_dir, hypertense_list, output_dir):
+def buildDB(normal_dir, hypertense_dir, output_dir):
     dataname="retina"
     patch_size=256 #size of the tiles to extract and save in the database, must be >= to training size
     stride_size=256 #distance to skip between patches, 1 indicated pixel wise extraction, patch_size would result in non-overlapping tiles
@@ -30,8 +28,8 @@ def buildDB(normal_dir, normal_list, hypertense_dir, hypertense_list, output_dir
 
     img_dtype = tables.UInt8Atom()  # dtype in which the images will be saved, this indicates that images will be saved as unsigned int 8 bit, i.e., [0,255]
     filenameAtom = tables.StringAtom(itemsize=255) #create an atom to store the filename of the image, just incase we need it later
-    files_normal = loadImages(normal_dir, normal_list)
-    files_hypertense = loadImages(hypertense_dir, hypertense_list)
+    files_normal = loadImages(normal_dir)
+    files_hypertense = loadImages(hypertense_dir)
 
     #create training and validation stages and split the files appropriately between them
     phases_normal={}
@@ -118,11 +116,9 @@ def buildDB(normal_dir, normal_list, hypertense_dir, hypertense_list, output_dir
 
 def main():
     normal_dir = sys.argv[1];
-    normal_list = sys.argv[2];
-    hypertense_dir = sys.argv[3];
-    hypertense_list = sys.argv[4];
-    output_dir = sys.argv[5];
-    buildDB(normal_dir, normal_list, hypertense_dir, hypertense_list, output_dir)
+    hypertense_dir = sys.argv[2];
+    output_dir = sys.argv[3];
+    buildDB(normal_dir, hypertense_dir, output_dir)
     print("done")
 
 if __name__== "__main__":
