@@ -68,7 +68,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     batch_size=128
     patch_size=224 #currently, this needs to be 224 due to densenet architecture
     num_epochs = 2
-    phases = ["train","val"] #how many phases did we create databases for?
+    phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
     validation_phases= ["val"]
@@ -164,17 +164,20 @@ def TrainDL(db_dir, gpuid, output_dir):
 
                         all_loss[phase]=torch.cat((all_loss[phase],loss.detach().view(1,-1)))
 
-                        if phase in validation_phases: #if this phase is part of validation, compute confusion matrix
-                            p=prediction.detach().cpu().numpy()
-                            cpredflat=np.argmax(p,axis=1).flatten()
-                            yflat=label.cpu().numpy().flatten()
+                        #if phase in validation_phases: #if this phase is part of validation, compute confusion matrix
+                        p=prediction.detach().cpu().numpy()
+                        cpredflat=np.argmax(p,axis=1).flatten()
+                        yflat=label.cpu().numpy().flatten()
 
-                            cmatrix[phase]=cmatrix[phase]+confusion_matrix(yflat,cpredflat, labels=range(nclasses))
+                        cmatrix[phase]=cmatrix[phase]+confusion_matrix(yflat,cpredflat, labels=range(nclasses))
 
+                cmatrix[phase]=np.asarray(cmatrix[phase])
                 all_acc[phase]=(cmatrix[phase]/cmatrix[phase].sum()).trace()
                 all_loss[phase] = all_loss[phase].cpu().numpy().mean()
 
                 print(cmatrix[phase])
+                print(all_acc[phase])
+                print(all_loss[phase])
 
                 #save metrics to tensorboard
                 writer.add_scalar(f'{phase}/loss', all_loss[phase], epoch)
@@ -190,7 +193,7 @@ def TrainDL(db_dir, gpuid, output_dir):
             #necessary for recreation
             if all_loss["val"] < best_loss_on_test:
                 best_loss_on_test = all_loss["val"]
-                print("  **")
+                #print("  **")
                 state = {'epoch': epoch + 1,
                  'model_dict': model.state_dict(),
                  'optim_dict': optim.state_dict(),
