@@ -77,12 +77,10 @@ def TrainDL(db_dir, gpuid, output_dir):
         m = math.floor(s / 60)
         s -= m * 60
         return '%dm %ds' % (m, s)
-    def timeSince(since, percent):
+    def timeSince(since):
         now = time.time()
         s = now - since
-        es = s / (percent+.00001)
-        rs = es - s
-        return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
+        return '%s' % (asMinutes(s))
 
 
     #torch.cuda.set_device(gpuid) #jupyter
@@ -132,8 +130,8 @@ def TrainDL(db_dir, gpuid, output_dir):
         writer=SummaryWriter() #open the tensorboard visualiser
         best_loss_on_test = np.Infinity
 
-        start_time = time.time()
         for epoch in range(num_epochs):
+            start_time = time.time()
             #zero out epoch based performance variables
             all_acc = {key: 0 for key in phases}
             all_loss = {key: torch.zeros(0).to(device) for key in phases} #keep this on GPU for greatly improved performance
@@ -176,6 +174,8 @@ def TrainDL(db_dir, gpuid, output_dir):
                 all_acc[phase]=(cmatrix[phase]/cmatrix[phase].sum()).trace()
                 all_loss[phase] = all_loss[phase].cpu().numpy().mean()
 
+                print(cmatrix[phase])
+
                 #save metrics to tensorboard
                 writer.add_scalar(f'{phase}/loss', all_loss[phase], epoch)
                 if phase in validation_phases:
@@ -184,8 +184,7 @@ def TrainDL(db_dir, gpuid, output_dir):
                         for c in range(nclasses): #essentially write out confusion matrix
                             writer.add_scalar(f'{phase}/{r}{c}', cmatrix[phase][r][c],epoch)
 
-            print('%s ([%d/%d] %d%%), train loss: %.4f test loss: %.4f' % (timeSince(start_time, (epoch+1) / num_epochs),
-                                                         epoch+1, num_epochs ,(epoch+1) / num_epochs * 100, all_loss["train"], all_loss["val"]),end="")
+            print('Epoch [%d/%d] - time_epoch %s - train_loss: %.4f - train_acc: %.4f - val_loss: %.4f - val_acc: %4.f' % (epoch+1, num_epochs, timeSince(start_time), all_loss["train"], all_acc["train"], all_loss["val"], all_acc["val"]))
 
             #if current loss is the best we've seen, save model state with all variables
             #necessary for recreation
