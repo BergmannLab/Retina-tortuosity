@@ -67,7 +67,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     # --- training params
     batch_size=128
     patch_size=224 #currently, this needs to be 224 due to densenet architecture
-    num_epochs = 2
+    num_epochs = 10
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
@@ -175,10 +175,6 @@ def TrainDL(db_dir, gpuid, output_dir):
                 all_acc[phase]=(cmatrix[phase]/cmatrix[phase].sum()).trace()
                 all_loss[phase] = all_loss[phase].cpu().numpy().mean()
 
-                print(cmatrix[phase])
-                print(all_acc[phase])
-                print(all_loss[phase])
-
                 #save metrics to tensorboard
                 writer.add_scalar(f'{phase}/loss', all_loss[phase], epoch)
                 if phase in validation_phases:
@@ -187,7 +183,7 @@ def TrainDL(db_dir, gpuid, output_dir):
                         for c in range(nclasses): #essentially write out confusion matrix
                             writer.add_scalar(f'{phase}/{r}{c}', cmatrix[phase][r][c],epoch)
 
-            print('Epoch [%d/%d] - time_epoch %s - train_loss: %.4f - train_acc: %.4f - val_loss: %.4f - val_acc: %4.f' % (epoch+1, num_epochs, timeSince(start_time), all_loss["train"], all_acc["train"], all_loss["val"], all_acc["val"]))
+            print('Epoch [%d/%d] - time_epoch %s - train_loss: %.4f - train_acc: %.4f - val_loss: %.4f - val_acc: %.4f' % (epoch+1, num_epochs, timeSince(start_time), all_loss["train"], all_acc["train"], all_loss["val"], all_acc["val"]))
 
             #if current loss is the best we've seen, save model state with all variables
             #necessary for recreation
