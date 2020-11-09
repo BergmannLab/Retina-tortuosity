@@ -14,7 +14,7 @@
 #
 # $ source /dcsrsoft/spack/bin/setup_dcsrsoft
 #
-# $ module load gcc python/3.7.6
+# $ module load gcc python/3.7.7
 #
 # $ cd /scratch/beegfs/FAC/FBM/DBC/sbergman/retina/
 #
@@ -37,7 +37,7 @@ hypertense_dir=$input_dir/hypertense/
 source /dcsrsoft/spack/bin/setup_dcsrsoft
 module purge
 module load gcc/8.3.0
-module load python/3.7.6
+module load python/3.7.7
 module load py-biopython
 python3.7 helpers/04/BuildDB.py $normal_dir $hypertense_dir $output_dir
 module purge
