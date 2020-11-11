@@ -65,7 +65,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     drop_rate=0
     num_classes=2
     # --- training params
-    batch_size=128
+    batch_size=1024 #128
     patch_size=224 #currently, this needs to be 224 due to densenet architecture
     num_epochs = 4
     phases = ["train", "val"] #how many phases did we create databases for?
