@@ -65,7 +65,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     drop_rate=0
     num_classes=2
     # --- training params
-    batch_size=256 #128
+    batch_size=128
     patch_size=224 #currently, this needs to be 224 due to densenet architecture
     num_epochs = 4
     phases = ["train", "val"] #how many phases did we create databases for?
@@ -115,7 +115,7 @@ def TrainDL(db_dir, gpuid, output_dir):
 
         dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=img_transform)
         dataLoader[phase]=DataLoader(dataset[phase], batch_size=batch_size,
-                                    shuffle=True, num_workers=8,pin_memory=True)
+                                    shuffle=True, num_workers=16,pin_memory=True)
         print(f"{phase} dataset size:\t{len(dataset[phase])}")
 
     optim = torch.optim.Adam(model.parameters()) #adam is going to be the most robust, though perhaps not the best performing, typically a good place to start
