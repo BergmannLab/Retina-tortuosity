@@ -15,11 +15,11 @@ def loadImages(images_dir):
 
 def buildDB(normal_dir, hypertense_dir, output_dir):
     dataname="retina"
-    patch_size=256 #size of the tiles to extract and save in the database, must be >= to training size
-    stride_size=256 #distance to skip between patches, 1 indicated pixel wise extraction, patch_size would result in non-overlapping tiles
-    mirror_pad_size=128 # number of pixels to pad *after* resize to image with by mirroring (edge's of patches tend not to be analyzed well, so padding allows them to appear more centered in the patch)
+    #patch_size=256 #size of the tiles to extract and save in the database, must be >= to training size
+    #stride_size=256 #distance to skip between patches, 1 indicated pixel wise extraction, patch_size would result in non-overlapping tiles
+    #mirror_pad_size=128 # number of pixels to pad *after* resize to image with by mirroring (edge's of patches tend not to be analyzed well, so padding allows them to appear more centered in the patch)
     test_set_size=.1 # what percentage of the dataset should be used as a held out validation/testing set
-    resize=1 #resize input images
+    #resize=1 #resize input images
     class_names=["hypertense", "normal"]#what classes we expect to have in the data, here we have only 2 classes but we could add additional classes
 
     seed = random.randrange(sys.maxsize) #get a random seed so that we can reproducibly do the cross validation setup
@@ -39,7 +39,8 @@ def buildDB(normal_dir, hypertense_dir, output_dir):
     phases_hypertense["train"],phases_hypertense["val"]=next(iter(model_selection.ShuffleSplit(n_splits=1,test_size=test_set_size).split(files_hypertense)))
 
     storage={} #holder for future pytables
-    block_shape=np.array((patch_size,patch_size,3)) #block shape specifies what we'll be saving into the pytable array, here we assume that masks are 1d and images are 3d
+    block_shape=np.array((224, 224, 3))
+    #block_shape=np.array((patch_size,patch_size,3)) #block shape specifies what we'll be saving into the pytable array, here we assume that masks are 1d and images are 3d
     filters=tables.Filters(complevel=6, complib='zlib') #we can also specify filters, such as compression, to improve storage speed
 
     for phase in ["train", "val"]: #now for each of the phases, we'll loop through the files
@@ -70,18 +71,24 @@ def buildDB(normal_dir, hypertense_dir, output_dir):
             io=cv2.cvtColor(cv2.imread(fname),cv2.COLOR_BGR2RGB)
             interp_method=PIL.Image.BICUBIC
 
-            io = cv2.resize(io,(0,0),fx=resize,fy=resize, interpolation=interp_method) #resize it as specified above
-            io = np.pad(io, [(mirror_pad_size, mirror_pad_size), (mirror_pad_size, mirror_pad_size), (0, 0)], mode="reflect")
+            # resize the image to the maximum input size 224x224 of the densenet used in the Deep Learning code
+            io = cv2.resize(io, dsize=(224, 224), interpolation=interp_method)
+            #io = cv2.resize(io,(0,0),fx=resize,fy=resize, interpolation=interp_method) #resize it as specified above
+            #io = np.pad(io, [(mirror_pad_size, mirror_pad_size), (mirror_pad_size, mirror_pad_size), (0, 0)], mode="reflect")
 
             #convert input image into overlapping tiles, size is ntiler x ntilec x 1 x patch_size x patch_size x3
-            io_arr_out=sklearn.feature_extraction.image.extract_patches(io,(patch_size,patch_size,3),stride_size)
+            #io_arr_out=sklearn.feature_extraction.image.extract_patches(io,(patch_size,patch_size,3),stride_size)
 
             #resize it into a ntile x patch_size x patch_size x 3
-            io_arr_out=io_arr_out.reshape(-1,patch_size,patch_size,3)
+            #io_arr_out=io_arr_out.reshape(-1,patch_size,patch_size,3)
 
-            storage["imgs"].append(io_arr_out)
-            storage["labels"].append([classid for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
-            storage["filenames"].append([fname for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
+            storage["imgs"].append(io)
+            storage["labels"].append(classid) #add the filename to the storage array
+            storage["filenames"].append(fname) #add the filename to the storage array
+
+            #storage["imgs"].append(io_arr_out)
+            #storage["labels"].append([classid for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
+            #storage["filenames"].append([fname for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
 
 
         for filei in phases_hypertense[phase]: #now for each of the files
@@ -94,18 +101,24 @@ def buildDB(normal_dir, hypertense_dir, output_dir):
             io=cv2.cvtColor(cv2.imread(fname),cv2.COLOR_BGR2RGB)
             interp_method=PIL.Image.BICUBIC
 
-            io = cv2.resize(io,(0,0),fx=resize,fy=resize, interpolation=interp_method) #resize it as specified above
-            io = np.pad(io, [(mirror_pad_size, mirror_pad_size), (mirror_pad_size, mirror_pad_size), (0, 0)], mode="reflect")
+            # resize the image to the maximum input size 224x224 of the densenet used in the Deep Learning code
+            io = cv2.resize(io, dsize=(224, 224), interpolation=interp_method)
+            #io = cv2.resize(io,(0,0),fx=resize,fy=resize, interpolation=interp_method) #resize it as specified above
+            #io = np.pad(io, [(mirror_pad_size, mirror_pad_size), (mirror_pad_size, mirror_pad_size), (0, 0)], mode="reflect")
 
             #convert input image into overlapping tiles, size is ntiler x ntilec x 1 x patch_size x patch_size x3
-            io_arr_out=sklearn.feature_extraction.image.extract_patches(io,(patch_size,patch_size,3),stride_size)
+            #io_arr_out=sklearn.feature_extraction.image.extract_patches(io,(patch_size,patch_size,3),stride_size)
 
             #resize it into a ntile x patch_size x patch_size x 3
-            io_arr_out=io_arr_out.reshape(-1,patch_size,patch_size,3)
+            #io_arr_out=io_arr_out.reshape(-1,patch_size,patch_size,3)
 
-            storage["imgs"].append(io_arr_out)
-            storage["labels"].append([classid for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
-            storage["filenames"].append([fname for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
+            storage["imgs"].append(io)
+            storage["labels"].append(classid) #add the filename to the storage array
+            storage["filenames"].append(fname) #add the filename to the storage array
+
+            #storage["imgs"].append(io_arr_out)
+            #storage["labels"].append([classid for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
+            #storage["filenames"].append([fname for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
 
         #lastely, we should store the number of pixels
         npixels=hdf5_file.create_carray(hdf5_file.root, 'classsizes', tables.Atom.from_dtype(totals.dtype), totals.shape)
