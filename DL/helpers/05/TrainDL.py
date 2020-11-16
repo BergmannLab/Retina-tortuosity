@@ -192,13 +192,13 @@ def TrainDL(db_dir, gpuid, output_dir):
                         for c in range(nclasses): #essentially write out confusion matrix
                             writer.add_scalar(f'{phase}/{r}{c}', cmatrix[phase][r][c],epoch)
 
-            print('Epoch [%d/%d] - time_epoch %s - train_loss: %.4f - train_acc: %.4f - val_loss: %.4f - val_acc: %.4f' % (epoch+1, num_epochs, timeSince(start_time), all_loss["train"], all_acc["train"], all_loss["val"], all_acc["val"]))
+            print('Epoch [%d/%d] - time_epoch %s - train_loss: %.4f - train_acc: %.4f - val_loss: %.4f - val_acc: %.4f' % (epoch+1, num_epochs, timeSince(start_time), all_loss["train"], all_acc["train"], all_loss["val"], all_acc["val"]), end='')
 
             #if current loss is the best we've seen, save model state with all variables
             #necessary for recreation
             if all_loss["val"] < best_loss_on_test:
                 best_loss_on_test = all_loss["val"]
-                #print("  **")
+                print("  **")
                 state = {'epoch': epoch + 1,
                  'model_dict': model.state_dict(),
                  'optim_dict': optim.state_dict(),
