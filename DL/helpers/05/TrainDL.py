@@ -66,8 +66,8 @@ def TrainDL(db_dir, gpuid, output_dir):
     num_classes=2
     # --- training params
     batch_size=128
-    patch_size=224 #currently, this needs to be 224 due to densenet architecture
-    num_epochs = 100
+    #patch_size=224 #currently, this needs to be 224 due to densenet architecture
+    num_epochs = 5
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
@@ -98,15 +98,24 @@ def TrainDL(db_dir, gpuid, output_dir):
 
     img_transform = transforms.Compose([
         transforms.ToPILImage(),
-        transforms.RandomVerticalFlip(),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomCrop(size=(patch_size,patch_size),pad_if_needed=True),
-        transforms.RandomResizedCrop(size=patch_size),
-        transforms.RandomRotation(180),
-        transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=.5),
-        transforms.RandomGrayscale(),
+        transforms.RandomRotation(degrees=(-5, 5)),
+        #transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=.5),
+        transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
         transforms.ToTensor()
         ])
+
+#     img_transform = transforms.Compose([
+#        transforms.ToPILImage(),
+#        transforms.RandomVerticalFlip(),
+#        transforms.RandomHorizontalFlip(),
+#        transforms.RandomCrop(size=(patch_size,patch_size),pad_if_needed=True),
+#        transforms.RandomResizedCrop(size=patch_size),
+#        transforms.RandomRotation(180),
+#        transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=.5),
+#        transforms.RandomGrayscale(),
+#        transforms.ToTensor()
+#        ])
+
 
     dataset={}
     dataLoader={}
@@ -115,7 +124,7 @@ def TrainDL(db_dir, gpuid, output_dir):
 
         dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=img_transform)
         dataLoader[phase]=DataLoader(dataset[phase], batch_size=batch_size,
-                                    shuffle=True, num_workers=16,pin_memory=True)
+                                    shuffle=True, num_workers=16, pin_memory=True)
         print(f"{phase} dataset size:\t{len(dataset[phase])}")
 
     optim = torch.optim.Adam(model.parameters()) #adam is going to be the most robust, though perhaps not the best performing, typically a good place to start
