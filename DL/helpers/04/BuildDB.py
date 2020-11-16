@@ -18,7 +18,7 @@ def buildDB(normal_dir, hypertense_dir, output_dir):
     #patch_size=256 #size of the tiles to extract and save in the database, must be >= to training size
     #stride_size=256 #distance to skip between patches, 1 indicated pixel wise extraction, patch_size would result in non-overlapping tiles
     #mirror_pad_size=128 # number of pixels to pad *after* resize to image with by mirroring (edge's of patches tend not to be analyzed well, so padding allows them to appear more centered in the patch)
-    test_set_size=.1 # what percentage of the dataset should be used as a held out validation/testing set
+    test_set_size=.2 # what percentage of the dataset should be used as a held out validation/testing set
     #resize=1 #resize input images
     class_names=["hypertense", "normal"]#what classes we expect to have in the data, here we have only 2 classes but we could add additional classes
 
