@@ -82,9 +82,9 @@ def buildDB(normal_dir, hypertense_dir, output_dir):
             #resize it into a ntile x patch_size x patch_size x 3
             #io_arr_out=io_arr_out.reshape(-1,patch_size,patch_size,3)
 
-            storage["imgs"].append(io)
-            storage["labels"].append(classid) #add the filename to the storage array
-            storage["filenames"].append(fname) #add the filename to the storage array
+            storage["imgs"].append([io])
+            storage["labels"].append([classid]) #add the filename to the storage array
+            storage["filenames"].append([fname]) #add the filename to the storage array
 
             #storage["imgs"].append(io_arr_out)
             #storage["labels"].append([classid for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
@@ -112,9 +112,9 @@ def buildDB(normal_dir, hypertense_dir, output_dir):
             #resize it into a ntile x patch_size x patch_size x 3
             #io_arr_out=io_arr_out.reshape(-1,patch_size,patch_size,3)
 
-            storage["imgs"].append(io)
-            storage["labels"].append(classid) #add the filename to the storage array
-            storage["filenames"].append(fname) #add the filename to the storage array
+            storage["imgs"].append([io])
+            storage["labels"].append([classid]) #add the filename to the storage array
+            storage["filenames"].append([fname]) #add the filename to the storage array
 
             #storage["imgs"].append(io_arr_out)
             #storage["labels"].append([classid for x in range(io_arr_out.shape[0])]) #add the filename to the storage array
