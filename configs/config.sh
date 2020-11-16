@@ -23,7 +23,7 @@ AV_threshold=0.0 # A/V classification AUC around 0.88 (consider all classified v
 # BuildTestDatasetHypertension
 # number of hypertension cases in dataset
 # (twice as many controls will be added)
-limit=1000
+#limit=1000
 
 # config GPU usage for DL
 # gpuid=-1 for CPU
