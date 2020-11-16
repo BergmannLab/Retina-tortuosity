@@ -5,14 +5,15 @@ from shutil import copyfile, rmtree
 
 def copyFileList(eid_list, images_dir, output_dir, limit):
     copied = 0
-    for items in eid_list.iteritems(): 
+    for items in eid_list.iteritems():
         eid = items[1]
-        pics = glob.glob(images_dir + str(eid) + '*.png')
+        # we select only one of the two eyes
+        pics = glob.glob(images_dir + str(eid) + '*21015*.png')
         for pic in pics:
             copyfile(pic, output_dir+os.path.basename(pic))
             copied = copied+1
             if copied>=limit: return;
-            
+
 def BuildTestHypertenseDataset(output_file_hypertense, output_file_control, output_dir_hypertense, output_dir_control, images_dir, pheno_file, limit):
     # dump to file eids corresponding to hypertense participants
     phenotypes = pd.read_csv(pheno_file)
@@ -25,7 +26,7 @@ def BuildTestHypertenseDataset(output_file_hypertense, output_file_control, outp
     #hypertrense_eid = pd.Series(phenotypes_hyp["eid"].values[0:1000])
     hypertrense_eid = phenotypes_hyp["eid"]
     hypertrense_eid.to_csv(output_file_hypertense, index=False, header=False);
-    
+
     # dump to file eids corresponding to participants with normal/low BP
     normal_DBP = phenotypes[DBP_biobankUID] < 80 # selecting in the low range
     normal_SBP = phenotypes[SBP_biobankUID] < 120
@@ -34,7 +35,7 @@ def BuildTestHypertenseDataset(output_file_hypertense, output_file_control, outp
     #normal_eid = pd.Series(phenotypes_normal["eid"].values[0:1000])
     normal_eid = phenotypes_normal["eid"]
     normal_eid.to_csv(output_file_control, index=False, header=False);
-    
+
     # build balanced dataset for hypertension by filtering images in images_dir
     rmtree(output_dir_hypertense); os.makedirs(output_dir_hypertense)
     rmtree(output_dir_control); os.makedirs(output_dir_control)
@@ -54,8 +55,8 @@ def main():
     limit = int(os.sys.argv[7])
     BuildTestHypertenseDataset(output_file_hypertense, output_file_control, output_dir_hypertense, output_dir_control, images_dir, pheno_file, limit)
     print("done")
-  
+
 if __name__== "__main__":
     main()
-  
+
 
