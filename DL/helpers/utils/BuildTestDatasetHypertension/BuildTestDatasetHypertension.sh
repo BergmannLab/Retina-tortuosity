@@ -32,7 +32,7 @@ pheno_file=$data/retina/UKBiob/phenotypes/1_data_extraction/ukb34181.csv
 source /dcsrsoft/spack/bin/setup_dcsrsoft
 module purge
 module load gcc/8.3.0
-module load python/3.7.6
+module load python/3.7.7
 module load py-biopython
 python3.7 run.py $output_file_hypertense $output_file_control $output_dir_hypertense $output_dir_control $images_dir $pheno_file $limit
 module purge
