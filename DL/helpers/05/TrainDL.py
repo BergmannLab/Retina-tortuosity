@@ -114,23 +114,23 @@ def TrainDL(db_dir, gpuid, output_dir):
 #        transforms.ToTensor()
 #        ])
 
-        train_dataset = Dataset(f"{db_dir}/{dataname}_"+"train"+".pytable", img_transform=img_transform)
+    train_dataset = Dataset(f"{db_dir}/{dataname}_"+"train"+".pytable", img_transform=img_transform)
 
-        nb_train_images = len(train_dataset)
+    nb_train_images = len(train_dataset)
 
-        #pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
-        pixels = np.array([1.2, 1.5, 2.8, 9.5, 1.6])
+    #pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
+    pixels = np.array([1.2, 1.5, 2.8, 9.5, 1.6])
 
-        data_mean = np.mean(pixels)
-        data_std = np.std(pixels)
+    data_mean = np.mean(pixels)
+    data_std = np.std(pixels)
 
-        norm_transform = transforms.Compose([
-            transforms.ToPILImage(),
-            transforms.RandomRotation(degrees=(-5, 5)),
-            transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
-            transforms.ToTensor()
-            transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
-            ])
+    norm_transform = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.RandomRotation(degrees=(-5, 5)),
+        transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
+        transforms.ToTensor()
+        transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
+        ])
 
     dataset={}
     dataLoader={}
