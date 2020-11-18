@@ -128,7 +128,7 @@ def TrainDL(db_dir, gpuid, output_dir):
         transforms.ToPILImage(),
         transforms.RandomRotation(degrees=(-5, 5)),
         transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
-        transforms.ToTensor()
+        transforms.ToTensor(),
         transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
         ])
 
