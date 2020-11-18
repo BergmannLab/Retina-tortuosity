@@ -248,10 +248,10 @@ def TrainDL(db_dir, gpuid, output_dir):
 
         #make a PDF with the loss and acc curves vs number of epochs
         pdf = PdfPages(f"{output_dir}/Training_Curves.pdf")
-        fig = plt.figure(figsize=(9, 13))
+        fig = plt.figure(figsize=(13, 9))
 
         # Loss curves
-        ax1 = fig.add_subplot(211)
+        ax1 = fig.add_subplot(121)
         ax1.plot(nb_epoch, train_loss, 'r', linewidth=3.0)
         ax1.plot(nb_epoch, val_loss, 'b', linewidth=3.0)
 
@@ -262,7 +262,7 @@ def TrainDL(db_dir, gpuid, output_dir):
         ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
 
         # Accuracy Curves
-        ax2 = fig.add_subplot(212)
+        ax2 = fig.add_subplot(122)
         ax2.plot(nb_epoch, train_acc, 'r', linewidth=3.0)
         ax2.plot(nb_epoch, val_acc, 'b', linewidth=3.0)
 
