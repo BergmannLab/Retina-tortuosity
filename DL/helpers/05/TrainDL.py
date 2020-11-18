@@ -247,7 +247,7 @@ def TrainDL(db_dir, gpuid, output_dir):
                 print("")
 
         #make a PDF with the loss and acc curves vs number of epochs
-        pdf = PdfPages("{output_dir}/Training_Curves.pdf")
+        pdf = PdfPages(f"{output_dir}/Training_Curves.pdf")
         fig = plt.figure(figsize=(9, 13))
 
         # Loss curves
