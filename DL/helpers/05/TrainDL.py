@@ -70,7 +70,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     # --- training params
     batch_size=128
     #patch_size=224 #currently, this needs to be 224 due to densenet architecture
-    num_epochs = 2
+    num_epochs = 150
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
@@ -248,7 +248,7 @@ def TrainDL(db_dir, gpuid, output_dir):
 
         #make a PDF with the loss and acc curves vs number of epochs
         pdf = PdfPages(f"{output_dir}/Training_Curves.pdf")
-        fig = plt.figure(figsize=(13, 9))
+        fig = plt.figure(figsize=(14, 6))
 
         # Loss curves
         ax1 = fig.add_subplot(121)
