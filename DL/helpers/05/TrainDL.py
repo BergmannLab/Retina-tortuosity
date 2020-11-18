@@ -191,7 +191,7 @@ def TrainDL(db_dir, gpuid, output_dir):
                             optim.zero_grad()
                             loss.backward()
                             optim.step()
-                            train_loss = loss
+                            #train_loss = loss
 
 
                         all_loss[phase]=torch.cat((all_loss[phase],loss.detach().view(1,-1)))
