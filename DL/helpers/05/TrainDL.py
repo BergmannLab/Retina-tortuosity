@@ -118,8 +118,8 @@ def TrainDL(db_dir, gpuid, output_dir):
 
     nb_train_images = len(train_dataset)
 
-    #pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
-    pixels = np.array([1.2, 1.5, 2.8, 9.5, 1.6])
+    pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
+    #pixels = np.array([1.2, 1.5, 2.8, 9.5, 1.6])
 
     data_mean = np.mean(pixels)
     data_std = np.std(pixels)
