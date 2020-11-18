@@ -98,9 +98,7 @@ def TrainDL(db_dir, gpuid, output_dir):
 
     img_transform = transforms.Compose([
         transforms.ToPILImage(),
-        transforms.RandomRotation(degrees=(-5, 5)),
-        #transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=.5),
-        transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
+        transforms.Grayscale(num_output_channels=1),
         transforms.ToTensor()
         ])
 
@@ -116,13 +114,30 @@ def TrainDL(db_dir, gpuid, output_dir):
 #        transforms.ToTensor()
 #        ])
 
+        train_dataset = Dataset(f"{db_dir}/{dataname}_"+"train"+".pytable", img_transform=img_transform)
+
+        nb_train_images = len(train_dataset)
+
+        #pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
+        pixels = np.array([1.2, 1.5, 2.8, 9.5, 1.6])
+
+        data_mean = np.mean(pixels)
+        data_std = np.std(pixels)
+
+        norm_transform = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.RandomRotation(degrees=(-5, 5)),
+            transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
+            transforms.ToTensor()
+            transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
+            ])
 
     dataset={}
     dataLoader={}
     for phase in phases: #now for each of the phases, we're creating the dataloader
                          #interestingly, given the batch size, i've not seen any improvements from using a num_workers>0
 
-        dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=img_transform)
+        dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=norm_transform)
         dataLoader[phase]=DataLoader(dataset[phase], batch_size=batch_size,
                                     shuffle=True, num_workers=16, pin_memory=True)
         print(f"{phase} dataset size:\t{len(dataset[phase])}")
