@@ -10,6 +10,9 @@ import time
 import math
 import tables
 from sklearn.metrics import confusion_matrix
+from matplotlib.ticker import MaxNLocator
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 #this defines our dataset class which will be used by the dataloader
 class Dataset(object):
@@ -119,7 +122,6 @@ def TrainDL(db_dir, gpuid, output_dir):
     nb_train_images = len(train_dataset)
 
     pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
-    #pixels = np.array([1.2, 1.5, 2.8, 9.5, 1.6])
 
     data_mean = np.mean(pixels)
     data_std = np.std(pixels)
@@ -153,6 +155,12 @@ def TrainDL(db_dir, gpuid, output_dir):
     def trainnetwork():
         writer=SummaryWriter() #open the tensorboard visualiser
         best_loss_on_test = np.Infinity
+
+        nb_epoch = []
+        train_loss = []
+        val_loss = []
+        train_acc = []
+        val_acc = []
 
         for epoch in range(num_epochs):
             start_time = time.time()
@@ -209,6 +217,12 @@ def TrainDL(db_dir, gpuid, output_dir):
 
             print('Epoch [%d/%d] - time_epoch %s - train_loss: %.4f - train_acc: %.4f - val_loss: %.4f - val_acc: %.4f' % (epoch+1, num_epochs, timeSince(start_time), all_loss["train"], all_acc["train"], all_loss["val"], all_acc["val"]), end='')
 
+            nb_epoch.append(epoch+1)
+            train_loss.append(all_loss["train"])
+            val_loss.append(all_loss["val"])
+            train_acc.append(all_acc["train"])
+            val_acc.append(all_acc["val"])
+
             #if current loss is the best we've seen, save model state with all variables
             #necessary for recreation
             if all_loss["val"] < best_loss_on_test:
@@ -231,6 +245,35 @@ def TrainDL(db_dir, gpuid, output_dir):
                 torch.save(state, f"{output_dir}/{dataname}_densenet_best_model.pth")
             else:
                 print("")
+
+        #make a PDF with the loss and acc curves vs number of epochs
+        pdf = PdfPages("{output_dir}/Training_Curves.pdf")
+        fig = plt.figure(figsize=(9, 13))
+
+        # Loss curves
+        ax1 = fig.add_subplot(211)
+        ax1.plot(nb_epoch, train_loss, 'r', linewidth=3.0)
+        ax1.plot(nb_epoch, val_loss, 'b', linewidth=3.0)
+
+        ax1.legend(['Training loss', 'Validation Loss'],fontsize=18)
+        ax1.set_xlabel('Epochs',fontsize=16)
+        ax1.set_ylabel('Loss',fontsize=16)
+        ax1.set_title('Loss Curves',fontsize=16)
+        ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+        # Accuracy Curves
+        ax2 = fig.add_subplot(212)
+        ax2.plot(nb_epoch, train_acc, 'r', linewidth=3.0)
+        ax2.plot(nb_epoch, val_acc, 'b', linewidth=3.0)
+
+        ax2.legend(['Training Accuracy', 'Validation Accuracy'],fontsize=18)
+        ax2.set_xlabel('Epochs',fontsize=16)
+        ax2.set_ylabel('Accuracy',fontsize=16)
+        ax2.set_title('Accuracy Curves',fontsize=16)
+        ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+        pdf.savefig()
+        pdf.close()
 
     # EXECUTE TRAINING
     trainnetwork()
