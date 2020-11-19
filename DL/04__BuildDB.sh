@@ -5,8 +5,8 @@
 #SBATCH --error=helpers/04/slurm_runs/slurm-%x_%j.err
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
-#SBATCH --cpus-per-task 1
-#SBATCH --mem 5G
+#SBATCH --cpus-per-task 16
+#SBATCH --mem 40G
 #SBATCH --time 00-24:00:00
 #SBATCH --partition normal
 
