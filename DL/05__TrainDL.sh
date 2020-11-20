@@ -8,8 +8,8 @@
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 16
-#SBATCH --mem 50G
-#SBATCH --time 05-00:00:00
+#SBATCH --mem 40G
+#SBATCH --time 03-00:00:00
 #SBATCH --partition normal
 
 # To install the Python3 libraries torch, torchvision and tensorboardX:
