@@ -13,7 +13,7 @@
 source $HOME/retina/configs/config.sh
 
 #number of cases/controls
-limit=20000
+limit=11500
 
 # clear previous run
 output_dir=$scratch/retina/DL/output/utils/BuildTestDatasetHypertension/
@@ -25,7 +25,12 @@ rm -f $output_file_hypertense $output_file_control
 rm -f $output_dir_hypertense/*
 rm -f $output_dir_control/*
 
-images_dir=$data/retina/UKBiob/fundus/REVIEW/CLRIS/
+# Original images
+#images_dir=$data/retina/UKBiob/fundus/REVIEW/CLRIS/
+
+# Artery/vein-segmented images
+images_dir=$scratch/retina/preprocessing/output/ClassifyAVLwnet_worked_preliminary/
+
 pheno_file=$data/retina/UKBiob/phenotypes/1_data_extraction/ukb34181.csv
 
 # build dataset of hypertense

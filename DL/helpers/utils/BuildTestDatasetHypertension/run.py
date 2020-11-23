@@ -8,7 +8,11 @@ def copyFileList(eid_list, images_dir, output_dir, limit):
     for items in eid_list.iteritems():
         eid = items[1]
         # we select only one of the two eyes
-        pics = glob.glob(images_dir + str(eid) + '*21015*.png')
+        # Original images
+        #pics = glob.glob(images_dir + str(eid) + '*21015*.png')
+
+        # Artery/vein-segmented images
+        pics = glob.glob(images_dir + str(eid) + '*21015*bin_seg.png')
         for pic in pics:
             copyfile(pic, output_dir+os.path.basename(pic))
             copied = copied+1
