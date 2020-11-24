@@ -12,10 +12,15 @@ def copyFileList(eid_list, images_dir, output_dir, limit):
         #pics = glob.glob(images_dir + str(eid) + '*21015*.png')
 
         # Artery/vein-segmented images
-        pics = glob.glob(images_dir + str(eid) + '*21015*bin_seg.png')
+        # glob.glob takes 1-2 minutes and this is done 20'000 times -> too long
+        #pics = glob.glob(images_dir + str(eid) + '*21015*bin_seg.png')
+        pics = [images_dir + str(eid) + '_21015_0_0_bin_seg.png', images_dir + str(eid) + '_21015_1_0_bin_seg.png']
         for pic in pics:
-            copyfile(pic, output_dir+os.path.basename(pic))
-            copied = copied+1
+            try:
+                copyfile(pic, output_dir+os.path.basename(pic))
+                copied = copied+1
+            except:
+                pass
             if copied>=limit: return;
 
 def BuildTestHypertenseDataset(output_file_hypertense, output_file_control, output_dir_hypertense, output_dir_control, images_dir, pheno_file, limit):
