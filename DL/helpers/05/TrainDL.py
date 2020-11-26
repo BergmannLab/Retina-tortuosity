@@ -65,7 +65,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     block_config=(2, 2, 2, 2)
     num_init_features=64
     bn_size=4
-    drop_rate=0.5
+    drop_rate=0.2
     num_classes=2
     # --- training params
     batch_size=128
