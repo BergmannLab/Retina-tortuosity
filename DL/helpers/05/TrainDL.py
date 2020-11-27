@@ -61,11 +61,11 @@ def TrainDL(db_dir, gpuid, output_dir):
     n_classes= 2    #number of classes in the data mask that we'll aim to predict
     in_channels= 3  #input channel of the data, RGB = 3
     # --- DL params
-    growth_rate=32
+    growth_rate=12
     block_config=(2, 2, 2, 2)
     num_init_features=64
     bn_size=4
-    drop_rate=0.2
+    drop_rate=0
     num_classes=2
     # --- training params
     batch_size=128
