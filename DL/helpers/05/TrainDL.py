@@ -61,16 +61,16 @@ def TrainDL(db_dir, gpuid, output_dir):
     n_classes= 2    #number of classes in the data mask that we'll aim to predict
     in_channels= 3  #input channel of the data, RGB = 3
     # --- DL params
-    growth_rate=12
-    block_config=(2, 2, 2, 2)
-    num_init_features=64
+    growth_rate=6 #32
+    block_config=(1, 1, 1, 1) #(2, 2, 2, 2)
+    num_init_features=24 #64
     bn_size=4
     drop_rate=0
     num_classes=2
     # --- training params
     batch_size=128
     #patch_size=224 #currently, this needs to be 224 due to densenet architecture
-    num_epochs = 120
+    num_epochs = 100
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
