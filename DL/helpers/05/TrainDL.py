@@ -14,6 +14,17 @@ from matplotlib.ticker import MaxNLocator
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
+class AddGaussianNoise(object):
+    def __init__(self, mean=0., std=1.):
+        self.std = std
+        self.mean = mean
+
+    def __call__(self, tensor):
+        return tensor + torch.randn(tensor.size()) * self.std + self.mean
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(mean={0}, std={1})'.format(self.mean, self.std)
+
 #this defines our dataset class which will be used by the dataloader
 class Dataset(object):
     def __init__(self, fname ,img_transform=None):
@@ -70,7 +81,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     # --- training params
     batch_size=128
     #patch_size=224 #currently, this needs to be 224 due to densenet architecture
-    num_epochs = 100
+    num_epochs = 150
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
@@ -130,8 +141,10 @@ def TrainDL(db_dir, gpuid, output_dir):
         transforms.ToPILImage(),
         transforms.RandomRotation(degrees=(-5, 5)),
         transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
+        transforms.RandomErasing(p=0.1), # randomly selects a rectangle region in an image and erases its pixels
         transforms.ToTensor(),
-        transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
+        transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std]),
+        AddGaussianNoise(0, 0.1)
         ])
 
     dataset={}
