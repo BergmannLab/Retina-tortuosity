@@ -144,7 +144,8 @@ def TrainDL(db_dir, gpuid, output_dir):
         transforms.RandomErasing(p=0.1), # randomly selects a rectangle region in an image and erases its pixels
         transforms.ToTensor(),
         transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std]),
-        transforms.RandomApply([AddGaussianNoise(0, 0.1)], p=1)
+        transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0))
+        #transforms.RandomApply([AddGaussianNoise(0, 0.1)], p=1)
         ])
 
     dataset={}
