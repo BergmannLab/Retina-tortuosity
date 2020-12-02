@@ -10,7 +10,8 @@ import random
 import glob
 
 def loadImages(images_dir):
-    files = glob.glob(images_dir+'*.png')
+    #files = glob.glob(images_dir+'*.png')
+    files = glob.glob(images_dir+'*.bmp')
     return files;
 
 def buildDB(normal_dir, hypertense_dir, output_dir):
