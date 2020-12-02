@@ -141,10 +141,10 @@ def TrainDL(db_dir, gpuid, output_dir):
         transforms.ToPILImage(),
         transforms.RandomRotation(degrees=(-5, 5)),
         transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
-        transforms.RandomErasing(p=0.1), # randomly selects a rectangle region in an image and erases its pixels
+        #transforms.RandomErasing(p=0.1), # randomly selects a rectangle region in an image and erases its pixels
         transforms.ToTensor(),
-        transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std]),
-        transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0))
+        transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
+        #transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0))
         #transforms.RandomApply([AddGaussianNoise(0, 0.1)], p=1)
         ])
 
