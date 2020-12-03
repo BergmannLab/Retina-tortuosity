@@ -273,17 +273,18 @@ def TrainDL(db_dir, gpuid, output_dir):
                 torch.save(state, f"{output_dir}/{dataname}_densenet_best_model.pth")
 
                 fpr, tpr, thresholds = roc_curve(yflat, p[:,0].flatten(), pos_label=0) # hyperclass = 0
+                roc_auc = auc(fpr, tpr)
 
                 pdf = PdfPages(f"{output_dir}/ROC_Curve.pdf")
                 plt.figure(figsize=(7, 7))
 
-                plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve')
+                plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc[2])
                 plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
                 plt.xlim([0.0, 1.0])
                 plt.ylim([0.0, 1.05])
                 plt.xlabel('False Positive Rate')
                 plt.ylabel('True Positive Rate')
-                plt.title('ROC')
+                plt.title('ROC curve for model at epoch = '+str(epoch+1))
                 plt.legend(loc="lower right")
 
                 pdf.savefig()
