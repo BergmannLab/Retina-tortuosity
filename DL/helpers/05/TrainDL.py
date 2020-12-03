@@ -10,7 +10,7 @@ import time
 import math
 import tables
 from sklearn.metrics import confusion_matrix
-from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_curve, auc
 from matplotlib.ticker import MaxNLocator
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
