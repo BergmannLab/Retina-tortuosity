@@ -81,7 +81,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     # --- training params
     batch_size=128
     #patch_size=224 #currently, this needs to be 224 due to densenet architecture
-    num_epochs = 100
+    num_epochs = 10
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
@@ -175,10 +175,16 @@ def TrainDL(db_dir, gpuid, output_dir):
         val_loss = []
         train_acc = []
         val_acc = []
+        train_sensitivity = []
+        val_sensitivity = []
+        train_specificity = []
+        val_specificity = []
 
         for epoch in range(num_epochs):
             start_time = time.time()
             #zero out epoch based performance variables
+            sensitivity = {key: 0 for key in phases}
+            specificity = {key: 0 for key in phases}
             all_acc = {key: 0 for key in phases}
             all_loss = {key: torch.zeros(0).to(device) for key in phases} #keep this on GPU for greatly improved performance
             cmatrix = {key: np.zeros((n_classes,n_classes)) for key in phases}
@@ -221,6 +227,10 @@ def TrainDL(db_dir, gpuid, output_dir):
                 all_acc[phase]=(cmatrix[phase]/cmatrix[phase].sum()).trace()
                 all_loss[phase] = all_loss[phase].cpu().numpy().mean()
 
+                tn, fp, fn, tp = cmatrix[phase].ravel()
+                sensitivity[phase] = tp/(tp+fn)
+                specificity[phase] = tn/(tn+fp)
+
                 #save metrics to tensorboard
                 writer.add_scalar(f'{phase}/loss', all_loss[phase], epoch)
                 if phase in validation_phases:
@@ -236,6 +246,10 @@ def TrainDL(db_dir, gpuid, output_dir):
             val_loss.append(all_loss["val"])
             train_acc.append(all_acc["train"])
             val_acc.append(all_acc["val"])
+            train_sensitivity.append(sensitivity["train"])
+            val_sensitivity.append(sensitivity["val"])
+            train_specificity.append(specificity["train"])
+            val_specificity.append(specificity["val"])
 
             #if current loss is the best we've seen, save model state with all variables
             #necessary for recreation
@@ -262,10 +276,10 @@ def TrainDL(db_dir, gpuid, output_dir):
 
         #make a PDF with the loss and acc curves vs number of epochs
         pdf = PdfPages(f"{output_dir}/Training_Curves.pdf")
-        fig = plt.figure(figsize=(14, 6))
+        fig = plt.figure(figsize=(14, 12))
 
         # Loss curves
-        ax1 = fig.add_subplot(121)
+        ax1 = fig.add_subplot(221)
         ax1.plot(nb_epoch, train_loss, 'r', linewidth=3.0)
         ax1.plot(nb_epoch, val_loss, 'b', linewidth=3.0)
 
@@ -276,7 +290,7 @@ def TrainDL(db_dir, gpuid, output_dir):
         ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
 
         # Accuracy Curves
-        ax2 = fig.add_subplot(122)
+        ax2 = fig.add_subplot(222)
         ax2.plot(nb_epoch, train_acc, 'r', linewidth=3.0)
         ax2.plot(nb_epoch, val_acc, 'b', linewidth=3.0)
 
@@ -284,6 +298,28 @@ def TrainDL(db_dir, gpuid, output_dir):
         ax2.set_xlabel('Epochs',fontsize=16)
         ax2.set_ylabel('Accuracy',fontsize=16)
         ax2.set_title('Accuracy Curves',fontsize=16)
+        ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+        # Sensitivity Curves
+        ax2 = fig.add_subplot(223)
+        ax2.plot(nb_epoch, train_sensitivity, 'r', linewidth=3.0)
+        ax2.plot(nb_epoch, val_sensitivity, 'b', linewidth=3.0)
+
+        ax2.legend(['Training Sensitivity', 'Validation Sensitivity'],fontsize=18)
+        ax2.set_xlabel('Epochs',fontsize=16)
+        ax2.set_ylabel('Sensitivity',fontsize=16)
+        ax2.set_title('Sensitivity Curves',fontsize=16)
+        ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+        # Specificity Curves
+        ax2 = fig.add_subplot(224)
+        ax2.plot(nb_epoch, train_specificity, 'r', linewidth=3.0)
+        ax2.plot(nb_epoch, val_specificity, 'b', linewidth=3.0)
+
+        ax2.legend(['Training Specificity', 'Validation Specificity'],fontsize=18)
+        ax2.set_xlabel('Epochs',fontsize=16)
+        ax2.set_ylabel('Specificity',fontsize=16)
+        ax2.set_title('Specificity Curves',fontsize=16)
         ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
 
         pdf.savefig()
