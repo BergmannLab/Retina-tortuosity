@@ -278,7 +278,7 @@ def TrainDL(db_dir, gpuid, output_dir):
                 plt.figure(figsize=(7, 7))
 
                 plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve')
-                plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+                plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
                 plt.xlim([0.0, 1.0])
                 plt.ylim([0.0, 1.05])
                 plt.xlabel('False Positive Rate')
