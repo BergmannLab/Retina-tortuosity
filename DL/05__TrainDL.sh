@@ -2,14 +2,14 @@
 ##SBATCH --account=sbergman_retina
 #SBATCH --job-name=TrainDL
 ##SBATCH --nodelist=cpt03,cpt04,cpt05,cpt06 # Xeon Phi available on some cpts to train DL
-#SBATCH --nodelist=cpt05
+##SBATCH --nodelist=cpt05
 #SBATCH --output=helpers/05/slurm_runs/slurm-%x_%j.out
 #SBATCH --error=helpers/05/slurm_runs/slurm-%x_%j.err
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 16
-#SBATCH --mem 40G
-#SBATCH --time 00-24:00:00
+#SBATCH --mem 20G
+#SBATCH --time 00-02:00:00
 #SBATCH --partition normal
 
 # To install the Python3 libraries torch, torchvision and tensorboardX:
