@@ -10,8 +10,8 @@ import random
 import glob
 
 def loadImages(images_dir):
-    #files = glob.glob(images_dir+'*.png')
-    files = glob.glob(images_dir+'*.bmp')
+    files = glob.glob(images_dir+'*.png') # for retina images
+    #files = glob.glob(images_dir+'*.bmp') # for Kanji images
     return files;
 
 def buildDB(normal_dir, hypertense_dir, output_dir):
