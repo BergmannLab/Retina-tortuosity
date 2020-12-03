@@ -82,7 +82,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     # --- training params
     batch_size=128
     #patch_size=224 #currently, this needs to be 224 due to densenet architecture
-    num_epochs = 5
+    num_epochs = 100
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
@@ -254,7 +254,7 @@ def TrainDL(db_dir, gpuid, output_dir):
 
             #if current loss is the best we've seen, save model state with all variables
             #necessary for recreation
-            if all_loss["val"] < best_loss_on_test:
+            if (phase == "val") and (all_loss["val"] < best_loss_on_test):
                 best_loss_on_test = all_loss["val"]
                 print("  **")
                 state = {'epoch': epoch + 1,
