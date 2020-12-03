@@ -10,6 +10,7 @@ import time
 import math
 import tables
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import roc_curve
 from matplotlib.ticker import MaxNLocator
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -81,7 +82,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     # --- training params
     batch_size=128
     #patch_size=224 #currently, this needs to be 224 due to densenet architecture
-    num_epochs = 10
+    num_epochs = 5
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
@@ -269,8 +270,25 @@ def TrainDL(db_dir, gpuid, output_dir):
                  'drop_rate':drop_rate,
                  'num_classes':num_classes}
 
-
                 torch.save(state, f"{output_dir}/{dataname}_densenet_best_model.pth")
+
+                fpr, tpr, thresholds = roc_curve(yflat, p[:,0].flatten(), pos_label=0) # hyperclass = 0
+
+                pdf = PdfPages(f"{output_dir}/ROC_Curve.pdf")
+                plt.figure(figsize=(7, 7))
+
+                plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve')
+                plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+                plt.xlim([0.0, 1.0])
+                plt.ylim([0.0, 1.05])
+                plt.xlabel('False Positive Rate')
+                plt.ylabel('True Positive Rate')
+                plt.title('ROC')
+                plt.legend(loc="lower right")
+
+                pdf.savefig()
+                pdf.close()
+
             else:
                 print("")
 
