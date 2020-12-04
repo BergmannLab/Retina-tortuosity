@@ -24,15 +24,24 @@ classdef Vessel_Data_IO
             measurements_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_measurements.tsv"));
             
             % data structure to contain stats
-            stats_names="median_diameter \t D9_diameter \t median_tortuosity \t short_tortuosity \t D9_tortuosity \t D95_tortuosity\n";
-            stats_names = strrep(stats_names,' ','');
-            stats_array = zeros(1,6);
+            stats_names="median_diameter \t D9_diameter \t median_tortuosity \t short_tortuosity \t D9_tortuosity \t D95_tortuosity \t tau1 \t tau2 \t tau3 \t tau4 \t tau5 \t tau6 \t tau7 \t tau0";
+            size_stats_names = size(strsplit(stats_names,"\\t"));
+            num_stat_features = size_stats_names(2);
+            stats_array = zeros(1,num_stat_features);
             num_vessels = numel(vessel_data.vessel_list());
             lengths = zeros(num_vessels,1);
             median_diameters = zeros(num_vessels,1);
             tortuosities = zeros(num_vessels,1);
             short_tortuosities = zeros(num_vessels,1);
-
+            tau1s = zeros(num_vessels,1);
+            tau2s = zeros(num_vessels,1);
+            tau3s = zeros(num_vessels,1);
+            tau4s = zeros(num_vessels,1);
+            tau5s = zeros(num_vessels,1);
+            tau6s = zeros(num_vessels,1);
+            tau7s = zeros(num_vessels,1);
+            tau0s = zeros(num_vessels,1);
+            
             % for each vessel
             for segmement_index = 1:num_vessels
                 segment = vessel_data.vessel_list(segmement_index);
@@ -66,10 +75,26 @@ classdef Vessel_Data_IO
                 if(segment.length_cumulative >=10 && segment.length_cumulative<=100)
                 	short_tortuosities(segmement_index,1) = DistanceFactor;
                 end
-
+                
+                [tau1, ~, ~] = compute_tortuosity(segment.centre, 1, false, false);
+                tau1s(segmement_index,1) = tau1;
+                [tau2, ~, ~] = compute_tortuosity(segment.centre, 2, false, false);
+                tau2s(segmement_index,1) = tau2;
+                [tau3, ~, ~] = compute_tortuosity(segment.centre, 3, false, false);
+                tau3s(segmement_index,1) = tau3;
+                [tau4, ~, ~] = compute_tortuosity(segment.centre, 4, false, false);
+                tau4s(segmement_index,1) = tau4;
+                [tau5, ~, ~] = compute_tortuosity(segment.centre, 5, false, false);
+                tau5s(segmement_index,1) = tau5;
+                [tau6, ~, ~] = compute_tortuosity(segment.centre, 6, false, false);
+                tau6s(segmement_index,1) = tau6;
+                [tau7, ~, ~] = compute_tortuosity(segment.centre, 7, false, false);
+                tau7s(segmement_index,1) = tau7;
+                [tau0, ~, ~] = compute_tortuosity(segment.centre, 0, false, false);
+                tau0s(segmement_index,1) = tau0;
             end
 
-            % return value that will be used for quality filtering
+            % set return value that will be used for quality filtering
             QCmeasure1 = sum(lengths); % tot length of vasculature system
             QCmeasure2 = num_vessels; % number of vessels
             
@@ -99,6 +124,16 @@ classdef Vessel_Data_IO
             D95_tort_index = floor(0.95*numel(sorted_tortuosities));
             D95_tortuosity = sorted_tortuosities(D95_tort_index);
             stats_array(6) = D95_tortuosity;
+            
+            % calculate stats: alternative tortuosity measures
+            stats_array(7) = median(tau1);
+            stats_array(8) = median(tau2);
+            stats_array(9) = median(tau3);
+            stats_array(10) = median(tau4);
+            stats_array(11) = median(tau5);
+            stats_array(12) = median(tau6);
+            stats_array(13) = median(tau7);
+            stats_array(14) = median(tau0);
             
             % save stats to tile
             fid = fopen(stats_file,'wt');
