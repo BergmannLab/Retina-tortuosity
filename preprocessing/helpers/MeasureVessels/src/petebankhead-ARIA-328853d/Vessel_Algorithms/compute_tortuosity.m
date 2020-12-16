@@ -31,7 +31,7 @@ function [tau, r, centers] = compute_tortuosity(points, method, plot_curve, smoo
     %
     % Author: Sven Bergmann.
     % Version: v1.4 (11 September 2020)
-    
+    points = transpose(points); % SOFIA solve emply arrays
     if(nargin < 1)
         N = 201;
         t = linspace(0, 4*pi, N);
@@ -59,7 +59,7 @@ function [tau, r, centers] = compute_tortuosity(points, method, plot_curve, smoo
         points(2,:) = smooth(points(1,:),points(2,:),0.3,'rloess');
     end
     
-    points1 = points(:,1:end-2); % QUESTIONS: WHY ARE THESE EMPTY?
+    points1 = points(:,1:end-2);
     points2 = points(:,2:end-1);
     points3 = points(:,3:end);
     
@@ -74,6 +74,8 @@ function [tau, r, centers] = compute_tortuosity(points, method, plot_curve, smoo
     
     [r,centers] = find_circle_through_3_points(ABC);
     r = r .* curvature_sign;
+    r(isnan(r))=0; %SOFIA, solve NaN problem
+
     
     hysteresis_threshold = 2.0 * std(abs(1 ./ r));
     
@@ -114,7 +116,7 @@ function [tau, r, centers] = compute_tortuosity(points, method, plot_curve, smoo
     end
     
     switch(method)
-        case 0
+        case 0    % SOFIA tau 0 is not used!
             tic
             tau_forward = TD3(points,r,hysteresis_threshold);
             subplot(2,1,2) % curvature analysis
@@ -159,32 +161,34 @@ function [tau, r, centers] = compute_tortuosity(points, method, plot_curve, smoo
             tau = L_arc / L_chord - 1;
             
         case 2
-            tau = sum(sqrt(Deltas(1,:) .^2 + Deltas(2,:) .^2) ./ abs(r));
+            tau = sum(sqrt(mean_Deltas(1,:) .^2 + mean_Deltas(2,:) .^2) ./ abs(r));
             
         case 3
-            tau = sum(sqrt(Deltas(1,:) .^2 + Deltas(2,:) .^2) ./ (r .* r));
+            tau = sum(sqrt(mean_Deltas(1,:) .^2 + mean_Deltas(2,:) .^2) ./ (r .* r));
             
         case 4
             L_arc = sum(sqrt(Deltas(1,:) .^2 + Deltas(2,:) .^2));
-            tau = sum(sqrt(Deltas(1,:) .^2 + Deltas(2,:) .^2) ./ abs(r)) / L_arc;
+            tau = sum(sqrt(mean_Deltas(1,:) .^2 + mean_Deltas(2,:) .^2) ./ abs(r)) / L_arc;
             
         case 5
             L_arc = sum(sqrt(Deltas(1,:) .^2 + Deltas(2,:) .^2));
-            tau = sum(sqrt(Deltas(1,:) .^2 + Deltas(2,:) .^2) ./ (r .* r)) / L_arc;
+            tau = sum(sqrt(mean_Deltas(1,:) .^2 + mean_Deltas(2,:) .^2) ./ (r .* r)) / L_arc;
             
         case 6
             L_chord = norm(points(:,end) - points(:,1));
-            tau = sum(sqrt(Deltas(1,:) .^2 + Deltas(2,:) .^2) ./ abs(r)) / L_chord;
+            tau = sum(sqrt(mean_Deltas(1,:) .^2 + mean_Deltas(2,:) .^2) ./ abs(r)) / L_chord;
             
         case 7
             L_chord = norm(points(:,end) - points(:,1));
-            tau = sum(sqrt(Deltas(1,:) .^2 + Deltas(2,:) .^2) ./ (r .* r)) / L_chord;
+            tau = sum(sqrt(mean_Deltas(1,:) .^2 + mean_Deltas(2,:) .^2) ./ (r .* r)) / L_chord;
             
         otherwise
             tau = NaN;
             
+
     end % switch(method)
     
+
     
     function tau = TD(points,r,hysteresis_threshold)
         

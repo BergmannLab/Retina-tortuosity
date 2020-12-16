@@ -23,8 +23,12 @@ classdef Vessel_Data_IO
             stats_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_stats.tsv"));
             measurements_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_measurements.tsv"));
             
+            %SOFIA : Have all the taus value for the last image analized
+             taus_file = fullfile(path_to_output, strcat("all_taus_same_image.tsv"));
+
+            
             % data structure to contain stats
-            stats_names="median_diameter \t D9_diameter \t median_tortuosity \t short_tortuosity \t D9_tortuosity \t D95_tortuosity \t tau1 \t tau2 \t tau3 \t tau4 \t tau5 \t tau6 \t tau7 \t tau0";
+            stats_names="median_diameter \t D9_diameter \t median_tortuosity \t short_tortuosity \t D9_tortuosity \t D95_tortuosity \t tau1 \t tau2 \t tau3 \t tau4 \t tau5 \t tau6 \t tau7 \t tau0 \n";
             size_stats_names = size(strsplit(stats_names,"\\t"));
             num_stat_features = size_stats_names(2);
             stats_array = zeros(1,num_stat_features);
@@ -68,9 +72,10 @@ classdef Vessel_Data_IO
                 % save diameters measurements to file
                 dlmwrite(measurements_file,diameters','delimiter','\t','-append');
                 
+                
                 % store value to calculate stats
                 median_diameters(segmement_index,1) = median(diameters);
-                DistanceFactor = segment.length_cumulative / segment.length_straight_line;
+                DistanceFactor = segment.length_cumulative / segment.length_straight_line - 1;
                 tortuosities(segmement_index,1) = DistanceFactor;
                 if(segment.length_cumulative >=10 && segment.length_cumulative<=100)
                 	short_tortuosities(segmement_index,1) = DistanceFactor;
@@ -90,7 +95,9 @@ classdef Vessel_Data_IO
                 tau6s(segmement_index,1) = tau6;
                 [tau7, ~, ~] = compute_tortuosity(segment.centre, 7, false, false);
                 tau7s(segmement_index,1) = tau7;
-                [tau0, ~, ~] = compute_tortuosity(segment.centre, 0, false, false);
+                %SOFIA Needs to be 0 to run
+                tau0 = 0;
+                %[tau0, ~, ~] = compute_tortuosity(segment.centre, 0, false, false);
                 tau0s(segmement_index,1) = tau0;
             end
 
@@ -126,20 +133,25 @@ classdef Vessel_Data_IO
             stats_array(6) = D95_tortuosity;
             
             % calculate stats: alternative tortuosity measures
-            stats_array(7) = median(tau1);
-            stats_array(8) = median(tau2);
-            stats_array(9) = median(tau3);
-            stats_array(10) = median(tau4);
-            stats_array(11) = median(tau5);
-            stats_array(12) = median(tau6);
-            stats_array(13) = median(tau7);
-            stats_array(14) = median(tau0);
+            stats_array(7) = median(tau1s); %SOFIA tau1 is the last value, the array is tau1s
+            stats_array(8) = median(tau2s);
+            stats_array(9) = median(tau3s);
+            stats_array(10) = median(tau4s);
+            stats_array(11) = median(tau5s);
+            stats_array(12) = median(tau6s);
+            stats_array(13) = median(tau7s);
+            stats_array(14) = median(tau0s);
             
             % save stats to tile
             fid = fopen(stats_file,'wt');
             fprintf(fid, stats_names);
             fclose(fid);
             dlmwrite(stats_file,stats_array,'delimiter','\t','precision', 14,'-append');
+            
+            %SOFIA: Have all the taus value for the last image analized
+            alltaus = [tau1s tau2s tau3s tau4s tau5s tau6s tau7s];
+            dlmwrite(taus_file,alltaus);
+
        end
        
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
