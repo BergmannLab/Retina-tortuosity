@@ -43,6 +43,6 @@ module purge
 module load gcc/8.3.0
 module load r/3.6.3
 Rscript $PWD/helpers/utils/QQnorm/QQnormMatrix.R $qq_input $qq_output
-smodule purge
+module purge
 
 echo FINISHED: output has been written to $output_dir
