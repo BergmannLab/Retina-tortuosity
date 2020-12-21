@@ -24,11 +24,11 @@ classdef Vessel_Data_IO
             measurements_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_measurements.tsv"));
             
             %SOFIA : Have all the taus value for the last image analized
-             taus_file = fullfile(path_to_output, strcat("all_taus_same_image.tsv"));
+            %taus_file = fullfile(path_to_output, strcat("all_taus_same_image.tsv"));
 
             
             % data structure to contain stats
-            stats_names="median_diameter \t D9_diameter \t median_tortuosity \t short_tortuosity \t D9_tortuosity \t D95_tortuosity \t tau1 \t tau2 \t tau3 \t tau4 \t tau5 \t tau6 \t tau7 \t tau0 \n";
+            stats_names="median_diameter\tD9_diameter\tmedian_tortuosity\tshort_tortuosity\tD9_tortuosity\tD95_tortuosity\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\ttau0\n";
             size_stats_names = size(strsplit(stats_names,"\\t"));
             num_stat_features = size_stats_names(2);
             stats_array = zeros(1,num_stat_features);
@@ -149,8 +149,8 @@ classdef Vessel_Data_IO
             dlmwrite(stats_file,stats_array,'delimiter','\t','precision', 14,'-append');
             
             %SOFIA: Have all the taus value for the last image analized
-            alltaus = [tau1s tau2s tau3s tau4s tau5s tau6s tau7s];
-            dlmwrite(taus_file,alltaus);
+            %alltaus = [tau1s tau2s tau3s tau4s tau5s tau6s tau7s];
+            %dlmwrite(taus_file,alltaus);
 
        end
        
