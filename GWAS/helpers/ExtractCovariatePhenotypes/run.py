@@ -16,14 +16,15 @@ def read_samples(sample_file):
     samples.rename(columns = {'ID_1':'eid'}, inplace = True)
     return samples
     
-def Extract_GWAS_Phenotypes(output, UKBB_pheno_file, phenos_to_extract, sample_file):
+def Extract_GWAS_Phenotypes(output_dir, UKBB_pheno_file, phenos_to_extract, sample_file):
     
     # read phenotypes and samples
     UKBB_phenotypes = pd.read_csv(UKBB_pheno_file)
     samples = read_samples(sample_file)
 
-    # create a dataframe containing the participant id (eid) from phenotypes
+    # create an empty dataframe using the participant id (eid) as index
     extracted_phenos = UKBB_phenotypes["eid"]
+    #########extracted_phenos.set_index("eid", inplace = True)
     # all column corresponding to required phenos
     for pheno_UID in phenos_to_extract.split(","):
         extracted_phenos = pd.concat([extracted_phenos, UKBB_phenotypes[pheno_UID]], axis=1)
@@ -33,20 +34,20 @@ def Extract_GWAS_Phenotypes(output, UKBB_pheno_file, phenos_to_extract, sample_f
     # replace NAs according to BGENIE convention
     extracted_phenos.fillna(-999, inplace=True)
     # output
-    extracted_phenos.to_csv(output, sep=' ', index = False)
+    output_file  = output_dir + "/disease-association_Phenotypes.csv"
+    extracted_phenos.to_csv(output_file, sep=' ', index = False)
 
 def main():
-    output = os.sys.argv[1]
+    output_dir = os.sys.argv[1]
     UKBB_pheno_file = os.sys.argv[2]
     phenos_to_extract = os.sys.argv[3]
     sample_file = os.sys.argv[4]
     print("Starting Extraction of phenotypes: " + phenos_to_extract)
     print("from UKBB phenotype file: " + UKBB_pheno_file)
     print("using sample file: " + sample_file)
-    Extract_GWAS_Phenotypes(output, UKBB_pheno_file, phenos_to_extract, sample_file)
+    Extract_GWAS_Phenotypes(output_dir, UKBB_pheno_file, phenos_to_extract, sample_file)
     print("done")
   
 if __name__== "__main__":
     main()
   
-
