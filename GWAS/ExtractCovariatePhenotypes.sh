@@ -16,7 +16,7 @@ source $HOME/retina/configs/config.sh
 output_dir=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes
 output=$output_dir/covars.csv
 
-###pheno_file=$data/retina/UKBiob/phenotypes/1_data_extraction/ukb34181.csv # 1st data extraction
+pheno_file=$data/retina/UKBiob/phenotypes/1_data_extraction/ukb34181.csv # 1st data extraction
 ###pheno_file=$data/retina/UKBiob/phenotypes/2_data_extraction_BMI_height_IMT/ukb42432.csv # 2nd data extraction
 
 # I extract disease phenotypes and useful covariates
