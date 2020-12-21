@@ -1,5 +1,5 @@
 #!/bin/bash
-##SBATCH --account=sbergman_retina
+#SBATCH --account=sbergman_retina
 #SBATCH --job-name=BuildDB
 #SBATCH --output=helpers/04/slurm_runs/slurm-%x_%j.out
 #SBATCH --error=helpers/04/slurm_runs/slurm-%x_%j.err
