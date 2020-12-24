@@ -3,7 +3,7 @@
 #BiocManager::install("GWASTools")
 library(qqman)
 library(GWASTools)
-setwd("/Users/mtomason/Documents/projects/retina/data_UKBiobank/03_gwas/qqplot")
+setwd("/Users/sortinve/Desktop/2020_12")
 
 # INSTRUCTIONS 
 # - take GWAS output files from Jura and ungz-them (run gzip -d *)
@@ -32,14 +32,21 @@ plotPvals <- function(name,pheno,do_qqplot,do_manhattan){
 ###gwasResults_allChr__D95_tortuosity <- data.frame()
 gwasResults_allChr__median_tortuosity <- data.frame()
 gwasResults_allChr__tau2_tortuosity <- data.frame()
-# TODO add more taus
+gwasResults_allChr__tau3_tortuosity <- data.frame()
+gwasResults_allChr__tau4_tortuosity <- data.frame()
+gwasResults_allChr__tau5_tortuosity <- data.frame()
+gwasResults_allChr__tau6_tortuosity <- data.frame()
+gwasResults_allChr__tau7_tortuosity <- data.frame()
+gwasResults_allChr__tau1_tortuosity <- data.frame() #sofia to check is the same that median 
 
 for (i in c(1:22)){
   write(paste0("processing chromo",i), stdout())
   
   # read input
   gwasResults <- read.table(paste("output_ukb_imp_chr", i,"_v3.txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
-  gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1)
+  gwasResults <- subset( gwasResults, select = -c( 60  : 63 )) #sofia deleting tau0, beacuse is always NA
+  #gwasResults[is.na(gwasResults)] <- 0 #sofia
+  gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1) 
 
   # median_diameter
   ###median_diameter <- subset(gwasResults, select = c("chr","rsid","pos","median_diameter.log10p"))
@@ -65,11 +72,34 @@ for (i in c(1:22)){
   median_tortuosity <- subset(gwasResults, select = c("chr","rsid","pos","median_tortuosity.log10p"))
   gwasResults_allChr__median_tortuosity <- rbind(gwasResults_allChr__median_tortuosity,median_tortuosity)
   
-  # median_tortuosity
+  # tau2_tortuosity
   tau2_tortuosity <- subset(gwasResults, select = c("chr","rsid","pos","tau2.log10p"))
   gwasResults_allChr__tau2_tortuosity <- rbind(gwasResults_allChr__tau2_tortuosity,tau2_tortuosity)
+  
+  # tau3_tortuosity
+  tau3_tortuosity <- subset(gwasResults, select = c("chr","rsid","pos","tau3.log10p"))
+  gwasResults_allChr__tau3_tortuosity <- rbind(gwasResults_allChr__tau3_tortuosity,tau3_tortuosity)
+  
+  # tau4_tortuosity
+  tau4_tortuosity <- subset(gwasResults, select = c("chr","rsid","pos","tau4.log10p"))
+  gwasResults_allChr__tau4_tortuosity <- rbind(gwasResults_allChr__tau4_tortuosity,tau4_tortuosity)
 
-  # TODO add more taus
+  # tau5_tortuosity
+  tau5_tortuosity <- subset(gwasResults, select = c("chr","rsid","pos","tau5.log10p"))
+  gwasResults_allChr__tau5_tortuosity <- rbind(gwasResults_allChr__tau5_tortuosity,tau5_tortuosity)
+  
+  # tau6_tortuosity
+  tau6_tortuosity <- subset(gwasResults, select = c("chr","rsid","pos","tau6.log10p"))
+  gwasResults_allChr__tau6_tortuosity <- rbind(gwasResults_allChr__tau6_tortuosity,tau6_tortuosity)
+  
+  # tau7_tortuosity
+  tau7_tortuosity <- subset(gwasResults, select = c("chr","rsid","pos","tau7.log10p"))
+  gwasResults_allChr__tau7_tortuosity <- rbind(gwasResults_allChr__tau7_tortuosity,tau7_tortuosity)
+  
+  # tau1_tortuosity
+  tau1_tortuosity <- subset(gwasResults, select = c("chr","rsid","pos","tau1.log10p"))
+  gwasResults_allChr__tau1_tortuosity <- rbind(gwasResults_allChr__tau1_tortuosity,tau1_tortuosity)
+  
 }
 
 # GENOME-WIDE plot: median_diameter
@@ -128,6 +158,52 @@ jpeg(file="tau2_tortuosity_MANHATTAN", width=2000,height=1000)
 plotPvals("tau2_tortuosity",gwasResults_allChr__tau2_tortuosity,FALSE,TRUE)
 dev.off()
 
-# TODO add more taus
+# GENOME-WIDE plot: tau3_tortuosity
+jpeg(file="tau3_tortuosity_QQPLOT", width=2000,height=1000)
+plotPvals("tau3_tortuosity",gwasResults_allChr__tau3_tortuosity,TRUE,FALSE)
+dev.off()
+jpeg(file="tau3_tortuosity_MANHATTAN", width=2000,height=1000)
+plotPvals("tau3_tortuosity",gwasResults_allChr__tau3_tortuosity,FALSE,TRUE)
+dev.off()
+
+# GENOME-WIDE plot: tau4_tortuosity
+jpeg(file="tau4_tortuosity_QQPLOT", width=2000,height=1000)
+plotPvals("tau4_tortuosity",gwasResults_allChr__tau4_tortuosity,TRUE,FALSE)
+dev.off()
+jpeg(file="tau4_tortuosity_MANHATTAN", width=2000,height=1000)
+plotPvals("tau4_tortuosity",gwasResults_allChr__tau4_tortuosity,FALSE,TRUE)
+dev.off()
+
+# GENOME-WIDE plot: tau5_tortuosity
+jpeg(file="tau5_tortuosity_QQPLOT", width=2000,height=1000)
+plotPvals("tau5_tortuosity",gwasResults_allChr__tau5_tortuosity,TRUE,FALSE)
+dev.off()
+jpeg(file="tau5_tortuosity_MANHATTAN", width=2000,height=1000)
+plotPvals("tau5_tortuosity",gwasResults_allChr__tau5_tortuosity,FALSE,TRUE)
+dev.off()
 
 
+# GENOME-WIDE plot: tau6_tortuosity
+jpeg(file="tau6_tortuosity_QQPLOT", width=2000,height=1000)
+plotPvals("tau6_tortuosity",gwasResults_allChr__tau6_tortuosity,TRUE,FALSE)
+dev.off()
+jpeg(file="tau6_tortuosity_MANHATTAN", width=2000,height=1000)
+plotPvals("tau6_tortuosity",gwasResults_allChr__tau6_tortuosity,FALSE,TRUE)
+dev.off()
+
+# GENOME-WIDE plot: tau7_tortuosity
+jpeg(file="tau7_tortuosity_QQPLOT", width=2000,height=1000)
+plotPvals("tau7_tortuosity",gwasResults_allChr__tau7_tortuosity,TRUE,FALSE)
+dev.off()
+jpeg(file="tau7_tortuosity_MANHATTAN", width=2000,height=1000)
+plotPvals("tau7_tortuosity",gwasResults_allChr__tau7_tortuosity,FALSE,TRUE)
+dev.off()
+
+
+# GENOME-WIDE plot: tau1_tortuosity
+jpeg(file="tau1_tortuosity_QQPLOT", width=2000,height=1000)
+plotPvals("tau1_tortuosity",gwasResults_allChr__tau1_tortuosity,TRUE,FALSE)
+dev.off()
+jpeg(file="tau1_tortuosity_MANHATTAN", width=2000,height=1000)
+plotPvals("tau1_tortuosity",gwasResults_allChr__tau1_tortuosity,FALSE,TRUE)
+dev.off()
