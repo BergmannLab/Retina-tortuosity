@@ -5,9 +5,10 @@ library(qqman)
 library(GWASTools)
 setwd("/Users/sortinve/Desktop/2020_12")
 
-# INSTRUCTIONS 
-# - take GWAS output files from Jura and ungz-them (run gzip -d *)
+# INSTRUCTIONS
+# - take chromosome files outputted by BGENIE, ungzip them (run "gzip -d *")
 # - place resulting txt files in the same folder as this script
+# - (if some chromosomes are missing, initialize for loop accordingly)
 # OUTPUT
 # - for each phenotype: genomewide qqplot and manhattan plot
 
@@ -39,7 +40,7 @@ gwasResults_allChr__tau6_tortuosity <- data.frame()
 gwasResults_allChr__tau7_tortuosity <- data.frame()
 gwasResults_allChr__tau1_tortuosity <- data.frame() #sofia to check is the same that median 
 
-for (i in c(1:22)){
+for (i in c(1:22)){ # change for loop range in case some chromosomes are misssing
   write(paste0("processing chromo",i), stdout())
   
   # read input
