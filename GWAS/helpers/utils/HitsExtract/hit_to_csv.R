@@ -1,4 +1,4 @@
-setwd("/Users/mtomason/Documents/projects/retina/data_UKBiobank/03_gwas/hits_extract")
+setwd("/Users/mtomason/Documents/projects/retina/data_UKBiobank/git/retina/GWAS/helpers/utils/HitsExtract/")
 
 # INSTRUCTIONS
 # - take chromosome files outputted by BGENIE, ungzip them (run "gzip -d *")
@@ -15,7 +15,7 @@ setwd("/Users/mtomason/Documents/projects/retina/data_UKBiobank/03_gwas/hits_ext
 # INITIALIZE APPROPRIATELY ####################################################
 #pheno_list <- c("median_diameter","D9_diameter","short_tortuosity","D9_tortuosity","D95_tortuosity")
 pheno_list <- c("median_tortuosity","tau2","tau3","tau4","tau5","tau6","tau7","tau1")
-chromo_list <- c(1:22)
+chromo_list <- c(1:1)
 # INITIALIZE APPROPRIATELY ####################################################
 
 
@@ -32,7 +32,7 @@ for (pheno_name in pheno_list) { # FOR EACH PHENOTYPE in GWAS
     
     chromo_name <- paste("output_ukb_imp_chr",chromo_numb,"_v3.txt", sep="")
     gwasResults <- read.table(chromo_name, sep=" ",header=T, stringsAsFactors= F)
-    gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1)
+    #gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1)
     
     pval_header <- paste(pheno_name,".log10p",sep="")
     beta_header <- paste(pheno_name,"_beta",sep="")
