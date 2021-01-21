@@ -25,10 +25,9 @@ classdef Vessel_Data_IO
             
             %SOFIA : Have all the taus value for the last image analized
             %taus_file = fullfile(path_to_output, strcat("all_taus_same_image.tsv"));
-
             
             % data structure to contain stats
-            stats_names="median_diameter\tD9_diameter\tmedian_tortuosity\tshort_tortuosity\tD9_tortuosity\tD95_tortuosity\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\ttau0\n";
+            stats_names="median_diameter\tD9_diameter\tmedian_tortuosity\tshort_tortuosity\tD9_tortuosity\tD95_tortuosity\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\n";
             size_stats_names = size(strsplit(stats_names,"\\t"));
             num_stat_features = size_stats_names(2);
             stats_array = zeros(1,num_stat_features);
@@ -44,7 +43,7 @@ classdef Vessel_Data_IO
             tau5s = zeros(num_vessels,1);
             tau6s = zeros(num_vessels,1);
             tau7s = zeros(num_vessels,1);
-            tau0s = zeros(num_vessels,1);
+            %tau0s = zeros(num_vessels,1);
             
             % for each vessel
             for segmement_index = 1:num_vessels
@@ -95,10 +94,9 @@ classdef Vessel_Data_IO
                 tau6s(segmement_index,1) = tau6;
                 [tau7, ~, ~] = compute_tortuosity(segment.centre, 7, false, false);
                 tau7s(segmement_index,1) = tau7;
-                %SOFIA Needs to be 0 to run
-                tau0 = 0;
+                %tau0 = 0; Sofia tau0 is not used
                 %[tau0, ~, ~] = compute_tortuosity(segment.centre, 0, false, false);
-                tau0s(segmement_index,1) = tau0;
+                %tau0s(segmement_index,1) = tau0;
             end
 
             % set return value that will be used for quality filtering
@@ -110,6 +108,15 @@ classdef Vessel_Data_IO
             median_diameters = nonzeros(median_diameters);
             tortuosities = nonzeros(tortuosities);
             short_tortuosities = nonzeros(short_tortuosities);
+            
+            tau1s = nonzeros(tau1s);
+            tau2s = nonzeros(tau2s); 
+            tau3s = nonzeros(tau3s);
+            tau4s = nonzeros(tau4s);
+            tau5s = nonzeros(tau5s);
+            tau6s = nonzeros(tau6s);
+            tau7s = nonzeros(tau7s);
+
             
             % calculate stats: median_diameter
             stats_array(1) = median(median_diameters);
@@ -140,7 +147,7 @@ classdef Vessel_Data_IO
             stats_array(11) = median(tau5s);
             stats_array(12) = median(tau6s);
             stats_array(13) = median(tau7s);
-            stats_array(14) = median(tau0s);
+            %stats_array(14) = median(tau0s);
             
             % save stats to tile
             fid = fopen(stats_file,'wt');
