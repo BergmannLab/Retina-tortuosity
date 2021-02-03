@@ -11,35 +11,39 @@
 #SBATCH --partition normal
 
 # To install the Python3 libraries tables, opencv_python, Pillow and sklearn:
-#
 # $ source /dcsrsoft/spack/bin/setup_dcsrsoft
-#
 # $ module load gcc python/3.7.7
-#
 # $ cd /scratch/beegfs/FAC/FBM/DBC/sbergman/retina/
-#
 # $ tar -zxvf pk.tar.gz
-#
 # $ pip install --user --no-index --find-links=pk tables opencv_python Pillow sklearn
 
 source $HOME/retina/configs/config.sh
+
+##########################################################################
+# CHOOSE DISEASE
+input_dir=$scratch/retina/DL/output/utils/old_BuildTestDatasetHypertension/
+# 
+#input_dir=$scratch/retina/DL/output/utils/BuildDatasetAngina/
+#input_dir=$scratch/retina/DL/output/utils/BuildDatasetDiabetes
+#input_dir=$scratch/retina/DL/output/utils/BuildDatasetDV_Thrombosis/
+#input_dir=$scratch/retina/DL/output/utils/BuildDatasetHeart_Attack/
+#input_dir=$scratch/retina/DL/output/utils/old_BuildDatasetHypertension/
+#input_dir=$scratch/retina/DL/output/utils/BuildDatasetStroke/
+
+controls_dir=$input_dir/controls/
+cases_dir=$input_dir/cases/
 
 # clear previous run
 output_dir=$scratch/retina/DL/output/04_DB/
 rm -f $output_dir/*pytable
 
-input_dir=$scratch/retina/DL/output/utils/BuildTestDatasetHypertension/
-
-normal_dir=$input_dir/normal/
-hypertense_dir=$input_dir/hypertense/
-
-# build Digital Pathology DB
+# build DB
 source /dcsrsoft/spack/bin/setup_dcsrsoft
 module purge
 module load gcc/8.3.0
 module load python/3.7.7
 module load py-biopython
-python3.7 helpers/04/BuildDB.py $normal_dir $hypertense_dir $output_dir
+python3.7 helpers/04/BuildDB.py $controls_dir $cases_dir $output_dir
 module purge
 
 echo FINISHED: output has been written to $output_dir

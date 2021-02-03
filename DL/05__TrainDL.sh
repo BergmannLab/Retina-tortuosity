@@ -13,15 +13,10 @@
 #SBATCH --partition normal
 
 # To install the Python3 libraries torch, torchvision and tensorboardX:
-#
 # $ source /dcsrsoft/spack/bin/setup_dcsrsoft
-#
 # $ module load gcc python/3.7.7
-#
 # $ cd /scratch/beegfs/FAC/FBM/DBC/sbergman/retina/
-#
 # $ tar -zxvf torch.tar.gz
-#
 # $ pip install --user --no-index --find-links=torch torch torchvision tensorboardX
 
 source $HOME/retina/configs/config.sh
@@ -30,7 +25,7 @@ source $HOME/retina/configs/config.sh
 output_dir=$scratch/retina/DL/output/05_DL/
 rm -f $output_dir/*
 
-# Digital Pathology DB
+# image DB
 db_dir=$scratch/retina/DL/output/04_DB/
 
 # Train DL model
