@@ -74,7 +74,7 @@ classdef Vessel_Data_IO
                 
                 % store value to calculate stats
                 median_diameters(segmement_index,1) = median(diameters);
-                DistanceFactor = segment.length_cumulative / segment.length_straight_line - 1;
+                DistanceFactor = segment.length_cumulative / segment.length_straight_line;
                 tortuosities(segmement_index,1) = DistanceFactor;
                 if(segment.length_cumulative >=10 && segment.length_cumulative<=100)
                 	short_tortuosities(segmement_index,1) = DistanceFactor;
