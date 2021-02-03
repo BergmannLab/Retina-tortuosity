@@ -16,7 +16,7 @@ source $HOME/retina/configs/config.sh
 limit=1077 # set this limit to create a balanced dataset
 
 # clear previous run
-output_dir=$scratch/retina/DL/output/utils/BuildDatasetAngina/
+output_dir=$scratch/retina/DL/output/utils/BuildDatasetDV_Thrombosis/
 rm -f $output_dir/cases/*
 rm -f $output_dir/controls/*
 

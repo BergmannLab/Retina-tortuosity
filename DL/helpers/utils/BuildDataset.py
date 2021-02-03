@@ -5,8 +5,11 @@ from shutil import copyfile
 def copyFileList(eid_list, images_dir, output_dir, limit):
     copied = 0
     for items in eid_list.iteritems():
+        # base-case
+        if copied>=limit: return;
+        
+        # we select both eyes, all available time points
         eid = items[1]
-        # we select only one of the two eyes
         pics = [images_dir +"/"+ str(eid) + '_21015_0_0_bin_seg.png',  # (A/V-segmented image) L eye, baseline 
                 images_dir +"/"+ str(eid) + '_21015_1_0_bin_seg.png',  # (A/V-segmented image) L eye, followup
                 images_dir +"/"+ str(eid) + '_21016_0_0_bin_seg.png',  # (A/V-segmented image) R eye, baseline
@@ -15,13 +18,16 @@ def copyFileList(eid_list, images_dir, output_dir, limit):
                 images_dir +"/"+ str(eid) + '_21015_1_0.png',  # (original image) L eye, followup
                 images_dir +"/"+ str(eid) + '_21016_0_0.png',  # (original image) R eye, baseline
                 images_dir +"/"+ str(eid) + '_21016_1_0.png'] # (original image) R eye, followup
+        # copy pictures
+        copy_has_succeeded = False # reset success flag
         for pic in pics:
             try:
                 copyfile(pic, output_dir+"/"+os.path.basename(pic))
-                copied = copied+1
+                copy_has_succeeded=True
             except:
                 pass
-            if copied>=limit: return;
+        # update copy counter
+        if copy_has_succeeded==True: copied = copied+1
 
 def BuildDataset(output_dir, images_dir, case_control_list, limit):
     # split eids into case/control

@@ -16,7 +16,7 @@ source $HOME/retina/configs/config.sh
 limit=8797 # set this limit to create a balanced dataset
 
 # clear previous run
-output_dir=$scratch/retina/DL/output/utils/BuildDatasetAngina/
+output_dir=$scratch/retina/DL/output/utils/BuildDatasetHypertension/
 rm -f $output_dir/cases/*
 rm -f $output_dir/controls/*
 
