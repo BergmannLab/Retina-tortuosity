@@ -47,7 +47,7 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     stats_phenotypes['tau5'] = None
     stats_phenotypes['tau6'] = None
     stats_phenotypes['tau7'] = None
-    %stats_phenotypes['tau0'] = None
+    #stats_phenotypes['tau0'] = None
    
     # import stats for each input file
     add_once=0
