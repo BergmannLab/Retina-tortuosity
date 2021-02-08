@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=sbergman_retina
+##SBATCH --account=sbergman_retina
 #SBATCH --job-name=BuildDB
 #SBATCH --output=helpers/04/slurm_runs/slurm-%x_%j.out
 #SBATCH --error=helpers/04/slurm_runs/slurm-%x_%j.err
@@ -22,7 +22,7 @@ source $HOME/retina/configs/config.sh
 ##########################################################################
 # CHOOSE DISEASE
 input_dir=$scratch/retina/DL/output/utils/old_BuildTestDatasetHypertension/
-# 
+#
 #input_dir=$scratch/retina/DL/output/utils/BuildDatasetAngina/
 #input_dir=$scratch/retina/DL/output/utils/BuildDatasetDiabetes
 #input_dir=$scratch/retina/DL/output/utils/BuildDatasetDV_Thrombosis/
