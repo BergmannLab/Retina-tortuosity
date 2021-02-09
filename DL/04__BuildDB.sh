@@ -21,9 +21,9 @@ source $HOME/retina/configs/config.sh
 
 ##########################################################################
 # CHOOSE DISEASE
-input_dir=$scratch/retina/DL/output/utils/old_BuildTestDatasetHypertension/
+#input_dir=$scratch/retina/DL/output/utils/old_BuildTestDatasetHypertension/
 #
-#input_dir=$scratch/retina/DL/output/utils/BuildDatasetAngina/
+input_dir=$scratch/retina/DL/output/utils/BuildDatasetAngina/
 #input_dir=$scratch/retina/DL/output/utils/BuildDatasetDiabetes
 #input_dir=$scratch/retina/DL/output/utils/BuildDatasetDV_Thrombosis/
 #input_dir=$scratch/retina/DL/output/utils/BuildDatasetHeart_Attack/
