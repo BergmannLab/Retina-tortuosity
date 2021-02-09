@@ -1,5 +1,7 @@
 #!/bin/bash
 ##SBATCH --account=sbergman_retina
+#SBATCH --mail-type ALL
+#SBATCH --mail-user philippe.jacquet@unil.ch
 #SBATCH --job-name=BuildDB
 #SBATCH --output=helpers/04/slurm_runs/slurm-%x_%j.out
 #SBATCH --error=helpers/04/slurm_runs/slurm-%x_%j.err

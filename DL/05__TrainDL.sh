@@ -1,5 +1,7 @@
 #!/bin/bash
 ##SBATCH --account=sbergman_retina
+#SBATCH --mail-type ALL
+#SBATCH --mail-user philippe.jacquet@unil.ch
 #SBATCH --job-name=TrainDL
 ##SBATCH --nodelist=cpt03,cpt04,cpt05,cpt06 # Xeon Phi available on some cpts to train DL
 ##SBATCH --nodelist=cpt05
