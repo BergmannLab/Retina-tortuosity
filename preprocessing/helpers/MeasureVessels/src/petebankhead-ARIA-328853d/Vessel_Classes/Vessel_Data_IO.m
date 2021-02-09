@@ -99,6 +99,15 @@ classdef Vessel_Data_IO
                 %tau0s(segmement_index,1) = tau0;
             end
 
+            lenght_quintiles = quantile(lengths,4);
+            DF_1st = nonzeros(tortuosities(lengths < lenght_quintiles(1)));
+            DF_2nd = nonzeros(tortuosities(lengths < lenght_quintiles(2) & lengths >= lenght_quintiles(1)));
+            DF_3rd = nonzeros(tortuosities(lengths < lenght_quintiles(3) & lengths >= lenght_quintiles(2)));
+            DF_4th = nonzeros(tortuosities(lengths < lenght_quintiles(4) & lengths >= lenght_quintiles(3)));
+            DF_5th = nonzeros(tortuosities(lengths >= lenght_quintiles(4)));
+
+
+
             % set return value that will be used for quality filtering
             QCmeasure1 = sum(lengths); % tot length of vasculature system
             QCmeasure2 = num_vessels; % number of vessels
@@ -117,37 +126,25 @@ classdef Vessel_Data_IO
             tau6s = nonzeros(tau6s);
             tau7s = nonzeros(tau7s);
 
-            
-            % calculate stats: median_diameter
-            stats_array(1) = median(median_diameters);
-            % calculate stats: 9th decile of diameter
-            sorted_diameters = sort(median_diameters);
-            D9_dia_index = floor(0.90*numel(sorted_diameters));
-            D9_diameter = sorted_diameters(D9_dia_index);
-            stats_array(2) = D9_diameter;
-            % calculate stats: median tortuosity
-            stats_array(3) = median(tortuosities);
-            % calculate stats: median tortuosity (only considering short vessels)
-            stats_array(4) = median(nonzeros(short_tortuosities));
-            % calculate stats: 9th decile of tortuosity
-            sorted_tortuosities = sort(tortuosities);
-            D9_tort_index = floor(0.90*numel(sorted_tortuosities));
-            D9_tortuosity = sorted_tortuosities(D9_tort_index);
-            stats_array(5) = D9_tortuosity;
-            % calculate stats: 95 percentile of tortuosity
-            D95_tort_index = floor(0.95*numel(sorted_tortuosities));
-            D95_tortuosity = sorted_tortuosities(D95_tort_index);
-            stats_array(6) = D95_tortuosity;
-            
-            % calculate stats: alternative tortuosity measures
-            stats_array(7) = median(tau1s); %SOFIA tau1 is the last value, the array is tau1s
-            stats_array(8) = median(tau2s);
-            stats_array(9) = median(tau3s);
-            stats_array(10) = median(tau4s);
-            stats_array(11) = median(tau5s);
-            stats_array(12) = median(tau6s);
-            stats_array(13) = median(tau7s);
-            %stats_array(14) = median(tau0s);
+
+            % we just doing distance factor quintiles here, plus some controls
+            % Controls are stats_array(#):
+            % (6 ) Vanilla DF
+            % (7/8)) if everything works as planned, there should be about equal number of elements in all quantile ranges, so these number should be ~=1 
+            stats_array(1) = median(DF_1st);
+            stats_array(2) = median(DF_2nd);
+            stats_array(3) = median(DF_3rd);
+            stats_array(4) = median(DF_4th);
+            stats_array(5) = median(DF_5th);
+            stats_array(6) = median(tortuosities);
+            stats_array(7) = length(DF_1st) / length(DF_2nd);
+            stats_array(8) = length(DF_1st) / length(DF_5th);
+            stats_array(9) = 0;
+            stats_array(10) = 0;
+            stats_array(11) = 0;
+            stats_array(12) = 0;
+            stats_array(13) = 0;
+            %stats_array(14) = 0;
             
             % save stats to tile
             fid = fopen(stats_file,'wt');
