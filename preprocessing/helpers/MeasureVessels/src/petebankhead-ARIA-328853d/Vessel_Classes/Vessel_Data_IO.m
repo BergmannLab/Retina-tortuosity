@@ -72,6 +72,21 @@ classdef Vessel_Data_IO
                 dlmwrite(measurements_file,diameters','delimiter','\t','-append');
                 
                 
+                % remove hard zeros (they correspond to vessels that have been
+                % filtered out as part of the artery/vein processing)
+                median_diameters = nonzeros(median_diameters);
+                tortuosities = nonzeros(tortuosities);
+                short_tortuosities = nonzeros(short_tortuosities);
+
+                tau1s = nonzeros(tau1s);
+                tau2s = nonzeros(tau2s); 
+                tau3s = nonzeros(tau3s);
+                tau4s = nonzeros(tau4s);
+                tau5s = nonzeros(tau5s);
+                tau6s = nonzeros(tau6s);
+                tau7s = nonzeros(tau7s);
+
+                
                 % store value to calculate stats
                 median_diameters(segmement_index,1) = median(diameters);
                 DistanceFactor = segment.length_cumulative / segment.length_straight_line;
@@ -103,19 +118,6 @@ classdef Vessel_Data_IO
             QCmeasure1 = sum(lengths); % tot length of vasculature system
             QCmeasure2 = num_vessels; % number of vessels
             
-            % remove hard zeros (they correspond to vessels that have been
-            % filtered out as part of the artery/vein processing)
-            median_diameters = nonzeros(median_diameters);
-            tortuosities = nonzeros(tortuosities);
-            short_tortuosities = nonzeros(short_tortuosities);
-            
-            tau1s = nonzeros(tau1s);
-            tau2s = nonzeros(tau2s); 
-            tau3s = nonzeros(tau3s);
-            tau4s = nonzeros(tau4s);
-            tau5s = nonzeros(tau5s);
-            tau6s = nonzeros(tau6s);
-            tau7s = nonzeros(tau7s);
 
             
             % calculate stats: median_diameter
