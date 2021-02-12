@@ -28,9 +28,9 @@ source $HOME/retina/configs/config.sh
 #input_dir=$scratch/retina/DL/output/utils/BuildDatasetAngina/
 #input_dir=$scratch/retina/DL/output/utils/BuildDatasetDiabetes
 #input_dir=$scratch/retina/DL/output/utils/BuildDatasetDV_Thrombosis/
-input_dir=$scratch/retina/DL/output/utils/BuildDatasetHeart_Attack/
+#input_dir=$scratch/retina/DL/output/utils/BuildDatasetHeart_Attack/
 #input_dir=$scratch/retina/DL/output/utils/old_BuildDatasetHypertension/
-#input_dir=$scratch/retina/DL/output/utils/BuildDatasetStroke/
+input_dir=$scratch/retina/DL/output/utils/BuildDatasetStroke/
 #
 # The Kanji dataset may be used to make sure that the pipeline works well, i.e. gives 100% validation accuracy
 #input_dir=$scratch/retina/DL/output/utils/Kanji/
