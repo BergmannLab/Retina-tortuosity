@@ -27,7 +27,7 @@ classdef Vessel_Data_IO
             %taus_file = fullfile(path_to_output, strcat("all_taus_same_image.tsv"));
             
             % data structure to contain stats
-            stats_names="median_diameter\tD9_diameter\tmedian_tortuosity\tshort_tortuosity\tD9_tortuosity\tD95_tortuosity\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\n";
+            stats_names="DF1st\tDF2nd\tDF3rd\tDF4th\tDF5th\tDF_control\tDF1_DF2\tDF1_DF5\n";
             size_stats_names = size(strsplit(stats_names,"\\t"));
             num_stat_features = size_stats_names(2);
             stats_array = zeros(1,num_stat_features);
@@ -139,12 +139,6 @@ classdef Vessel_Data_IO
             stats_array(6) = median(tortuosities);
             stats_array(7) = length(DF_1st) / length(DF_2nd);
             stats_array(8) = length(DF_1st) / length(DF_5th);
-            stats_array(9) = 0;
-            stats_array(10) = 0;
-            stats_array(11) = 0;
-            stats_array(12) = 0;
-            stats_array(13) = 0;
-            %stats_array(14) = 0;
             
             % save stats to tile
             fid = fopen(stats_file,'wt');
