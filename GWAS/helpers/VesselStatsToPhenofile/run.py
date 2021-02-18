@@ -34,20 +34,15 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     # index = eid from sample file (to respect UKBB ordering)
     stats_phenotypes = read_samples(sample_file)
     # add stats columns to dataframe
-    stats_phenotypes['median_diameter'] = None
-    stats_phenotypes['D9_diameter'] = None
-    stats_phenotypes['median_tortuosity'] = None
-    stats_phenotypes['short_tortuosity'] = None
-    stats_phenotypes['D9_tortuosity'] = None
-    stats_phenotypes['D95_tortuosity'] = None
-    stats_phenotypes['tau1'] = None
-    stats_phenotypes['tau2'] = None
-    stats_phenotypes['tau3'] = None
-    stats_phenotypes['tau4'] = None
-    stats_phenotypes['tau5'] = None
-    stats_phenotypes['tau6'] = None
-    stats_phenotypes['tau7'] = None
-    #stats_phenotypes['tau0'] = None
+
+    stats_phenotypes['DF1st'] = None
+    stats_phenotypes['DF2nd'] = None
+    stats_phenotypes['DF3rd'] = None
+    stats_phenotypes['DF4th'] = None
+    stats_phenotypes['DF5th'] = None
+    stats_phenotypes['DF_control'] = None
+    stats_phenotypes['DF1_DF2'] = None
+    stats_phenotypes['DF1_DF5'] = None
    
     # import stats for each input file
     add_once=0
