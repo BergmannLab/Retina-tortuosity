@@ -111,7 +111,7 @@ classdef Vessel_Data_IO
                 % saving segment stats
                 dlmwrite(segmentStats_file,[median(diameters), median(segment.centre(:,1)), median(segment.centre(:,2)), ...
                     segment.length_cumulative, segment.length_straight_line, DistanceFactor, ...
-                    tau1, tau2, tau3, tau4, tau5, tau6, tau7, av_score]','delimiter','\t','-append');
+                    tau1, tau2, tau3, tau4, tau5, tau6, tau7, av_score],'delimiter','\t','-append');
             end
 
             lenght_quintiles = quantile(lengths,4);
