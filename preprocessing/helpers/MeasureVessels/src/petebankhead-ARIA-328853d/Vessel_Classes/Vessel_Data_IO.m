@@ -100,11 +100,11 @@ classdef Vessel_Data_IO
             end
 
             lenght_quintiles = quantile(lengths,4);
-            DF_1st = nonzeros(tortuosities(lengths < lenght_quintiles(1)));
-            DF_2nd = nonzeros(tortuosities(lengths < lenght_quintiles(2) & lengths >= lenght_quintiles(1)));
-            DF_3rd = nonzeros(tortuosities(lengths < lenght_quintiles(3) & lengths >= lenght_quintiles(2)));
-            DF_4th = nonzeros(tortuosities(lengths < lenght_quintiles(4) & lengths >= lenght_quintiles(3)));
-            DF_5th = nonzeros(tortuosities(lengths >= lenght_quintiles(4)));
+            DF_1st = tortuosities(lengths < lenght_quintiles(1));
+            DF_2nd = tortuosities(lengths < lenght_quintiles(2) & lengths >= lenght_quintiles(1));
+            DF_3rd = tortuosities(lengths < lenght_quintiles(3) & lengths >= lenght_quintiles(2));
+            DF_4th = tortuosities(lengths < lenght_quintiles(4) & lengths >= lenght_quintiles(3));
+            DF_5th = tortuosities(lengths >= lenght_quintiles(4));
 
 
 
@@ -114,17 +114,17 @@ classdef Vessel_Data_IO
             
             % remove hard zeros (they correspond to vessels that have been
             % filtered out as part of the artery/vein processing)
-            median_diameters = nonzeros(median_diameters);
-            tortuosities = nonzeros(tortuosities);
-            short_tortuosities = nonzeros(short_tortuosities);
+            median_diameters = median_diameters;
+            tortuosities = tortuosities;
+            short_tortuosities = short_tortuosities;
             
-            tau1s = nonzeros(tau1s);
-            tau2s = nonzeros(tau2s); 
-            tau3s = nonzeros(tau3s);
-            tau4s = nonzeros(tau4s);
-            tau5s = nonzeros(tau5s);
-            tau6s = nonzeros(tau6s);
-            tau7s = nonzeros(tau7s);
+            %tau1s = nonzeros(tau1s);
+            %tau2s = nonzeros(tau2s); 
+            %tau3s = nonzeros(tau3s);
+            %tau4s = nonzeros(tau4s);
+            %tau5s = nonzeros(tau5s);
+            %tau6s = nonzeros(tau6s);
+            %tau7s = nonzeros(tau7s);
 
 
             % we just doing distance factor quintiles here, plus some controls
