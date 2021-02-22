@@ -108,7 +108,7 @@ classdef Vessel_Data_IO
                 %[tau0, ~, ~] = compute_tortuosity(segment.centre, 0, false, false);
                 %tau0s(segmement_index,1) = tau0;
 
-                # saving segment stats
+                % saving segment stats
                 dlmwrite(segmentStats_file,[median(diameters), median(segment.centre(:,1)), median(segment.centre(:,2)), ...
                     segment.length_cumulative, segment.length_straight_line, DistanceFactor, ...
                     tau1, tau2, tau3, tau4, tau5, tau6, tau7, av_score]','delimiter','\t','-append');
