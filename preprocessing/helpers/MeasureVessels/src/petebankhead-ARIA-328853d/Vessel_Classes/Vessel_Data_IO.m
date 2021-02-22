@@ -22,8 +22,12 @@ classdef Vessel_Data_IO
             % names of output files
             imageStats_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_imageStats.tsv"));
            
-            segmentStats_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_segmentStats.tsv"));
-           
+            segmentStats_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_segmentStats.tsv"));           
+            segmentStats_names = "medianDiameter\tmedianPosX\tmedianPosY\tarcLength\tchordLength\tDF\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\tAVScore\n";
+            fid = fopen(segmentStats_file,'wt');
+            fprintf(fid, segmentStats_names);
+            fclose(fid);
+
             posX_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_posX.tsv"));
             posY_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_posY.tsv"));
             diameters_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_rawDiameters.tsv"));
@@ -103,6 +107,11 @@ classdef Vessel_Data_IO
                 %tau0 = 0; Sofia tau0 is not used
                 %[tau0, ~, ~] = compute_tortuosity(segment.centre, 0, false, false);
                 %tau0s(segmement_index,1) = tau0;
+
+                # saving segment stats
+                dlmwrite(segmentStats_file,[median(diameters), median(segment.centre(:,1)), median(segment.centre(:,2)), ...
+                    segment.length_cumulative, segment.length_straight_line, DistanceFactor, ...
+                    tau1, tau2, tau3, tau4, tau5, tau6, tau7, av_score]','delimiter','\t','-append');
             end
 
             lenght_quintiles = quantile(lengths,4);
