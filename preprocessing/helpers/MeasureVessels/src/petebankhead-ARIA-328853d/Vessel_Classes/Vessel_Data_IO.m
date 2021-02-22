@@ -28,8 +28,8 @@ classdef Vessel_Data_IO
             fprintf(fid, segmentStats_names);
             fclose(fid);
 
-            posX_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_posX.tsv"));
-            posY_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_posY.tsv"));
+            posX_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_rawXCoordinates.tsv"));
+            posY_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_rawYCoordinates.tsv"));
             diameters_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_rawDiameters.tsv"));
             
             %SOFIA : Have all the taus value for the last image analized
