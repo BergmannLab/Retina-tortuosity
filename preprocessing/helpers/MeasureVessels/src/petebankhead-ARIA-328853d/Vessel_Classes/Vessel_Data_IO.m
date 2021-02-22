@@ -17,17 +17,22 @@ classdef Vessel_Data_IO
       
        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
        % MATTIA: Save VESSEL STATS and MEASUREMTNS to a TEXT file
-       function [stats_file, measurements_file, QCmeasure1, QCmeasure2] = save_vessel_data_to_text(fname, vessel_data, AV_option, AV_thr, path_to_output)
+       function [imageStats_file, segmentStats_file, posX_file, posY_file, diameters_file, QCmeasure1, QCmeasure2] = save_vessel_data_to_text(fname, vessel_data, AV_option, AV_thr, path_to_output)
            
             % names of output files
-            stats_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_stats.tsv"));
-            measurements_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_measurements.tsv"));
+            imageStats_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_imageStats.tsv"));
+           
+            segmentStats_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_segmentStats.tsv"));
+           
+            posX_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_posX.tsv"));
+            posY_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_posY.tsv"));
+            diameters_file = fullfile(path_to_output, strcat(fname,"_",AV_option,"_rawDiameters.tsv"));
             
             %SOFIA : Have all the taus value for the last image analized
             %taus_file = fullfile(path_to_output, strcat("all_taus_same_image.tsv"));
             
             % data structure to contain stats
-            stats_names="DF1st\tDF2nd\tDF3rd\tDF4th\tDF5th\tDF_control\tDF1_DF2\tDF1_DF5\n";
+            stats_names="DF\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\tnVessels\n";
             size_stats_names = size(strsplit(stats_names,"\\t"));
             num_stat_features = size_stats_names(2);
             stats_array = zeros(1,num_stat_features);
@@ -68,9 +73,10 @@ classdef Vessel_Data_IO
                     continue;  
                 end
 
-                % save diameters measurements to file
-                dlmwrite(measurements_file,diameters','delimiter','\t','-append');
-                
+                % save raw segment measurements to file
+                dlmwrite(posX_file,segment.centre(:,1)','delimiter','\t','-append');
+                dlmwrite(posY_file,segment.centre(:,2)','delimiter','\t','-append');
+                dlmwrite(diameters_file,diameters','delimiter','\t','-append');
                 
                 % store value to calculate stats
                 median_diameters(segmement_index,1) = median(diameters);
@@ -106,8 +112,6 @@ classdef Vessel_Data_IO
             DF_4th = tortuosities(lengths < lenght_quintiles(4) & lengths >= lenght_quintiles(3));
             DF_5th = tortuosities(lengths >= lenght_quintiles(4));
 
-
-
             % set return value that will be used for quality filtering
             QCmeasure1 = sum(lengths); % tot length of vasculature system
             QCmeasure2 = num_vessels; % number of vessels
@@ -141,10 +145,10 @@ classdef Vessel_Data_IO
             stats_array(8) = length(DF_1st) / length(DF_5th);
             
             % save stats to tile
-            fid = fopen(stats_file,'wt');
+            fid = fopen(imageStats_file,'wt');
             fprintf(fid, stats_names);
             fclose(fid);
-            dlmwrite(stats_file,stats_array,'delimiter','\t','precision', 14,'-append');
+            dlmwrite(imageStats_file,stats_array,'delimiter','\t','precision', 14,'-append');
             
             %SOFIA: Have all the taus value for the last image analized
             %alltaus = [tau1s tau2s tau3s tau4s tau5s tau6s tau7s];
@@ -156,7 +160,7 @@ classdef Vessel_Data_IO
        % MATTIA: apply quality filter
        % remove generated files for images with "quality_data" (i.e. tot 
        % length of vasculature system) < then "threshold"
-       function filter_quality(stats_file, measurements_file, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, QCmeasure1, QCmeasure2)
+       function filter_quality(imageStats_file, segmentStats_file, posX_file, posY_file, diameters_file, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, QCmeasure1, QCmeasure2)
            passes_QC = true;
            if (QCmeasure1 < str2double(minQCthr1))
                 disp(strcat("  SKIPPING IMAGE: tot amount of vasculature < min threshold: ", num2str(QCmeasure1)));
@@ -173,8 +177,11 @@ classdef Vessel_Data_IO
            end
            
            if passes_QC == false
-                delete(stats_file);
-                delete(measurements_file);
+                delete(imageStats_file);
+                delete(segmentStats_file);
+                delete(posX_file);
+                delete(posY_file);
+                delete(diameters_file);
                 %%%delete(ARIA_object_file);
            end
            %uncomment to output quality stats about those images that passed QC
@@ -293,14 +300,14 @@ classdef Vessel_Data_IO
                          throw(MException('Vessel_Data_IO:Open', 'No vessels found in the chosen file.'));
                     else
                         % mattia: save data (measurements and stats) and store object to .m file 
-                        [stats_file, measurements_file, QCmeasure1, QCmeasure2] = Vessel_Data_IO.save_vessel_data_to_text(fname, vessel_data, AV_option, AV_thr, path_to_output); % mattia
+                        [imageStats_file, segmentStats_file, posX_file, posY_file, diameters_file, QCmeasure1, QCmeasure2] = Vessel_Data_IO.save_vessel_data_to_text(fname, vessel_data, AV_option, AV_thr, path_to_output); % mattia
                         
                         % optionally save .mat file.
                         %%%if you enable this, uncomment line "delete(ARIA_object_file)" in Vessel_Data_IO.filter_quality
                         %%%ARIA_object_file = Vessel_Data_IO.save_vessel_object_to_file(fname, vessel_data, path_to_output); % mattia
                         
                         % mattia: apply quality filter: files correspoding to low quality images will be deleted
-                        Vessel_Data_IO.filter_quality(stats_file, measurements_file, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, QCmeasure1, QCmeasure2)
+                        Vessel_Data_IO.filter_quality(imageStats_file, segmentStats_file, posX_file, posY_file, diameters_file, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, QCmeasure1, QCmeasure2)
                     end
 
                     
