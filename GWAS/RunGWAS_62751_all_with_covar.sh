@@ -20,11 +20,11 @@ PARAM=$(sed "${SLURM_ARRAY_TASK_ID}q;d" $j_array_params)
 chromosome_number=$(echo $PARAM | cut -d" " -f1)
 
 chromosome_name=ukb_imp_chr"$chromosome_number"_v3
-chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset.bgen # for full rslist, use _subset instead of _subset_mini
+chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_mini.bgen # for full rslist, use _subset instead of _subset_mini
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
 
-experiment_id=2020_10_03__62751_trait_qqnorm # RENAME EXPERIMENT APPROPRIATELY
-pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_trait_qqnorm_tortuosityonly.csv
+experiment_id=2021_02_19_segmentLengthQuintiles_fixed # RENAME EXPERIMENT APPROPRIATELY
+pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_qqnorm.csv
 covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar.csv
 output_file_name=output_"$chromosome_name".txt
 

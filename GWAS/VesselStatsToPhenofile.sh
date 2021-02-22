@@ -18,7 +18,7 @@ output=$output_dir/phenofile.csv
 
 #UKBB
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
-stats_dir=$scratch/retina/preprocessing/output/backup/2020_12_17__14_13_32_all/
+stats_dir=$scratch/retina/preprocessing/output/backup/2021_02_19__09_16_16_all/
 
 #SkiPOGH
 #sample_file=$data/retina/SkiPOGH/genotypes/SkiPOGH.sample
@@ -31,6 +31,7 @@ source /dcsrsoft/spack/bin/setup_dcsrsoft
 module purge
 module load gcc/8.3.0
 module load python/3.7.7
+$PYTHONPATH
 module load py-biopython
 python3.7 $PWD/helpers/VesselStatsToPhenofile/run.py $output $sample_file $stats_dir
 module purge
