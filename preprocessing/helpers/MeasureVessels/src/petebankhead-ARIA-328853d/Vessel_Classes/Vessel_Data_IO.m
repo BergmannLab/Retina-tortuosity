@@ -32,7 +32,7 @@ classdef Vessel_Data_IO
             %taus_file = fullfile(path_to_output, strcat("all_taus_same_image.tsv"));
             
             % data structure to contain stats
-            stats_names="DF\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\tnVessels\n";
+            stats_names="DF\tDF1st\tDF2nd\tDF3rd\tDF4th\tDF5th\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\tnVessels\n";
             size_stats_names = size(strsplit(stats_names,"\\t"));
             num_stat_features = size_stats_names(2);
             stats_array = zeros(1,num_stat_features);
@@ -131,19 +131,26 @@ classdef Vessel_Data_IO
             %tau7s = nonzeros(tau7s);
 
 
-            % we just doing distance factor quintiles here, plus some controls
+            % DF, DF quintiles, all the taus, and #vessels
             % Controls are stats_array(#):
             % (6 ) Vanilla DF
             % (7/8)) if everything works as planned, there should be about equal number of elements in all quantile ranges, so these number should be ~=1 
-            stats_array(1) = median(DF_1st);
-            stats_array(2) = median(DF_2nd);
-            stats_array(3) = median(DF_3rd);
-            stats_array(4) = median(DF_4th);
-            stats_array(5) = median(DF_5th);
-            stats_array(6) = median(tortuosities);
-            stats_array(7) = length(DF_1st) / length(DF_2nd);
-            stats_array(8) = length(DF_1st) / length(DF_5th);
-            
+            stats_array(1) = median(tortuosities);
+            stats_array(2) = median(DF_1st);
+            stats_array(3) = median(DF_2nd);
+            stats_array(4) = median(DF_3rd);
+            stats_array(5) = median(DF_4th);
+            stats_array(6) = median(DF_5th);
+            stats_array(7) = median(tau1s);
+            stats_array(8) = median(tau2s);
+            stats_array(9) = median(tau3s);
+            stats_array(10) = median(tau4s);
+            stats_array(11) = median(tau5s);
+            stats_array(12) = median(tau6s);
+            stats_array(13) = median(tau7s);
+            stats_array(14) = num_vessels;
+
+
             % save stats to tile
             fid = fopen(imageStats_file,'wt');
             fprintf(fid, stats_names);
