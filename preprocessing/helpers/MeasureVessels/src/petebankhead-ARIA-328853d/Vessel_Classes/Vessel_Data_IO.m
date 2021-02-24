@@ -34,8 +34,8 @@ classdef Vessel_Data_IO
             %taus_file = fullfile(path_to_output, strcat("all_taus_same_image.tsv"));
             
             % data structure to contain stats
-            %stats_names="median_diameter\tD9_diameter\tmedian_tortuosity\tshort_tortuosity\tD9_tortuosity\tD95_tortuosity\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\n";
-            stats_names="median_diameter\tD9_diameter\tmedian_tortuosity\tshort_tortuosity\tD9_tortuosity\tD95_tortuosity\n";
+            stats_names="median_diameter\tD9_diameter\tmedian_tortuosity\tshort_tortuosity\tD9_tortuosity\tD95_tortuosity\ttau1\ttau2\ttau3\ttau4\ttau5\ttau6\ttau7\n";
+            %stats_names="median_diameter\tD9_diameter\tmedian_tortuosity\tshort_tortuosity\tD9_tortuosity\tD95_tortuosity\n";
 
             size_stats_names = size(strsplit(stats_names,"\\t"));
             num_stat_features = size_stats_names(2);
@@ -45,14 +45,25 @@ classdef Vessel_Data_IO
             median_diameters = zeros(num_vessels,1);
             tortuosities = zeros(num_vessels,1);
             short_tortuosities = zeros(num_vessels,1);
-            %tau1s = zeros(num_vessels,1);
-            %tau2s = zeros(num_vessels,1);
-            %tau3s = zeros(num_vessels,1);
-            %tau4s = zeros(num_vessels,1);
-            %tau5s = zeros(num_vessels,1);
-            %tau6s = zeros(num_vessels,1);
-            %tau7s = zeros(num_vessels,1);
+            tau1s = zeros(num_vessels,1);
+            tau2s = zeros(num_vessels,1);
+            tau3s = zeros(num_vessels,1);
+            tau4s = zeros(num_vessels,1);
+            tau5s = zeros(num_vessels,1);
+            tau6s = zeros(num_vessels,1);
+            tau7s = zeros(num_vessels,1);
             %tau0s = zeros(num_vessels,1);
+            
+            median_diameters(median_diameters==0)=-999;
+            tortuosities(tortuosities==0)=-999;
+            short_tortuosities(short_tortuosities==0)=-999;
+            tau1s(tau1s==0)=-999;
+            tau2s(tau2s==0)=-999;
+            tau3s(tau3s==0)=-999;
+            tau4s(tau4s==0)=-999;
+            tau5s(tau5s==0)=-999;
+            tau6s(tau6s==0)=-999;
+            tau7s(tau7s==0)=-999;
             
             % for each vessel
             for segmement_index = 1:num_vessels
@@ -87,21 +98,21 @@ classdef Vessel_Data_IO
                 if(segment.length_cumulative >=10 && segment.length_cumulative<=100)
                 	short_tortuosities(segmement_index,1) = DistanceFactor;
                 end
-                
-                %[tau1, ~, ~] = compute_tortuosity(segment.centre, 1, false, false);
-                %tau1s(segmement_index,1) = tau1;
-                %[tau2, ~, ~] = compute_tortuosity(segment.centre, 2, false, false);
-                %tau2s(segmement_index,1) = tau2;
-                %[tau3, ~, ~] = compute_tortuosity(segment.centre, 3, false, false);
-                %tau3s(segmement_index,1) = tau3;
-                %[tau4, ~, ~] = compute_tortuosity(segment.centre, 4, false, false);
-                %tau4s(segmement_index,1) = tau4;
-                %[tau5, ~, ~] = compute_tortuosity(segment.centre, 5, false, false);
-                %tau5s(segmement_index,1) = tau5;
-                %[tau6, ~, ~] = compute_tortuosity(segment.centre, 6, false, false);
-                %tau6s(segmement_index,1) = tau6;
-                %[tau7, ~, ~] = compute_tortuosity(segment.centre, 7, false, false);
-                %tau7s(segmement_index,1) = tau7;
+
+                [tau1, ~, ~] = compute_tortuosity(segment.centre, 1, false, false);
+                tau1s(segmement_index,1) = tau1;
+                [tau2, ~, ~] = compute_tortuosity(segment.centre, 2, false, false);
+                tau2s(segmement_index,1) = tau2;
+                [tau3, ~, ~] = compute_tortuosity(segment.centre, 3, false, false);
+                tau3s(segmement_index,1) = tau3;
+                [tau4, ~, ~] = compute_tortuosity(segment.centre, 4, false, false);
+                tau4s(segmement_index,1) = tau4;
+                [tau5, ~, ~] = compute_tortuosity(segment.centre, 5, false, false);
+                tau5s(segmement_index,1) = tau5;
+                [tau6, ~, ~] = compute_tortuosity(segment.centre, 6, false, false);
+                tau6s(segmement_index,1) = tau6;
+                [tau7, ~, ~] = compute_tortuosity(segment.centre, 7, false, false);
+                tau7s(segmement_index,1) = tau7;
                 %tau0 = 0; Sofia tau0 is not used
                 %[tau0, ~, ~] = compute_tortuosity(segment.centre, 0, false, false);
                 %tau0s(segmement_index,1) = tau0;
@@ -111,19 +122,20 @@ classdef Vessel_Data_IO
             QCmeasure1 = sum(lengths); % tot length of vasculature system
             QCmeasure2 = num_vessels; % number of vessels
 
-            % remove hard zeros (they correspond to vessels that have been
+            % remove hard -999 (they correspond to vessels that have been
             % filtered out as part of the artery/vein processing)
-            median_diameters = nonzeros(median_diameters);
-            tortuosities = nonzeros(tortuosities);
-            short_tortuosities = nonzeros(short_tortuosities);
+            median_diameters(median_diameters==-999)=[];
+            tortuosities(tortuosities==-999)=[];
+            short_tortuosities(short_tortuosities==-999)=[];
+            
+            tau1s(tau1s==-999)=[];
+            tau2s(tau2s==-999)=[];
+            tau3s(tau3s==-999)=[];
+            tau4s(tau4s==-999)=[];
+            tau5s(tau5s==-999)=[];
+            tau6s(tau6s==-999)=[];
+            tau7s(tau7s==-999)=[];
 
-            %tau1s = nonzeros(tau1s);
-            %tau2s = nonzeros(tau2s); 
-            %tau3s = nonzeros(tau3s);
-            %tau4s = nonzeros(tau4s);
-            %tau5s = nonzeros(tau5s);
-            %tau6s = nonzeros(tau6s);
-            %tau7s = nonzeros(tau7s);
             
             % calculate stats: median_diameter
             stats_array(1) = median(median_diameters);
@@ -147,13 +159,13 @@ classdef Vessel_Data_IO
             stats_array(6) = D95_tortuosity;
             
             % calculate stats: alternative tortuosity measures
-            %stats_array(7) = median(tau1s); %SOFIA tau1 is the last value, the array is tau1s
-            %stats_array(8) = median(tau2s);
-            %stats_array(9) = median(tau3s);
-            %stats_array(10) = median(tau4s);
-            %stats_array(11) = median(tau5s);
-            %stats_array(12) = median(tau6s);
-            %stats_array(13) = median(tau7s);
+            stats_array(7) = median(tau1s); %SOFIA tau1 is the last value, the array is tau1s
+            stats_array(8) = median(tau2s);
+            stats_array(9) = median(tau3s);
+            stats_array(10) = median(tau4s);
+            stats_array(11) = median(tau5s);
+            stats_array(12) = median(tau6s);
+            stats_array(13) = median(tau7s);
             %stats_array(14) = median(tau0s);
             
             % save stats to tile
