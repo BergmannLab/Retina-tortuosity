@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from unittest.mock import inplace
             
 # read samples file: create a dataframe that contains uniquely the participant ids
 def read_samples(sample_file):
@@ -17,6 +18,15 @@ def read_samples(sample_file):
 
 def calculate_average(stats_i, stats_collision):
     return (stats_i.values + stats_collision.values) / 2
+
+def read_stats(stats_dir,i):
+    stats_i = pd.read_csv(stats_dir+"/"+i, sep="\t").iloc[0]
+    # trim indexes: have spaces can cause a nasty, silent error
+    trimmed = []
+    for i in range(len(stats_i.index)): 
+        trimmed.append(stats_i.index[i].strip())
+    stats_i.index = trimmed
+    return stats_i
     
 def VesselStats_to_phenofile(output, sample_file, stats_dir):
     
@@ -30,7 +40,15 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     stats_phenotypes['short_tortuosity'] = None
     stats_phenotypes['D9_tortuosity'] = None
     stats_phenotypes['D95_tortuosity'] = None
-
+    stats_phenotypes['tau1'] = None
+    stats_phenotypes['tau2'] = None
+    stats_phenotypes['tau3'] = None
+    stats_phenotypes['tau4'] = None
+    stats_phenotypes['tau5'] = None
+    stats_phenotypes['tau6'] = None
+    stats_phenotypes['tau7'] = None
+    #stats_phenotypes['tau0'] = None
+   
     # import stats for each input file
     add_once=0
     replace=0
@@ -40,7 +58,7 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
             ###print("WARNING: " + i + " will be ignored (not a stats file)")
             continue # process stats files only
         # import file stats to dataframe
-        stats_i = pd.read_csv(stats_dir+"/"+i, sep="\t").iloc[0]
+        stats_i = read_stats(stats_dir,i)
         #eid_i = float(i[0:6]) # SkiPOGH
         eid_i = float(i[0:7]) # loat(i.split("_")[0]) 
         try: # eid might not be present in stats_phenotypes

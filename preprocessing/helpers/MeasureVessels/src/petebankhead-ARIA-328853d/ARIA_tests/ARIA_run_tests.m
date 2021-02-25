@@ -216,6 +216,7 @@ if any(strcmp({'review', 'all'}, test_name))
     sets = {'CLRIS'};
     % mattia: we are simulating a REVIEW CLRIS test
     % sets = {'KPIS', 'CLRIS', 'VDIS', 'HRIS_downsample', 'HRIS'};
+    
     for ii = numel(sets):-1:1
 		processor = zeros(0); % mattia: setting preprocessor to null (the function will take care of initializing it)
         chunk_start = str2double(chunk_start); % mattia: converting input params to correct type
