@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "helpers/04/BuildDB.py", line 1, in <module>
-    import tables
-ModuleNotFoundError: No module named 'tables'

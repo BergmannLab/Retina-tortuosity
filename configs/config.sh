@@ -7,7 +7,7 @@ raw_data_dir=$ARIA_data_dir"CLRIS/"
 raw_data_dir_av_test=$ARIA_data_dir/CLRIS_AV_test/
 
 # quality thresholds for ARIA
-min_QCthreshold_1=11000 
+min_QCthreshold_1=11000
 max_QCthreshold_1=20000
 min_QCthreshold_2=100
 max_QCthreshold_2=250
@@ -21,9 +21,9 @@ AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/ClassifyAVLwnet/ # Lwnet U
 AV_threshold=0.0 # A/V classification AUC around 0.88 (consider all classified vessels)
 
 # BuildTestDatasetHypertension
-# number of hypertension cases in dataset 
+# number of hypertension cases in dataset
 # (twice as many controls will be added)
-limit=1000
+#limit=1000
 
 # config GPU usage for DL
 # gpuid=-1 for CPU
@@ -43,6 +43,8 @@ bgenie_dir=$data/retina/software/bgenie
 bgenix_dir=$data/retina/software/bgenix/gavinband-bgen-407eaf355425/build/apps/
 # ARIA (compiled)
 ARIA_dir=$data/retina/software/ARIA
+# ARIA with random AV calling (compiled)
+ARIA_rndAVcalling_dir=$data/retina/software/ARIA_rndAVcalling
 # conda
 conda_dir=/data/FAC/FBM/DBC/sbergman/retina/software/miniconda3/
 # AV classification

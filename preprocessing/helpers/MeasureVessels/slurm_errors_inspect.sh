@@ -7,5 +7,3 @@ error_runs=$(find slurm_runs_all -type f -name '*.err' -exec du -ch {} + | grep 
 
 echo "$success_runs OK"
 echo "$error_runs ERROR"
-
-
