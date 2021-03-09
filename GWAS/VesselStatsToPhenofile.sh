@@ -13,12 +13,13 @@
 source $HOME/retina/configs/config.sh
 
 # define inputs and outputs
-output_dir=$scratch/retina/GWAS/output/VesselStatsToPhenofile/
+output_dir=$scratch/retina/GWAS/output/VesselStatsToPhenofile/$1
+mkdir -p $output_dir
 output=$output_dir/phenofile.csv
 
 #UKBB
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
-stats_dir=$scratch/retina/preprocessing/output/backup/2021_02_19__09_16_16_all/
+stats_dir=$scratch/retina/preprocessing/output/backup/$1
 
 #SkiPOGH
 #sample_file=$data/retina/SkiPOGH/genotypes/SkiPOGH.sample

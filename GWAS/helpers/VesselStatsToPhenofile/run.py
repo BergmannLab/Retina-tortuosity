@@ -35,21 +35,20 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     stats_phenotypes = read_samples(sample_file)
     # add stats columns to dataframe
 
+#    stats_phenotypes['DF'] = None
     stats_phenotypes['DF1st'] = None
     stats_phenotypes['DF2nd'] = None
     stats_phenotypes['DF3rd'] = None
     stats_phenotypes['DF4th'] = None
     stats_phenotypes['DF5th'] = None
-    stats_phenotypes['DF_control'] = None
-    stats_phenotypes['DF1_DF2'] = None
-    stats_phenotypes['DF1_DF5'] = None
    
     # import stats for each input file
+    print("Starting loop over files:")
     add_once=0
     replace=0
     not_in_sample=[]
     for i in os.listdir(stats_dir):
-        if not i.endswith("stats.tsv"): 
+        if not i.endswith("imageStats.tsv"): 
             ###print("WARNING: " + i + " will be ignored (not a stats file)")
             continue # process stats files only
         # import file stats to dataframe
@@ -60,10 +59,10 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
             collision = stats_phenotypes.loc[eid_i] 
             not_present = collision[0] == None
             if not_present: # simply add
-                stats_phenotypes.loc[eid_i] = stats_i
+                stats_phenotypes.loc[eid_i] = stats_i[0:5]
                 add_once = add_once+1
             else: # average stats from iteration (stats_i) and those present (collision)
-                stats_phenotypes.loc[eid_i] = calculate_average(stats_i,collision)
+                stats_phenotypes.loc[eid_i] = calculate_average(stats_i[0:5],collision)
                 replace = replace+1
         except KeyError:
             eid_not_in_sample = str(eid_i)[:-2]
@@ -79,6 +78,7 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     print(str(len(not_in_sample)) + " were omitted (not in sample file)")
     stats_phenotypes.fillna(-999, inplace=True)
     # output
+    #stats_phenotypes.to_csv("~/phenofile.csv", sep=' ', index = False)
     stats_phenotypes.to_csv(output, sep=' ', index = False)
     omitted_file = output[:-4] + "_NotInSamplefile.csv"
     with open(omitted_file, "w") as outfile:
