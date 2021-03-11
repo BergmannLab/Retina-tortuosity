@@ -54,6 +54,18 @@ classdef Vessel_Data_IO
             tau7s = zeros(num_vessels,1);
             %tau0s = zeros(num_vessels,1);
             
+            median_diameters(median_diameters==0)=-999;
+            tortuosities(tortuosities==0)=-999;
+            short_tortuosities(short_tortuosities==0)=-999;
+            tau1s(tau1s==0)=-999;
+            tau2s(tau2s==0)=-999;
+            tau3s(tau3s==0)=-999;
+            tau4s(tau4s==0)=-999;
+            tau5s(tau5s==0)=-999;
+            tau6s(tau6s==0)=-999;
+            tau7s(tau7s==0)=-999;
+
+            
             % for each vessel
             for segmement_index = 1:num_vessels
                 segment = vessel_data.vessel_list(segmement_index);
@@ -127,18 +139,24 @@ classdef Vessel_Data_IO
             
             % remove hard zeros (they correspond to vessels that have been
             % filtered out as part of the artery/vein processing)
-            median_diameters = median_diameters;
-            tortuosities = tortuosities;
-            short_tortuosities = short_tortuosities;
             
-            %tau1s = nonzeros(tau1s);
-            %tau2s = nonzeros(tau2s); 
-            %tau3s = nonzeros(tau3s);
-            %tau4s = nonzeros(tau4s);
-            %tau5s = nonzeros(tau5s);
-            %tau6s = nonzeros(tau6s);
-            %tau7s = nonzeros(tau7s);
+            %median_diameters(median_diameters==-999)=[];
+            tortuosities(tortuosities==-999)=[];
+            %short_tortuosities(short_tortuosities==-999)=[];
+            
+            tau1s(tau1s==-999)=[];
+            tau2s(tau2s==-999)=[];
+            tau3s(tau3s==-999)=[];
+            tau4s(tau4s==-999)=[];
+            tau5s(tau5s==-999)=[];
+            tau6s(tau6s==-999)=[];
+            tau7s(tau7s==-999)=[];
 
+            DF_1st(DF_1st==-999)=[];
+            DF_2nd(DF_2nd==-999)=[];
+            DF_3rd(DF_3rd==-999)=[];
+            DF_4th(DF_4th==-999)=[];
+            DF_5th(DF_5th==-999)=[];
 
             % DF, DF quintiles, all the taus, and #vessels
             % Controls are stats_array(#):
