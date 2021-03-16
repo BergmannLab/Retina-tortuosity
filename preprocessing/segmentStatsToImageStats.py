@@ -1,5 +1,6 @@
 #%%
 import os
+import sys
 from datetime import datetime
 import pandas as pd
 import numpy as np
@@ -9,12 +10,21 @@ from matplotlib import cm
 import csv
 
 DATE = datetime.now().strftime("%Y_%m_%d")
-QUINTILE_TYPE = "diameter"
-VESSEL_TYPE  = 'ArteryVeinDiff' # Arteries, Veins, or ArteryVeinDiff
+QUINTILE_TYPE = "segmentLengths"
+VESSEL_TYPE  = 'Arteries' # Arteries, Veins, or ArteryVeinDiff
 
 
 input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"
 output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + DATE + "_" + QUINTILE_TYPE + "QuintilesImageStats" + VESSEL_TYPE + "/"
+
+imageIDs= []
+with open("imageIDs.txt") as file:
+    for i, line in enumerate(file):
+        if((i>=int(sys.argv[1])) & (i<=int(sys.argv[2]))):
+            imageIDs.append(line.rstrip('\n'))
+print(imageIDs)
+
+
 
 os.chdir(input_dir)
 try:
@@ -22,31 +32,28 @@ try:
 except Exception as e:
     print(e)
 
-for i in os.listdir():
-    if i.endswith("segmentStats.tsv"):
-
-        # loading image-specific segment stats:
-        df = pd.read_csv(i, delimiter='\t')
+for imageID in imageIDs:
+    # loading image-specific segment stats:
+    df = pd.read_csv(imageID+"_all_segmentStats.tsv", delimiter='\t')
  
-        if VESSEL_TYPE == 'Arteries':
-            df = df.loc[df['AVScore']>0]
-            # in case less than 5 remaining vessels (need 5 for quintiles):
-            if df.shape[0] < 5:
-                continue
-        elif VESSEL_TYPE == 'Veins':
-            df = df.loc[df['AVScore']<0]
-            # in case less than 5 remaining vessels (need 5 for quintiles):
-            if df.shape[0] < 5:
-                continue
-        elif VESSEL_TYPE == 'ArteryVeinDiff':
-            df_vein   = df.loc[df['AVScore']<0]
-            df = df.loc[df['AVScore']>0]
-            # in case less than 5 remaining vessels (need 5 for quintiles):
-            if (df.shape[0] < 5) | (df_vein.shape[0] < 5):
-                continue
+    if VESSEL_TYPE == 'Arteries':
+        df = df.loc[df['AVScore']>0]
+        # in case less than 5 remaining vessels (need 5 for quintiles):
+        if df.shape[0] < 5:
+            continue
+    elif VESSEL_TYPE == 'Veins':
+        df = df.loc[df['AVScore']<0]
+        # in case less than 5 remaining vessels (need 5 for quintiles):
+        if df.shape[0] < 5:
+            continue
+    elif VESSEL_TYPE == 'ArteryVeinDiff':
+        df_vein   = df.loc[df['AVScore']<0]
+        df = df.loc[df['AVScore']>0]
+        # in case less than 5 remaining vessels (need 5 for quintiles):
+        if (df.shape[0] < 5) | (df_vein.shape[0] < 5):
+            continue
 
-        imageID = i.split("_all_segmentStats")[0]
-        
+    if 1==1:    
 	# DISTANCE QUINTILES
 	# a) distance from literal center of fundus image        
         #center_X = 1536/2
@@ -82,37 +89,37 @@ for i in os.listdir():
         
         
         # DIAMETER QUINTILES
-        diam_quints = np.quantile(df["medianDiameter"], [0.2,0.4,0.6,0.8])
-        diam_q1Inds = df["medianDiameter"].loc[df["medianDiameter"] < diam_quints[0]].index
-        diam_q2Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[1]) \
-            & (df["medianDiameter"] >= diam_quints[0])].index
-        diam_q3Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[2]) \
-            & (df["medianDiameter"] >= diam_quints[1])].index
-        diam_q4Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[3]) \
-            & (df["medianDiameter"] >= diam_quints[2])].index
-        diam_q5Inds = df["medianDiameter"].loc[df["medianDiameter"] >= diam_quints[3]].index
-        
-        if VESSEL_TYPE == 'ArteryVeinDiff':
-            diamVein_quints = np.quantile(df_vein["medianDiameter"], [0.2,0.4,0.6,0.8])
-            diamVein_q1Inds = df_vein["medianDiameter"].loc[df_vein["medianDiameter"] < diamVein_quints[0]].index
-            diamVein_q2Inds = df_vein["medianDiameter"].loc[(df_vein["medianDiameter"] < diamVein_quints[1]) \
-                & (df_vein["medianDiameter"] >= diamVein_quints[0])].index
-            diamVein_q3Inds = df_vein["medianDiameter"].loc[(df_vein["medianDiameter"] < diamVein_quints[2]) \
-                & (df_vein["medianDiameter"] >= diamVein_quints[1])].index
-            diamVein_q4Inds = df_vein["medianDiameter"].loc[(df_vein["medianDiameter"] < diamVein_quints[3]) \
-                & (df_vein["medianDiameter"] >= diamVein_quints[2])].index
-            diamVein_q5Inds = df_vein["medianDiameter"].loc[df_vein["medianDiameter"] >= diamVein_quints[3]].index
+        #diam_quints = np.quantile(df["medianDiameter"], [0.2,0.4,0.6,0.8])
+        #diam_q1Inds = df["medianDiameter"].loc[df["medianDiameter"] < diam_quints[0]].index
+        #diam_q2Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[1]) \
+        #    & (df["medianDiameter"] >= diam_quints[0])].index
+        #diam_q3Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[2]) \
+        #    & (df["medianDiameter"] >= diam_quints[1])].index
+        #diam_q4Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[3]) \
+        #    & (df["medianDiameter"] >= diam_quints[2])].index
+        #diam_q5Inds = df["medianDiameter"].loc[df["medianDiameter"] >= diam_quints[3]].index
+        # 
+        #if VESSEL_TYPE == 'ArteryVeinDiff':
+        #    diamVein_quints = np.quantile(df_vein["medianDiameter"], [0.2,0.4,0.6,0.8])
+        #    diamVein_q1Inds = df_vein["medianDiameter"].loc[df_vein["medianDiameter"] < diamVein_quints[0]].index
+        #    diamVein_q2Inds = df_vein["medianDiameter"].loc[(df_vein["medianDiameter"] < diamVein_quints[1]) \
+        #        & (df_vein["medianDiameter"] >= diamVein_quints[0])].index
+        #    diamVein_q3Inds = df_vein["medianDiameter"].loc[(df_vein["medianDiameter"] < diamVein_quints[2]) \
+        #        & (df_vein["medianDiameter"] >= diamVein_quints[1])].index
+        #    diamVein_q4Inds = df_vein["medianDiameter"].loc[(df_vein["medianDiameter"] < diamVein_quints[3]) \
+        #        & (df_vein["medianDiameter"] >= diamVein_quints[2])].index
+        #    diamVein_q5Inds = df_vein["medianDiameter"].loc[df_vein["medianDiameter"] >= diamVein_quints[3]].index
         
 
-        #segLen_quints = np.quantile(df["arcLength"], [0.2,0.4,0.6,0.8])
-        #segLen_q1Inds = df["arcLength"].loc[df["arcLength"] < segLen_quints[0]].index
-        #segLen_q2Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[1]) \
-        #    & (df["arcLength"] >= segLen_quints[0])].index
-        #segLen_q3Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[2]) \
-        #    & (df["arcLength"] >= segLen_quints[1])].index
-        #segLen_q4Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[3]) \
-        #    & (df["arcLength"] >= segLen_quints[2])].index
-        #segLen_q5Inds = df["arcLength"].loc[df["arcLength"] >= segLen_quints[3]].index
+        segLen_quints = np.quantile(df["arcLength"], [0.2,0.4,0.6,0.8])
+        segLen_q1Inds = df["arcLength"].loc[df["arcLength"] < segLen_quints[0]].index
+        segLen_q2Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[1]) \
+            & (df["arcLength"] >= segLen_quints[0])].index
+        segLen_q3Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[2]) \
+            & (df["arcLength"] >= segLen_quints[1])].index
+        segLen_q4Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[3]) \
+            & (df["arcLength"] >= segLen_quints[2])].index
+        segLen_q5Inds = df["arcLength"].loc[df["arcLength"] >= segLen_quints[3]].index
 
 
         with open(output_dir + imageID + "_all_imageStats.tsv", 'w') as f:
@@ -120,11 +127,11 @@ for i in os.listdir():
             
             if VESSEL_TYPE != 'ArteryVeinDiff':
                 # .loc for diam/segLen, .iloc for dist
-                f.write("%s\t" % np.median(df['DF'].loc[diam_q1Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[diam_q2Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[diam_q3Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[diam_q4Inds]))
-                f.write("%s\n" % np.median(df['DF'].loc[diam_q5Inds]))
+                f.write("%s\t" % np.median(df['DF'].loc[segLen_q1Inds]))
+                f.write("%s\t" % np.median(df['DF'].loc[segLen_q2Inds]))
+                f.write("%s\t" % np.median(df['DF'].loc[segLen_q3Inds]))
+                f.write("%s\t" % np.median(df['DF'].loc[segLen_q4Inds]))
+                f.write("%s\n" % np.median(df['DF'].loc[segLen_q5Inds]))
             else:
                 # .loc for diam/segLen, .iloc for dist
                 f.write("%s\t" % np.subtract(np.median(df['DF'].loc[diam_q1Inds]),np.median(df_vein['DF'].loc[diamVein_q1Inds])))
