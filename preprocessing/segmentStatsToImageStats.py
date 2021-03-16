@@ -134,9 +134,9 @@ for imageID in imageIDs:
                 f.write("%s\n" % np.median(df['DF'].loc[segLen_q5Inds]))
             else:
                 # .loc for diam/segLen, .iloc for dist
-                f.write("%s\t" % np.subtract(np.median(df['DF'].loc[diam_q1Inds]),np.median(df_vein['DF'].loc[diamVein_q1Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['DF'].loc[diam_q2Inds]),np.median(df_vein['DF'].loc[diamVein_q2Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['DF'].loc[diam_q3Inds]),np.median(df_vein['DF'].loc[diamVein_q3Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['DF'].loc[diam_q4Inds]),np.median(df_vein['DF'].loc[diamVein_q4Inds])))
-                f.write("%s\n" % np.subtract(np.median(df['DF'].loc[diam_q5Inds]),np.median(df_vein['DF'].loc[diamVein_q5Inds])))
+                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q1Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q1Inds])))
+                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q2Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q2Inds])))
+                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q3Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q3Inds])))
+                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q4Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q4Inds])))
+                f.write("%s\n" % np.subtract(np.median(df['medianDiameter'].loc[diam_q5Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q5Inds])))
 # %%
