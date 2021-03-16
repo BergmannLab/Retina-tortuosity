@@ -10,7 +10,7 @@ from matplotlib import cm
 import csv
 
 DATE = datetime.now().strftime("%Y_%m_%d")
-QUINTILE_TYPE = "diameters"
+QUINTILE_TYPE = "distanceToCenterOfImage"
 VESSEL_TYPE  = '' # '', Arteries, Veins, or ArteryVeinDiff
 
 
