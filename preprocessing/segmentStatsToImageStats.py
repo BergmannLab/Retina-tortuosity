@@ -22,8 +22,6 @@ with open("imageIDs.txt") as file:
     for i, line in enumerate(file):
         if((i>=int(sys.argv[1])) & (i<=int(sys.argv[2]))):
             imageIDs.append(line.rstrip('\n'))
-print(imageIDs)
-
 
 
 os.chdir(input_dir)
