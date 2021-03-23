@@ -81,7 +81,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     num_classes=2
     # --- training params
     batch_size=128
-    #patch_size=224 #currently, this needs to be 224 due to densenet architecture
+    #patch_size=224
     num_epochs = 100
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
@@ -146,7 +146,7 @@ def TrainDL(db_dir, gpuid, output_dir):
         transforms.ToTensor(),
         transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
         #transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0))
-        #transforms.RandomApply([AddGaussianNoise(0, 0.1)], p=1)
+        #transforms.RandomApply([AddGaussianNoise(0, 0.1)], p=1) # not working
         ])
 
     dataset={}
@@ -180,6 +180,8 @@ def TrainDL(db_dir, gpuid, output_dir):
         val_sensitivity = []
         train_specificity = []
         val_specificity = []
+        prediction_val = []
+        correct_val = []
 
         for epoch in range(num_epochs):
             start_time = time.time()
@@ -217,12 +219,16 @@ def TrainDL(db_dir, gpuid, output_dir):
 
                         all_loss[phase]=torch.cat((all_loss[phase],loss.detach().view(1,-1)))
 
-                        #if phase in validation_phases: #if this phase is part of validation, compute confusion matrix
+                        #compute confusion matrix
                         p=prediction.detach().cpu().numpy()
                         cpredflat=np.argmax(p,axis=1).flatten()
                         yflat=label.cpu().numpy().flatten()
 
                         cmatrix[phase]=cmatrix[phase]+confusion_matrix(yflat,cpredflat, labels=range(nclasses))
+
+                        if phase == "val":
+                            prediction_val.append(p[:,0].flatten())
+                            correct_val.append(yflat)
 
                 cmatrix[phase]=np.asarray(cmatrix[phase])
                 all_acc[phase]=(cmatrix[phase]/cmatrix[phase].sum()).trace()
@@ -272,7 +278,7 @@ def TrainDL(db_dir, gpuid, output_dir):
 
                 torch.save(state, f"{output_dir}/{dataname}_densenet_best_model.pth")
 
-                fpr, tpr, thresholds = roc_curve(yflat, p[:,0].flatten(), pos_label=0) # hyperclass = 0
+                fpr, tpr, thresholds = roc_curve(correct_val, prediction_val, pos_label=0) # hyperclass = 0
                 roc_auc = auc(fpr, tpr)
 
                 pdf = PdfPages(f"{output_dir}/ROC_Curve.pdf")
