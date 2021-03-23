@@ -180,8 +180,6 @@ def TrainDL(db_dir, gpuid, output_dir):
         val_sensitivity = []
         train_specificity = []
         val_specificity = []
-        prediction_val = []
-        correct_val = []
 
         for epoch in range(num_epochs):
             start_time = time.time()
@@ -191,6 +189,8 @@ def TrainDL(db_dir, gpuid, output_dir):
             all_acc = {key: 0 for key in phases}
             all_loss = {key: torch.zeros(0).to(device) for key in phases} #keep this on GPU for greatly improved performance
             cmatrix = {key: np.zeros((n_classes,n_classes)) for key in phases}
+            prediction_val = []
+            correct_val = []
 
             for phase in phases: #iterate through both training and validation states
 
