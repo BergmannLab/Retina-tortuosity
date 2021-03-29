@@ -243,10 +243,6 @@ def TrainDL(db_dir, gpuid, output_dir):
                         if phase == "val":
                             prediction_val += p[:,0].flatten().tolist()
                             correct_val += yflat.tolist()
-                            print("p", p[:,0].flatten())
-                            print("y", yflat)
-                            print("prediction_val", prediction_val)
-                            print("correct_val", correct_val)
 
                 cmatrix[phase]=np.asarray(cmatrix[phase])
                 all_acc[phase]=(cmatrix[phase]/cmatrix[phase].sum()).trace()
