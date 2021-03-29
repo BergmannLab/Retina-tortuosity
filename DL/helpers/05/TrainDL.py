@@ -82,7 +82,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     # --- training params
     batch_size=128
     #patch_size=224
-    num_epochs = 5
+    num_epochs = 50
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up

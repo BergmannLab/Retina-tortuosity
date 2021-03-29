@@ -1,5 +1,5 @@
 #!/bin/bash
-##SBATCH --account=sbergman_retina
+#SBATCH --account=sbergman_retina
 #SBATCH --mail-type ALL
 #SBATCH --mail-user philippe.jacquet@unil.ch
 #SBATCH --job-name=BuildDB
