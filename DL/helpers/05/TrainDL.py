@@ -241,7 +241,8 @@ def TrainDL(db_dir, gpuid, output_dir):
                         cmatrix[phase]=cmatrix[phase]+confusion_matrix(yflat,cpredflat, labels=range(nclasses))
 
                         if phase == "val":
-                            prediction_val.append(p[:,0].flatten())
+                            p_val = p[:,0].flatten().tolist()
+                            prediction_val.append(p_val)
                             correct_val.append(yflat)
                             print("p", p[:,0].flatten())
                             print("y", yflat)
