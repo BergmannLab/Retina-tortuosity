@@ -82,7 +82,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     # --- training params
     batch_size=128
     #patch_size=224
-    num_epochs = 100
+    num_epochs = 5
     phases = ["train", "val"] #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
@@ -138,7 +138,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     data_mean = np.mean(pixels)
     data_std = np.std(pixels)
 
-    norm_transform = transforms.Compose([
+    norm_transform_train = transforms.Compose([
         transforms.ToPILImage(),
         transforms.RandomRotation(degrees=(-5, 5)),
         transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
@@ -149,15 +149,29 @@ def TrainDL(db_dir, gpuid, output_dir):
         #transforms.RandomApply([AddGaussianNoise(0, 0.1)], p=1) # not working
         ])
 
+    norm_transform_val = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
+        ])
+
     dataset={}
     dataLoader={}
-    for phase in phases: #now for each of the phases, we're creating the dataloader
-                         #interestingly, given the batch size, i've not seen any improvements from using a num_workers>0
+    #now for each of the phases, we're creating the dataloader
+    #interestingly, given the batch size, i've not seen any improvements from using a num_workers>0
 
-        dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=norm_transform)
-        dataLoader[phase]=DataLoader(dataset[phase], batch_size=batch_size,
-                                    shuffle=True, num_workers=16, pin_memory=True)
-        print(f"{phase} dataset size:\t{len(dataset[phase])}")
+    # We use data augmentation for training
+    phase = "train"
+    dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=norm_transform_train)
+    dataLoader[phase]=DataLoader(dataset[phase], batch_size=batch_size, shuffle=True, num_workers=16, pin_memory=True)
+    print(f"{phase} dataset size:\t{len(dataset[phase])}")
+
+    # We only normalize the validation dataset
+    phase = "val"
+    dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=norm_transform_val)
+    dataLoader[phase]=DataLoader(dataset[phase], batch_size=batch_size, shuffle=True, num_workers=16, pin_memory=True)
+    print(f"{phase} dataset size:\t{len(dataset[phase])}")
 
     optim = torch.optim.Adam(model.parameters()) #adam is going to be the most robust, though perhaps not the best performing, typically a good place to start
     nclasses = dataset["train"].classsizes.shape[0]
