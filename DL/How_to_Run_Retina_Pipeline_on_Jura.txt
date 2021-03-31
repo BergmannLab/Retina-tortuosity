@@ -33,7 +33,7 @@ $ source /dcsrsoft/spack/bin/setup_dcsrsoft
 $ module load gcc python/3.7.7
 $ cd /scratch/beegfs/FAC/FBM/DBC/sbergman/retina/
 
-# If the pk folder is not present:
+# If the pk folder is NOT present:
 $ tar -zxvf pk.tar.gz
 
 $ pip install --user --no-index --find-links=pk tables opencv_python Pillow sklearn
@@ -56,6 +56,16 @@ $ ls
 # IMPORTANT: here you can choose the hyper-parameters of the DL model:
 $ cd ~/retina/DL/helpers/05
 $ vi TrainDL.py
+
+# To install the Python3 libraries torch, torchvision and tensorboardX:
+$ source /dcsrsoft/spack/bin/setup_dcsrsoft
+$ module load gcc python/3.7.7
+$ cd /scratch/beegfs/FAC/FBM/DBC/sbergman/retina/
+
+# If the torch folder is NOT present:
+$ tar -zxvf torch.tar.gz
+
+$ pip install --user --no-index --find-links=torch torch torchvision tensorboardX
 
 $ cd ~/retina/DL
 $ vi 05__TrainDL.sh
