@@ -42,8 +42,18 @@ im_pro.set_norm_img_transform(data_path)
 
 #load dataset
 dataset=Dataset(data_path, img_transform=im_pro.norm_transform_train)
+dataLoader=DataLoader(dataset, batch_size=tp.batch_size, shuffle=True, num_workers=16, pin_memory=True)
+
+for ii , (X, label, img_orig) in enumerate(dataLoader):
+	X = X.to(device)  # [Nbatch, 3, H, W]
+	label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
+
+	#X = dataset.__getitem__(1)[0]
+	#X = X.to(device)
+	print(D(X))
+	print(D.features(X))
 
 #make a prediction
-print(D(dataset))
-print(D.features)
-print(D.features[:3])
+#print(D(X))
+#print(D.features)
+#print(D.features[:3])
