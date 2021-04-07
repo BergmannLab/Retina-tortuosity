@@ -74,10 +74,10 @@ img_transform = transforms.Compose([
     transforms.ToTensor()
     ])
 
-data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB"
-dataset=Dataset(f"%s"%(data_path,), img_transform=img_transform)
+data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_train.pytable"
+dataset=Dataset(data_path, img_transform=img_transform)
 nb_train_images = len(dataset)
-pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
+pixels = np.array(torch.flatten(torch.stack([dataset[i][0] for i in range(nb_train_images)])))
 
 data_mean = np.mean(pixels)
 data_std = np.std(pixels)
@@ -104,7 +104,7 @@ norm_transform_val = transforms.Compose([
 #interestingly, given the batch size, i've not seen any improvements from using a num_workers>0
 
 # We use data augmentation for training
-dataset=Dataset(f"%s"%(data_path,), img_transform=norm_transform_train)
+dataset=Dataset(data_path, img_transform=norm_transform_train)
 #####
 
 device = torch.device(f'cuda:{gpuid}' if torch.cuda.is_available() else 'cpu')
@@ -114,9 +114,10 @@ dict_path="/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/05_DL/retina_de
 state_dict = torch.load(dict_path)["model_dict"]
 #D = DenseNet()
 missing_keys = D.load_state_dict(state_dict)
-#print(D.eval())
 print(D.features)
-print(D.features[:3])
+print(dataset[0])
+print(D(dataset[0][0]))
+print(D.eval(dataset[0]))
 
 #test_path=""
 #D.eval(test_path)
