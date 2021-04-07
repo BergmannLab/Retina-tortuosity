@@ -36,7 +36,9 @@ dict_path="/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/05_DL/retina_de
 state_dict = torch.load(dict_path)["model_dict"]
 #D = DenseNet()
 missing_keys = D.load_state_dict(state_dict)
-print(D.eval())
+#print(D.eval())
+print(D.features)
+print(D.features[:3])
 
-test_path=""
-D.eval(test_path)
+#test_path=""
+#D.eval(test_path)
