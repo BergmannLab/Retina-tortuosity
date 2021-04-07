@@ -30,6 +30,43 @@ batch_size=256#128
 #patch_size=224
 num_epochs = 50
 
+class Dataset(object):
+    def __init__(self, fname ,img_transform=None):
+        #nothing special here, just internalizing the constructor parameters
+        self.fname=fname
+
+        self.img_transform=img_transform
+
+        with tables.open_file(self.fname,'r') as db:
+            self.classsizes=db.root.classsizes[:]
+            self.nitems=db.root.imgs.shape[0]
+
+        self.imgs = None
+        self.labels = None
+
+    def __getitem__(self, index):
+        #opening should be done in __init__ but seems to be
+        #an issue with multithreading so doing here. need to do it everytime, otherwise hdf5 crashes
+
+        with tables.open_file(self.fname,'r') as db:
+            self.imgs=db.root.imgs
+            self.labels=db.root.labels
+
+            #get the requested image and mask from the pytable
+            img = self.imgs[index,:,:,:]
+            label = self.labels[index]
+
+
+        img_new = img
+
+        if self.img_transform is not None:
+            img_new = self.img_transform(img)
+
+
+        return img_new, label, img
+    def __len__(self):
+        return self.nitems
+
 #image transformation
 img_transform = transforms.Compose([
     transforms.ToPILImage(),
