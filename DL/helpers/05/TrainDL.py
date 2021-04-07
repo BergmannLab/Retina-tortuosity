@@ -64,29 +64,104 @@ class Dataset(object):
     def __len__(self):
         return self.nitems
 
+class TrainParameters:
+    '''
+    The parameters we moved to their own class to enable for easy access
+    '''
+    def __init__(self):
+        #these parameters get fed directly into the densenet class, and more description of them can be discovered there
+        self.n_classes= 2    #number of classes in the data mask that we'll aim to predict
+        self.in_channels= 3  #input channel of the data, RGB = 3
+        # --- DL params
+        self.growth_rate=6 #32
+        self.block_config=(1, 1, 1, 1) #(2, 2, 2, 2)
+        self.num_init_features=24 #64
+        self.bn_size=4
+        self.drop_rate=0
+        self.num_classes=2
+        # --- training params
+        self.batch_size=128
+        #patch_size=224
+        self.num_epochs = 50
+        self.phases = ["train", "val"] #how many phases did we create databases for?
+        #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
+        #additionally, using simply [], will skip validation entirely, drastically speeding things up
+        self.validation_phases= ["val"]
 
+class ImageProcess:
+    def __init__(self):
+        self.img_transform = None
+        self.norm_transform_train = None
+        self.norm_transform_val = None
+
+    def set_img_transform():
+        self.img_transform = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.Grayscale(num_output_channels=1),
+            transforms.ToTensor()
+            ])
+
+        #     img_transform = transforms.Compose([
+        #        transforms.ToPILImage(),
+        #        transforms.RandomVerticalFlip(),
+        #        transforms.RandomHorizontalFlip(),
+        #        transforms.RandomCrop(size=(patch_size,patch_size),pad_if_needed=True),
+        #        transforms.RandomResizedCrop(size=patch_size),
+        #        transforms.RandomRotation(180),
+        #        transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=.5),
+        #        transforms.RandomGrayscale(),
+        #        transforms.ToTensor()
+        #        ])
+    def set_norm_img_transform(train_data_path):
+        self.set_img_transform()
+        train_dataset = Dataset(data_path, img_transform=self.img_transform)
+        nb_train_images = len(train_dataset)
+
+        pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
+
+        data_mean = np.mean(pixels)
+        data_std = np.std(pixels)
+
+        self.norm_transform_train = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.RandomRotation(degrees=(-5, 5)),
+            transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
+            #transforms.RandomErasing(p=0.1), # randomly selects a rectangle region in an image and erases its pixels
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
+            #transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0))
+            #transforms.RandomApply([AddGaussianNoise(0, 0.1)], p=1) # not working
+            ])
+
+        self.norm_transform_val = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
+            ])
 
 def TrainDL(db_dir, gpuid, output_dir):
     dataname="retina"
     # --- densenet params
+    tp = TrainParameters()
     #these parameters get fed directly into the densenet class, and more description of them can be discovered there
-    n_classes= 2    #number of classes in the data mask that we'll aim to predict
-    in_channels= 3  #input channel of the data, RGB = 3
+    n_classes= tp.n_classes   #number of classes in the data mask that we'll aim to predict
+    in_channels= tp.in_channels  #input channel of the data, RGB = 3
     # --- DL params
-    growth_rate=6 #32
-    block_config=(1, 1, 1, 1) #(2, 2, 2, 2)
-    num_init_features=24 #64
-    bn_size=4
-    drop_rate=0
-    num_classes=2
+    growth_rate=tp.growth_rate #32
+    block_config=tp.block_config #(2, 2, 2, 2)
+    num_init_features=tp.num_init_features #64
+    bn_size=tp.bn_size
+    drop_rate=tp.drop_rate
+    num_classes=tp.num_classes
     # --- training params
-    batch_size=128
+    batch_size=tp.batch_size
     #patch_size=224
-    num_epochs = 50
-    phases = ["train", "val"] #how many phases did we create databases for?
+    num_epochs = tp.num_epochs
+    phases = tp.phases #how many phases did we create databases for?
     #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
     #additionally, using simply [], will skip validation entirely, drastically speeding things up
-    validation_phases= ["val"]
+    validation_phases= tp.validation_phases
 
     def asMinutes(s):
         m = math.floor(s / 60)
@@ -96,7 +171,6 @@ def TrainDL(db_dir, gpuid, output_dir):
         now = time.time()
         s = now - since
         return '%s' % (asMinutes(s))
-
 
     #torch.cuda.set_device(gpuid) #jupyter
     #device = torch.device(f'cuda:{gpuid}' if torch.cuda.is_available() else 'cpu') #jupyter
@@ -111,50 +185,10 @@ def TrainDL(db_dir, gpuid, output_dir):
                      num_init_features=num_init_features, bn_size=bn_size, drop_rate=drop_rate, num_classes=num_classes).to(device)
     print(f"total params: \t{sum([np.prod(p.size()) for p in model.parameters()])}")
 
-    img_transform = transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Grayscale(num_output_channels=1),
-        transforms.ToTensor()
-        ])
-
-#     img_transform = transforms.Compose([
-#        transforms.ToPILImage(),
-#        transforms.RandomVerticalFlip(),
-#        transforms.RandomHorizontalFlip(),
-#        transforms.RandomCrop(size=(patch_size,patch_size),pad_if_needed=True),
-#        transforms.RandomResizedCrop(size=patch_size),
-#        transforms.RandomRotation(180),
-#        transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=.5),
-#        transforms.RandomGrayscale(),
-#        transforms.ToTensor()
-#        ])
-
-    train_dataset = Dataset(f"{db_dir}/{dataname}_"+"train"+".pytable", img_transform=img_transform)
-
-    nb_train_images = len(train_dataset)
-
-    pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
-
-    data_mean = np.mean(pixels)
-    data_std = np.std(pixels)
-
-    norm_transform_train = transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.RandomRotation(degrees=(-5, 5)),
-        transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
-        #transforms.RandomErasing(p=0.1), # randomly selects a rectangle region in an image and erases its pixels
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
-        #transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0))
-        #transforms.RandomApply([AddGaussianNoise(0, 0.1)], p=1) # not working
-        ])
-
-    norm_transform_val = transforms.Compose([
-        transforms.ToPILImage(),
-        transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
-        ])
+    image_process = ImageProcess()
+    #set normal image process
+    train_data_path = f"{db_dir}/{dataname}_"+"train"+".pytable"
+    image_process.set_norm_img_transform(train_data_path)
 
     dataset={}
     dataLoader={}
@@ -377,5 +411,3 @@ def main():
 
 if __name__== "__main__":
     main()
-
-
