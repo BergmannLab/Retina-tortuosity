@@ -94,7 +94,7 @@ class ImageProcess:
         self.norm_transform_train = None
         self.norm_transform_val = None
 
-    def set_img_transform():
+    def set_img_transform(self):
         self.img_transform = transforms.Compose([
             transforms.ToPILImage(),
             transforms.Grayscale(num_output_channels=1),
@@ -112,9 +112,9 @@ class ImageProcess:
         #        transforms.RandomGrayscale(),
         #        transforms.ToTensor()
         #        ])
-    def set_norm_img_transform(train_data_path):
+    def set_norm_img_transform(self,train_data_path):
         self.set_img_transform()
-        train_dataset = Dataset(data_path, img_transform=self.img_transform)
+        train_dataset = Dataset(train_data_path, img_transform=self.img_transform)
         nb_train_images = len(train_dataset)
 
         pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))

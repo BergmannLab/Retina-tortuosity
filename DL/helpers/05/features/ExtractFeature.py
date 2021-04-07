@@ -36,7 +36,7 @@ state_dict = torch.load(dict_path)["model_dict"]
 missing_keys = D.load_state_dict(state_dict)
 
 #set image processing methods
-data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_train.pytables"
+data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_train.pytable"
 im_pro = ImageProcess()
 im_pro.set_norm_img_transform(data_path)
 
