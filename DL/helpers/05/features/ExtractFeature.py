@@ -15,6 +15,7 @@ from matplotlib.ticker import MaxNLocator
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
+#model architecture
 n_classes= 2    #number of classes in the data mask that we'll aim to predict
 in_channels= 3  #input channel of the data, RGB = 3
 # --- DL params
@@ -28,6 +29,46 @@ num_classes=2
 batch_size=256#128
 #patch_size=224
 num_epochs = 50
+
+#image transformation
+img_transform = transforms.Compose([
+    transforms.ToPILImage(),
+    transforms.Grayscale(num_output_channels=1),
+    transforms.ToTensor()
+    ])
+
+data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB"
+dataset=Dataset(f"%s"%(data_path,), img_transform=img_transform)
+nb_train_images = len(dataset)
+pixels = np.array(torch.flatten(torch.stack([train_dataset[i][0] for i in range(nb_train_images)])))
+
+data_mean = np.mean(pixels)
+data_std = np.std(pixels)
+
+norm_transform_train = transforms.Compose([
+    transforms.ToPILImage(),
+    transforms.RandomRotation(degrees=(-5, 5)),
+    transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
+    #transforms.RandomErasing(p=0.1), # randomly selects a rectangle region in an image and erases its pixels
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
+    #transforms.GaussianBlur(kernel_size=3, sigma=(0.1, 2.0))
+    #transforms.RandomApply([AddGaussianNoise(0, 0.1)], p=1) # not working
+    ])
+
+norm_transform_val = transforms.Compose([
+    transforms.ToPILImage(),
+    transforms.Grayscale(num_output_channels=3), # densenet expects 3-channel images as input (here R=G=B)
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[data_mean, data_mean, data_mean], std=[data_std, data_std, data_std])
+    ])
+
+#now for each of the phases, we're creating the dataloader
+#interestingly, given the batch size, i've not seen any improvements from using a num_workers>0
+
+# We use data augmentation for training
+dataset=Dataset(f"%s"%(data_path,), img_transform=norm_transform_train)
+#####
 
 device = torch.device(f'cuda:{gpuid}' if torch.cuda.is_available() else 'cpu')
 D = DenseNet(growth_rate=growth_rate, block_config=block_config,num_init_features=num_init_features, bn_size=bn_size, drop_rate=drop_rate, num_classes=num_classes).to(device)
