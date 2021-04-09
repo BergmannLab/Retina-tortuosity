@@ -42,18 +42,26 @@ im_pro.set_norm_img_transform(data_path)
 
 #load dataset
 dataset=Dataset(data_path, img_transform=im_pro.norm_transform_train)
-dataLoader=DataLoader(dataset, batch_size=tp.batch_size, shuffle=True, num_workers=16, pin_memory=True)
+dataLoader=DataLoader(dataset, batch_size=tp.batch_size, num_workers=16, pin_memory=True)
 
+#load patient ids
+pytables_data = tables.open_file(data_path,'r')
+patient_id = pytables_data.root.filenames.read()
+pytables_data.close()
+
+output_file = open("test.out","w+")
+index=0
 for ii , (X, label, img_orig) in enumerate(dataLoader):
 	X = X.to(device)  # [Nbatch, 3, H, W]
 	label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
+	
+	#print(patient_id[ii])
+	#print(np.max(abs(D.features(X)[0][0].detach().numpy())))
 
-	#X = dataset.__getitem__(1)[0]
-	#X = X.to(device)
-	print(D(X))
-	print(D.features(X))
-
-#make a prediction
-#print(D(X))
-#print(D.features)
-#print(D.features[:3])
+	F=D.features(X)
+	for sample in F:
+		p_id = str(patient_id[index]).split("/")[-1].split("_")[0]
+		max_val = np.max(abs(sample[-1][-1].detach().numpy()))
+		output_file.write(p_id+","+str(max_val)+"\n")
+		index = index + 1
+output_file.close()
