@@ -61,7 +61,7 @@ for ii , (X, label, img_orig) in enumerate(dataLoader):
 	F=D.features(X)
 	for sample in F:
 		p_id = str(patient_id[index]).split("/")[-1].split("_")[0]
-		max_val = np.max(abs(sample[-1][-1].detach().numpy()))
+		max_val = np.average(sample[-1][-1].detach().numpy())
 		output_file.write(p_id+","+str(max_val)+"\n")
 		index = index + 1
 output_file.close()
