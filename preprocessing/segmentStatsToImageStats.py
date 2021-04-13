@@ -11,18 +11,21 @@ import csv
 
 DATE = datetime.now().strftime("%Y_%m_%d")
 QUINTILE_TYPE = "segmentLengths"
-VESSEL_TYPE  = 'Arteries' # Arteries, Veins, or ArteryVeinDiff
+VESSEL_TYPE  = '' # "", Arteries, Veins, or ArteryVeinDiff
 
 
 input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"
 output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + DATE + "_" + QUINTILE_TYPE + "QuintilesImageStats" + VESSEL_TYPE + "/"
+
+with open("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/imageQuintiles.tsv", 'w') as f:
+    f.write("image_id\tn_segments\tdiam_quint1\tdiam_quint2\tdiam_quint3\tdiam_quint4\tsegLen_quint1\tsegLen_quint2\tsegLen_quint3\tsegLen_quint4\n")
 
 imageIDs= []
 with open("imageIDs.txt") as file:
     for i, line in enumerate(file):
         if((i>=int(sys.argv[1])) & (i<=int(sys.argv[2]))):
             imageIDs.append(line.rstrip('\n'))
-print(imageIDs)
+#print(imageIDs)
 
 
 
@@ -89,7 +92,7 @@ for imageID in imageIDs:
         
         
         # DIAMETER QUINTILES
-        #diam_quints = np.quantile(df["medianDiameter"], [0.2,0.4,0.6,0.8])
+        diam_quints = np.quantile(df["medianDiameter"], [0.2,0.4,0.6,0.8])
         #diam_q1Inds = df["medianDiameter"].loc[df["medianDiameter"] < diam_quints[0]].index
         #diam_q2Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[1]) \
         #    & (df["medianDiameter"] >= diam_quints[0])].index
@@ -112,31 +115,40 @@ for imageID in imageIDs:
         
 
         segLen_quints = np.quantile(df["arcLength"], [0.2,0.4,0.6,0.8])
-        segLen_q1Inds = df["arcLength"].loc[df["arcLength"] < segLen_quints[0]].index
-        segLen_q2Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[1]) \
-            & (df["arcLength"] >= segLen_quints[0])].index
-        segLen_q3Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[2]) \
-            & (df["arcLength"] >= segLen_quints[1])].index
-        segLen_q4Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[3]) \
-            & (df["arcLength"] >= segLen_quints[2])].index
-        segLen_q5Inds = df["arcLength"].loc[df["arcLength"] >= segLen_quints[3]].index
+        #segLen_q1Inds = df["arcLength"].loc[df["arcLength"] < segLen_quints[0]].index
+        #segLen_q2Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[1]) \
+        #    & (df["arcLength"] >= segLen_quints[0])].index
+        #segLen_q3Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[2]) \
+        #    & (df["arcLength"] >= segLen_quints[1])].index
+        #segLen_q4Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[3]) \
+        #    & (df["arcLength"] >= segLen_quints[2])].index
+        #segLen_q5Inds = df["arcLength"].loc[df["arcLength"] >= segLen_quints[3]].index
 
-
-        with open(output_dir + imageID + "_all_imageStats.tsv", 'w') as f:
-            f.write("DF1st\tDF2nd\tDF3rd\tDF4th\tDF5th\n")
+        #print(segLen_quints)
+        #print(diam_quints)
+        with open("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/imageQuintiles.tsv", 'a') as f:
+            f.write(imageID + "\t")
+            f.write(str(df.shape[0]) + "\t")
+            for i in diam_quints:
+                f.write("%s\t" % i)
+            for i in segLen_quints:
+                f.write("%s\t" % i)
+            f.write("\n")
             
-            if VESSEL_TYPE != 'ArteryVeinDiff':
+#            if VESSEL_TYPE != 'ArteryVeinDiff':
+#
+#                # .loc for diam/segLen, .iloc for dist
+#                f.write("%s\t" % np.median(df['DF'].loc[segLen_q1Inds]))
+#                f.write("%s\t" % np.median(df['DF'].loc[segLen_q2Inds]))
+#                f.write("%s\t" % np.median(df['DF'].loc[segLen_q3Inds]))
+#                f.write("%s\t" % np.median(df['DF'].loc[segLen_q4Inds]))
+#                f.write("%s\n" % np.median(df['DF'].loc[segLen_q5Inds]))
+            #else:
                 # .loc for diam/segLen, .iloc for dist
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q1Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q2Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q3Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q4Inds]))
-                f.write("%s\n" % np.median(df['DF'].loc[segLen_q5Inds]))
-            else:
-                # .loc for diam/segLen, .iloc for dist
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q1Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q1Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q2Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q2Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q3Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q3Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q4Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q4Inds])))
-                f.write("%s\n" % np.subtract(np.median(df['medianDiameter'].loc[diam_q5Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q5Inds])))
+        #        f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q1Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q1Inds])))
+         #       f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q2Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q2Inds])))
+          #      f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q3Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q3Inds])))
+           #     f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q4Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q4Inds])))
+            #    f.write("%s\n" % np.subtract(np.median(df['medianDiameter'].loc[diam_q5Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q5Inds])))
 # %%
+
