@@ -27,10 +27,7 @@ print(imageIDs)
 
 
 os.chdir(input_dir)
-try:
-    os.mkdir(output_dir)
-except Exception as e:
-    print(e)
+    pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
 
 for imageID in imageIDs:
     # loading image-specific segment stats:
