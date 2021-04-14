@@ -1,5 +1,5 @@
 #%%
-import os
+import os, pathlib
 import sys
 from datetime import datetime
 import pandas as pd
@@ -11,7 +11,7 @@ import csv
 
 DATE = datetime.now().strftime("%Y_%m_%d")
 QUINTILE_TYPE = "segmentLengths"
-VESSEL_TYPE  = 'Arteries' # Arteries, Veins, or ArteryVeinDiff
+VESSEL_TYPE  = '' # Arteries, Veins, or ArteryVeinDiff
 
 
 input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"
@@ -27,7 +27,7 @@ print(imageIDs)
 
 
 os.chdir(input_dir)
-    pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
+pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
 
 for imageID in imageIDs:
     # loading image-specific segment stats:
