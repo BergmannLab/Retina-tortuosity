@@ -7,10 +7,10 @@ raw_data_dir=$ARIA_data_dir"CLRIS/"
 raw_data_dir_av_test=$ARIA_data_dir/CLRIS_AV_test/
 
 # quality thresholds for ARIA
-min_QCthreshold_1=11000 
-max_QCthreshold_1=20000
-min_QCthreshold_2=100
-max_QCthreshold_2=250
+min_QCthreshold_1=0 
+max_QCthreshold_1=1000000
+min_QCthreshold_2=0
+max_QCthreshold_2=1000000
 
 # AV CLASSIFICATION IMAGE DATA
 ###AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/uncertainty/ # AVUncertain UKBB
