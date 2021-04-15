@@ -20,21 +20,28 @@ sys.path.insert(1, '../')
 from TrainDL import TrainParameters,ImageProcess,Dataset
 
 #feature extractoin functions
-def abs_max(sample):
-	return [np.max(abs(sample[-1][-1].detach().numpy()))]
+def abs_max(layer_activation):
+	return [np.max(abs(layer_activation.flatten()))]
 
-def ave(sample):
-	return [np.average(sample[-1][-1].detach().numpy())]
+def ave(layer_activation):
+	return [np.average(layer_activation.flatten())]
 
-def flat_layer(sample):
-	layer = sample[-1][-1].detach().numpy().flatten()
-	return layer
-	
+def flat_layer(layer_activation):
+	return layer_activation.flatten()
+
+
+#set the pytorch hook
+activation = {}
+def get_activation(name):
+	def hook(model, input, output):
+		activation[name] = output.detach()
+	return hook
+
 #set feature_func
 feature_func = flat_layer
 
 #set output file
-output_file = open("last_layer.out","w+")
+output_file = open("output/last_layer_ave.out","w+")
 
 #set train parameters
 tp = TrainParameters()
@@ -55,6 +62,7 @@ missing_keys = D.load_state_dict(state_dict)
 #set image processing methods
 data_label_list = ["train","val"]
 write_header=True
+
 for data_idx,data_label in enumerate(data_label_list):
 	data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
 	im_pro = ImageProcess()
@@ -62,27 +70,33 @@ for data_idx,data_label in enumerate(data_label_list):
 
 	#load dataset
 	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_train)
-	dataLoader=DataLoader(dataset, batch_size=tp.batch_size, num_workers=16, pin_memory=True)
+	dataLoader=DataLoader(dataset, batch_size=1, num_workers=16, pin_memory=True)
 
 	#load patient ids
 	pytables_data = tables.open_file(data_path,'r')
 	patient_id = pytables_data.root.filenames.read()
 	pytables_data.close()
 
+	#set index
 	index=0
 	for ii , (X, label, img_orig) in enumerate(dataLoader):
 		X = X.to(device)  # [Nbatch, 3, H, W]
 		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
 
-		F=D.features(X)
-		for sample in F:
-			p_id = str(patient_id[index]).split("/")[-1].split("_")[0]
-			feature_value = feature_func(sample)
-			feature_line = ",".join([str(f) for f in feature_value])
-			if write_header:
-				feature_header = ",".join(["Feature %d"%(fid,) for fid in range(len(feature_value))])
-				output_file.write("Patient ID,"+feature_header+", Dataset\n")
-				write_header=False
-			output_file.write(p_id+","+feature_line+","+data_label+"\n")
-			index = index + 1
+		D.features.conv0.register_forward_hook(get_activation("conv0"))
+		D.features.norm5.register_forward_hook(get_activation("norm5"))
+		output = D(X)
+		layer = "norm5"
+		p_id = str(patient_id[index]).split("/")[-1].split("_")[0]
+		active = activation[layer].detach().numpy()
+		#plt.imshow(active[0][0])
+		#plt.savefig("img/%s_%s.png"%(layer,p_id))
+		feature_value = ave(active)
+		feature_line = ",".join([str(f) for f in feature_value])
+		if write_header:
+			feature_header = ",".join(["Feature %d"%(fid,) for fid in range(len(feature_value))])
+			output_file.write("Patient ID,"+feature_header+", Dataset\n")
+			write_header=False
+		output_file.write(p_id+","+feature_line+","+data_label+"\n")
+		index += 1
 output_file.close()
