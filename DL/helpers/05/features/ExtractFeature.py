@@ -41,13 +41,13 @@ def get_activation(name):
 feature_func = flat_layer
 
 #set output file
-output_file = open("output/last_layer_ave.out","w+")
+output_file = open("output/all_block_layers_ave.out","w+")
 
 #set train parameters
 tp = TrainParameters()
 
 device = 'cpu'#torch.device(f'cuda:{gpuid}' if torch.cuda.is_available() else 'cpu')
-D = DenseNet(growth_rate=tp.growth_rate,
+model = DenseNet(growth_rate=tp.growth_rate,
             block_config=tp.block_config,
             num_init_features=tp.num_init_features,
             bn_size=tp.bn_size,
@@ -57,7 +57,7 @@ D = DenseNet(growth_rate=tp.growth_rate,
 # load model from state_dict
 dict_path="/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/05_DL/retina_densenet_best_model.pth"
 state_dict = torch.load(dict_path)["model_dict"]
-missing_keys = D.load_state_dict(state_dict)
+missing_keys = model.load_state_dict(state_dict)
 
 #set image processing methods
 data_label_list = ["train","val"]
@@ -79,24 +79,39 @@ for data_idx,data_label in enumerate(data_label_list):
 
 	#set index
 	index=0
-	for ii , (X, label, img_orig) in enumerate(dataLoader):
-		X = X.to(device)  # [Nbatch, 3, H, W]
+	for ii , (img, label, img_orig) in enumerate(dataLoader):
+		img = img.to(device)  # [Nbatch, 3, H, W]
 		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
-
-		D.features.conv0.register_forward_hook(get_activation("conv0"))
-		D.features.norm5.register_forward_hook(get_activation("norm5"))
-		output = D(X)
-		layer = "norm5"
 		p_id = str(patient_id[index]).split("/")[-1].split("_")[0]
-		active = activation[layer].detach().numpy()
-		#plt.imshow(active[0][0])
-		#plt.savefig("img/%s_%s.png"%(layer,p_id))
-		feature_value = ave(active)
+
+		#set the features hooks to extract the layer activations
+		for f_idx,f in enumerate(model.features):
+			f.register_forward_hook(get_activation(f_idx))
+
+		#make a prediction
+		output = model(img)
+		
+		feature_value = []
+		for f_idx,f in enumerate(model.features):
+			active = activation[f_idx].detach().numpy()
+			print(f,active.shape)
+			feature_value.append(ave(active))
+			#store layer activations
+			active_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/"
+			np.save(active_dir+str(p_id)+"_"+data_label+"_feature_"+str(f_idx)+"_activation.npy",active)
+			#save images of the features for the first sample
+			if index == 0:
+				plt.imshow(active[0][0])
+				plt.savefig("img/feature%d_dataset%d.png"%(f_idx,index))
+				plt.close()
+
+
+		#write features to a single output file
 		feature_line = ",".join([str(f) for f in feature_value])
 		if write_header:
 			feature_header = ",".join(["Feature %d"%(fid,) for fid in range(len(feature_value))])
-			output_file.write("Patient ID,"+feature_header+", Dataset\n")
+			output_file.write("Patient ID,"+feature_header+", Dataset,Label\n")
 			write_header=False
-		output_file.write(p_id+","+feature_line+","+data_label+"\n")
+		output_file.write(p_id+","+feature_line+","+data_label+","+str(label.numpy()[0])+"\n")
 		index += 1
 output_file.close()
