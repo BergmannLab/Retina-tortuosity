@@ -102,7 +102,7 @@ for data_idx,data_label in enumerate(data_label_list):
 			#save images of the features for the first sample
 			if index == 0:
 				plt.imshow(active[0][0])
-				plt.savefig("img/feature%d_dataset%d.png"%(f_idx,index))
+				plt.savefig("img/feature%d_dataset_%s.png"%(data_label))
 				plt.close()
 
 
