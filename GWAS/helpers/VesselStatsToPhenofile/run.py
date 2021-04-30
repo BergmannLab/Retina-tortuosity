@@ -35,12 +35,22 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     stats_phenotypes = read_samples(sample_file)
     # add stats columns to dataframe
 
-#    stats_phenotypes['DF'] = None
+    stats_phenotypes['DF'] = None
     stats_phenotypes['DF1st'] = None
     stats_phenotypes['DF2nd'] = None
     stats_phenotypes['DF3rd'] = None
     stats_phenotypes['DF4th'] = None
     stats_phenotypes['DF5th'] = None
+    stats_phenotypes['tau1'] = None
+    stats_phenotypes['tau2'] = None
+    stats_phenotypes['tau3'] = None
+    stats_phenotypes['tau4'] = None
+    stats_phenotypes['tau5'] = None
+    stats_phenotypes['tau6'] = None
+    stats_phenotypes['tau7'] = None
+    stats_phenotypes['nVessels'] = None
+
+
    
     # import stats for each input file
     print("Starting loop over files:")
@@ -59,10 +69,10 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
             collision = stats_phenotypes.loc[eid_i] 
             not_present = collision[0] == None
             if not_present: # simply add
-                stats_phenotypes.loc[eid_i] = stats_i[0:5]
+                stats_phenotypes.loc[eid_i] = stats_i[0:15]
                 add_once = add_once+1
             else: # average stats from iteration (stats_i) and those present (collision)
-                stats_phenotypes.loc[eid_i] = calculate_average(stats_i[0:5],collision)
+                stats_phenotypes.loc[eid_i] = calculate_average(stats_i[0:15],collision)
                 replace = replace+1
         except KeyError:
             eid_not_in_sample = str(eid_i)[:-2]
