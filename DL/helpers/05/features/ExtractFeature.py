@@ -83,7 +83,7 @@ for data_idx,data_label in enumerate(data_label_list):
 		img = img.to(device)  # [Nbatch, 3, H, W]
 		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
 		p_id = str(patient_id[index]).split("/")[-1].split("_")[0]
-
+		
 		#set the features hooks to extract the layer activations
 		for f_idx,f in enumerate(model.features):
 			f.register_forward_hook(get_activation(f_idx))
@@ -94,8 +94,7 @@ for data_idx,data_label in enumerate(data_label_list):
 		feature_value = []
 		for f_idx,f in enumerate(model.features):
 			active = activation[f_idx].detach().numpy()
-			print(f,active.shape)
-			feature_value.append(ave(active))
+			print("layer shape :",f,active.shape)
 			#store layer activations
 			active_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/"
 			np.save(active_dir+str(p_id)+"_"+data_label+"_feature_"+str(f_idx)+"_activation.npy",active)
@@ -104,14 +103,5 @@ for data_idx,data_label in enumerate(data_label_list):
 				plt.imshow(active[0][0])
 				plt.savefig("img/feature%d_dataset_%s.png"%(data_label))
 				plt.close()
-
-
-		#write features to a single output file
-		feature_line = ",".join([str(f) for f in feature_value])
-		if write_header:
-			feature_header = ",".join(["Feature %d"%(fid,) for fid in range(len(feature_value))])
-			output_file.write("Patient ID,"+feature_header+", Dataset,Label\n")
-			write_header=False
-		output_file.write(p_id+","+feature_line+","+data_label+","+str(label.numpy()[0])+"\n")
 		index += 1
 output_file.close()
