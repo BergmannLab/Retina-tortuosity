@@ -43,7 +43,7 @@ feature_func = flat_layer
 #set output file
 output_file = open("output/all_block_layers_ave.out","w+")
 pred_file = open("output/prediction.out","w+")
-pred_file.write("Subject ID, Prediction Value1, Prediction Value2\n")
+pred_file.write("Subject ID, Prediction Value1, Prediction Value2, Label, Dataset\n")
 
 #set train parameters
 tp = TrainParameters()
@@ -84,6 +84,7 @@ for data_idx,data_label in enumerate(data_label_list):
 	for ii , (img, label, img_orig) in enumerate(dataLoader):
 		img = img.to(device)  # [Nbatch, 3, H, W]
 		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
+		label = label.detach()/numpy()[0]
 		p_id = str(patient_id[index]).split("/")[-1].split("_")[0]
 		
 		index += 1
@@ -95,8 +96,8 @@ for data_idx,data_label in enumerate(data_label_list):
 		#make a prediction
 		output = model(img)
 		pred_output = output.detach().numpy()
-		pred_file.write(str(p_id)+","+str(pred_output[0][0])+","+str(pred_output[0][1])+","+data_label+"\n")
-		
+		pred_file.write(str(p_id)+","+str(pred_output[0][0])+","+str(pred_output[0][1])+","+str(label)+","+data_label+"\n")
+		continue	
 		feature_value = []
 		for f_idx,f in enumerate(model.features):
 			active = activation[f_idx].detach().numpy()
