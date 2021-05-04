@@ -42,6 +42,8 @@ feature_func = flat_layer
 
 #set output file
 output_file = open("output/all_block_layers_ave.out","w+")
+pred_file = open("output/prediction.out","w+")
+pred_file.write("Subject ID, Prediction Value1, Prediction Value2\n")
 
 #set train parameters
 tp = TrainParameters()
@@ -84,12 +86,16 @@ for data_idx,data_label in enumerate(data_label_list):
 		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
 		p_id = str(patient_id[index]).split("/")[-1].split("_")[0]
 		
+		index += 1
+
 		#set the features hooks to extract the layer activations
 		for f_idx,f in enumerate(model.features):
 			f.register_forward_hook(get_activation(f_idx))
 
 		#make a prediction
 		output = model(img)
+		pred_output = output.detach().numpy()
+		pred_file.write(str(p_id)+","+str(pred_output[0][0])+","+str(pred_output[0][1])+","+data_label+"\n")
 		
 		feature_value = []
 		for f_idx,f in enumerate(model.features):
@@ -101,7 +107,7 @@ for data_idx,data_label in enumerate(data_label_list):
 			#save images of the features for the first sample
 			if index == 0:
 				plt.imshow(active[0][0])
-				plt.savefig("img/feature%d_dataset_%s.png"%(data_label))
+				plt.savefig("img/feature%d_dataset_%s.png"%(f_idx,data_label))
 				plt.close()
-		index += 1
 output_file.close()
+pred_file.close()
