@@ -15,63 +15,79 @@ from matplotlib.ticker import MaxNLocator
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-#make a PDF with the loss and acc curves vs number of epochs
-pdf = PdfPages(f"{output_dir}/Training_Curves.pdf")
-fig = plt.figure(figsize=(14, 12))
+import sys
+sys.path.insert(1, '../')
+from TrainDL import TrainParameters,ImageProcess,Dataset
 
-# Loss curves
-ax1 = fig.add_subplot(221)
-ax1.plot(nb_epoch, train_loss, 'r', linewidth=3.0)
-ax1.plot(nb_epoch, val_loss, 'b', linewidth=3.0)
 
-ax1.legend(['Training loss', 'Validation Loss'],fontsize=18)
-ax1.set_xlabel('Epochs',fontsize=16)
-ax1.set_ylabel('Loss',fontsize=16)
-ax1.set_title('Loss Curves',fontsize=16)
-ax1.xaxis.set_major_locator(MaxNLocator(integer=True))
+#set train parameters
+tp = TrainParameters()
 
-# Accuracy Curves
-ax2 = fig.add_subplot(222)
-ax2.plot(nb_epoch, train_acc, 'r', linewidth=3.0)
-ax2.plot(nb_epoch, val_acc, 'b', linewidth=3.0)
+device = 'cpu'#torch.device(f'cuda:{gpuid}' if torch.cuda.is_available() else 'cpu')
+model = DenseNet(growth_rate=tp.growth_rate,
+            block_config=tp.block_config,
+            num_init_features=tp.num_init_features,
+            bn_size=tp.bn_size,
+            drop_rate=tp.drop_rate,
+            num_classes=tp.num_classes).to(device)
 
-ax2.legend(['Training Accuracy', 'Validation Accuracy'],fontsize=18)
-ax2.set_xlabel('Epochs',fontsize=16)
-ax2.set_ylabel('Accuracy',fontsize=16)
-ax2.set_title('Accuracy Curves',fontsize=16)
-ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+# load model from state_dict
+dict_path="/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/05_DL/retina_densenet_best_model.pth"
+state_dict = torch.load(dict_path)["model_dict"]
+missing_keys = model.load_state_dict(state_dict)
 
-# Sensitivity Curves
-ax2 = fig.add_subplot(223)
-ax2.plot(nb_epoch, train_sensitivity, 'r', linewidth=3.0)
-ax2.plot(nb_epoch, val_sensitivity, 'b', linewidth=3.0)
+#set image processing methods
+data_label_list = ["train","val"]
+write_header=True
 
-ax2.legend(['Training Sensitivity', 'Validation Sensitivity'],fontsize=18)
-ax2.set_xlabel('Epochs',fontsize=16)
-ax2.set_ylabel('Sensitivity',fontsize=16)
-ax2.set_title('Sensitivity Curves',fontsize=16)
-ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+for data_idx,data_label in enumerate(data_label_list):
+	data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
+	im_pro = ImageProcess()
+	im_pro.set_norm_img_transform(data_path)
 
-# Specificity Curves
-ax2 = fig.add_subplot(224)
-ax2.plot(nb_epoch, train_specificity, 'r', linewidth=3.0)
-ax2.plot(nb_epoch, val_specificity, 'b', linewidth=3.0)
+	#load dataset
+	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_train)
+	dataLoader=DataLoader(dataset, batch_size=1, num_workers=16, pin_memory=True)
 
-ax2.legend(['Training Specificity', 'Validation Specificity'],fontsize=18)
-ax2.set_xlabel('Epochs',fontsize=16)
-ax2.set_ylabel('Specificity',fontsize=16)
-ax2.set_title('Specificity Curves',fontsize=16)
-ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
+	#load patient ids
+	pytables_data = tables.open_file(data_path,'r')
+	patient_id = pytables_data.root.filenames.read()
+	pytables_data.close()
+	
+	prediction_val = []
+	correct_val = []	
 
-pdf.savefig()
-pdf.close()
+	for ii , (img, label, img_orig) in enumerate(dataLoader):
+		img = img.to(device)  # [Nbatch, 3, H, W]
+		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
+		label = label.detach()/numpy()[0]
+		
+		#make a prediction
+		prediction = model(img)  # [N, Nclass]
+		loss = criterion(prediction, label)
 
-def main():
-    db_dir = sys.argv[1]
-    gpuid = sys.argv[2];
-    output_dir = sys.argv[3];
-    TrainDL(db_dir, gpuid, output_dir)
-    print("done")
+		#compute confusion matrix
+		p=prediction.detach().cpu().numpy()
+		yflat=label.cpu().numpy().flatten()
+
+		prediction_val += p[:,0].flatten().tolist()
+		correct_val += yflat.tolist()
+
+	fpr, tpr, thresholds = roc_curve(correct_val, prediction_val, pos_label=0) # hyperclass = 0
+	roc_auc = auc(fpr, tpr)
+
+	plt.figure(figsize=(7, 7))
+
+	plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+	plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+	plt.xlim([0.0, 1.0])
+	plt.ylim([0.0, 1.05])
+	plt.xlabel('False Positive Rate')
+	plt.ylabel('True Positive Rate')
+	plt.title('ROC curve')
+	plt.legend(loc="lower right")
+	plt.savefig("roc_"+data_label+".png")
+	plt.close()
 
 if __name__== "__main__":
     main()
