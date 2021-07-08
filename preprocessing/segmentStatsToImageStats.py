@@ -7,133 +7,337 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib import cm
+import cv2
 import csv
 
-DATE = datetime.now().strftime("%Y_%m_%d")
-QUINTILE_TYPE = "segmentLengths"
-VESSEL_TYPE  = '' # Arteries, Veins, or ArteryVeinDiff
+os.chdir(sys.path[0])
 
+# METHODS
+def eucl_dist(x_1,y_1,x_2,y_2):
 
-input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"
-output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + DATE + "_" + QUINTILE_TYPE + "QuintilesImageStats" + VESSEL_TYPE + "/"
+    return np.sqrt((x_1-x_2)**2 + (y_1-y_2)**2)
+
+def dist_to_disc_center(pos1, pos2, center):
+    return min(eucl_dist(pos1[0], pos2[0], center[0], center[1]), eucl_dist(pos1[-1], pos2[-1], center[0], center[1]))
+
+def crop_image(img,tol=0.1):
+    # img is 2D image data
+    # tol  is tolerance
+    mask = img>tol
+    half_0 = img.shape[0] // 2
+    half_1 = img.shape[1] // 2
+
+    mask_topleft = mask[0:half_0, 0:half_1]
+    remaining_topleft = mask_topleft[np.ix_(mask_topleft.any(1),mask_topleft.any(0))]
+    # plt.figure()
+    # plt.imshow(mask_topleft)
+    # plt.title('original')
+    # plt.figure()
+    # plt.imshow(remaining_topleft)
+    # plt.title('remaining')
+    cut_top = mask_topleft.shape[0] - remaining_topleft.shape[0]
+    cut_left = mask_topleft.shape[1] - remaining_topleft.shape[1]
+
+    return img[np.ix_(mask.any(1),mask.any(0))], cut_top, cut_left
+
+def crop_left(img):
+    shape = img.shape
+    third_0 = img.shape[0] // 3
+    third_1 = img.shape[1] // 3
+
+    return img[third_0:third_0*2, 0:third_1]
+
+def crop_right(img):
+    shape = img.shape
+    third_0 = img.shape[0] // 3
+    third_1 = img.shape[1] // 3
+
+    return img[third_0:third_0*2, 2*third_1:]
+
+def blur_image(img, size=250):
+    kernel = np.ones((size,size),np.float32)/(size**2)
+    dst = cv2.filter2D(img,-1,kernel)
+    # plt.imshow(dst)
+
+    [y_max, x_max] = np.where(dst == np.max(dst))
+    thres = 0.99 * np.max(dst)
+    thres_mask = dst >= thres
+    [y,x] = np.where(thres_mask)
+    # print(y)
+    # print(x)
+    xmean = np.mean(x)
+    ymean = np.mean(y)
+    print(img.shape)
+    print(dst.shape)
+    # plt.subplot(121),plt.imshow(img),plt.title('Original')
+    # plt.xticks([]), plt.yticks([])
+    # plt.scatter(xmean, ymean, c='red')
+    # plt.subplot(122),plt.imshow(dst),plt.title('Averaging')
+    # plt.scatter(x, y, 0.5, c='orange')
+    # plt.xticks([]), plt.yticks([])
+    # plt.show()
+
+    return([int(xmean), int(ymean)])
+
+DATE = datetime.now().strftime("%Y_%m_%d")# CONSTANTS
+MAX_DIST_TO_DISC_CENTER = 300
+MIN_LENGTH_FINAL = 200
+SEGMENT_DISTANCE = 5
+
+# input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"
+input_dir = "/Users/mbeyele5/retina_tortuosity/data/2021_02_22_rawMeasurements/"
+# image_dir = jura_path
+image_dir = "/Users/mbeyele5/retina_tortuosity/data/rawMeasurements_first50Images/"
+# output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + DATE + "_" + QUINTILE_TYPE + "QuintilesImageStats" + VESSEL_TYPE + "/"
+output_dir = "/Users/mbeyele5/Desktop/tmp/"
 
 imageIDs= []
 with open("imageIDs.txt") as file:
     for i, line in enumerate(file):
-        if((i>=int(sys.argv[1])) & (i<=int(sys.argv[2]))):
+        try:
+            if((i>=int(sys.argv[1])) & (i<=int(sys.argv[2]))):
+                imageIDs.append(line.rstrip('\n'))
+        except:
             imageIDs.append(line.rstrip('\n'))
-print(imageIDs)
-
 
 
 os.chdir(input_dir)
 pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
 
-for imageID in imageIDs:
-    # loading image-specific segment stats:
-    df = pd.read_csv(imageID+"_all_segmentStats.tsv", delimiter='\t')
- 
-    if VESSEL_TYPE == 'Arteries':
-        df = df.loc[df['AVScore']>0]
-        # in case less than 5 remaining vessels (need 5 for quintiles):
-        if df.shape[0] < 5:
-            continue
-    elif VESSEL_TYPE == 'Veins':
-        df = df.loc[df['AVScore']<0]
-        # in case less than 5 remaining vessels (need 5 for quintiles):
-        if df.shape[0] < 5:
-            continue
-    elif VESSEL_TYPE == 'ArteryVeinDiff':
-        df_vein   = df.loc[df['AVScore']<0]
-        df = df.loc[df['AVScore']>0]
-        # in case less than 5 remaining vessels (need 5 for quintiles):
-        if (df.shape[0] < 5) | (df_vein.shape[0] < 5):
-            continue
 
-    if 1==1:    
-	# DISTANCE QUINTILES
-	# a) distance from literal center of fundus image        
-        #center_X = 1536/2
-        #center_Y = 2048/2
-	# b) center as combination of thickest vessel positions
-	# ... to copy
 
-        #X = []
-        #Y = []
-        #with open(imageID + "_all_rawXCoordinates.tsv") as fd:
-        #    rd = csv.reader(fd, delimiter='\t')
-        #    for row in rd:
-        #        X.append([float(j) for j in row])
-        #with open(imageID + "_all_rawYCoordinates.tsv") as fd:
-        #    rd = csv.reader(fd, delimiter='\t')
-        #    for row in rd:
-        #        Y.append([float(j) for j in row])
+for imageID in imageIDs[0:100]:
+    print(imageID)
+    
+    pos1 = []
+    pos2 = []
+    with open(imageID + "_all_rawXCoordinates.tsv") as f:
+        for line in f:
+            pos1.append([float(i) for i in line.rstrip().split(sep='\t')])
+    with open(imageID + "_all_rawYCoordinates.tsv") as f:
+        for line in f:
+            pos2.append([float(i) for i in line.rstrip().split(sep='\t')])
+    
+    segmentStats = pd.read_csv(imageID + "_all_segmentStats.tsv", sep='\t')
+    AVScores = segmentStats['AVScore'].tolist()
+    medianDiameters = segmentStats['medianDiameter'].tolist()
+    DFs = segmentStats['DF'].tolist()
 
-        #dists = []
-        #for j in range(len(X)):
-        #    if j in df.index:
-        #        segMedianX = np.median(X[j])
-        #        segMedianY = np.median(Y[j])
-        #        dists.append(np.sqrt(np.power(segMedianX-center_X, 2) + np.power(segMedianY-center_Y, 2)))
+
+    img = mpimg.imread(image_dir + imageID + ".png")
+
+    # optic nerve center
+    if "21015" in imageID:
+        leftRight = 0
+    else:
+        leftRight = 1
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray, cut_top, cut_left = crop_image(gray)
+
+    if leftRight == 0:
+        nerve = crop_left(gray)
+    else:
+        nerve = crop_right(gray)
+    center = blur_image(nerve, 200)
+
+    # reconstructing the center position for the original image
+    center[1] = center[1] + cut_top + gray.shape[0]//3
+    center[0] = center[0] + cut_left
+    
+    if leftRight == 1:
+        center[0] = center[0] + 2 * gray.shape[1]//3
+
+    tmp = [center[1], center[0]]
+    center = tmp
+
+    # REORDERING SEGMENTS BY DISTANCE TO OPTIC NERVE CENTER
+    dists = []
+    for i in range(0,len(pos1)):
+        dists.append(dist_to_disc_center(pos1[i], pos2[i], center))
+    dists = np.array(dists)
+    sorted_index = np.argsort(dists)
+
+    pos1 = np.array(pos1)
+    pos1 = pos1[sorted_index].tolist()
+    pos2 = np.array(pos2)
+    pos2 = pos2[sorted_index].tolist()
+    AVScores = np.array(AVScores)
+    AVScores = AVScores[sorted_index].tolist()
+    medianDiameters = np.array(medianDiameters)
+    medianDiameters = medianDiameters[sorted_index].tolist()
+    DFs = np.array(DFs)
+    DFs = DFs[sorted_index].tolist()
+
+    seg_pixel_distance = SEGMENT_DISTANCE
+    print(len(pos1))
+    exit_status = 1
+    while exit_status == 1:
+        break_out = False
         
-        #dist_quints = np.quantile(dists, [0.2,0.4,0.6,0.8])
-        #dist_q1Inds = [i for i in range(len(dists)) if dists[i] < dist_quints[0]]
-        #dist_q2Inds = [i for i in range(len(dists)) if ((dists[i] < dist_quints[1]) & (dists[i] >= dist_quints[0]))]
-        #dist_q3Inds = [i for i in range(len(dists)) if ((dists[i] < dist_quints[2]) & (dists[i] >= dist_quints[1]))]
-        #dist_q4Inds = [i for i in range(len(dists)) if ((dists[i] < dist_quints[3]) & (dists[i] >= dist_quints[2]))]
-        #dist_q5Inds = [i for i in range(len(dists)) if dists[i] >= dist_quints[3]]
+        for i in range(0,len(pos1)):
+            candidates = []
+            candidates_type = []
+            for j in range(i+1, len(pos1)):
+                # print(i,j, eucl_dist(pos1[i][-1], pos2[i][-1], pos1[j][0], pos1[j][0]), eucl_dist(pos1[i][0], pos2[i][0], pos1[j][-1], pos1[j][-1]))
+                
+                if (eucl_dist(pos1[i][-1], pos2[i][-1], pos1[j][0], pos2[j][0]) < seg_pixel_distance) & (np.sign(AVScores[i]) == np.sign(AVScores[j])):
+                    candidates.append(j)
+                    candidates_type.append(0)
 
-        
-        
-        # DIAMETER QUINTILES
-        #diam_quints = np.quantile(df["medianDiameter"], [0.2,0.4,0.6,0.8])
-        #diam_q1Inds = df["medianDiameter"].loc[df["medianDiameter"] < diam_quints[0]].index
-        #diam_q2Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[1]) \
-        #    & (df["medianDiameter"] >= diam_quints[0])].index
-        #diam_q3Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[2]) \
-        #    & (df["medianDiameter"] >= diam_quints[1])].index
-        #diam_q4Inds = df["medianDiameter"].loc[(df["medianDiameter"] < diam_quints[3]) \
-        #    & (df["medianDiameter"] >= diam_quints[2])].index
-        #diam_q5Inds = df["medianDiameter"].loc[df["medianDiameter"] >= diam_quints[3]].index
-        # 
-        #if VESSEL_TYPE == 'ArteryVeinDiff':
-        #    diamVein_quints = np.quantile(df_vein["medianDiameter"], [0.2,0.4,0.6,0.8])
-        #    diamVein_q1Inds = df_vein["medianDiameter"].loc[df_vein["medianDiameter"] < diamVein_quints[0]].index
-        #    diamVein_q2Inds = df_vein["medianDiameter"].loc[(df_vein["medianDiameter"] < diamVein_quints[1]) \
-        #        & (df_vein["medianDiameter"] >= diamVein_quints[0])].index
-        #    diamVein_q3Inds = df_vein["medianDiameter"].loc[(df_vein["medianDiameter"] < diamVein_quints[2]) \
-        #        & (df_vein["medianDiameter"] >= diamVein_quints[1])].index
-        #    diamVein_q4Inds = df_vein["medianDiameter"].loc[(df_vein["medianDiameter"] < diamVein_quints[3]) \
-        #        & (df_vein["medianDiameter"] >= diamVein_quints[2])].index
-        #    diamVein_q5Inds = df_vein["medianDiameter"].loc[df_vein["medianDiameter"] >= diamVein_quints[3]].index
-        
-
-        segLen_quints = np.quantile(df["arcLength"], [0.2,0.4,0.6,0.8])
-        segLen_q1Inds = df["arcLength"].loc[df["arcLength"] < segLen_quints[0]].index
-        segLen_q2Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[1]) \
-            & (df["arcLength"] >= segLen_quints[0])].index
-        segLen_q3Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[2]) \
-            & (df["arcLength"] >= segLen_quints[1])].index
-        segLen_q4Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[3]) \
-            & (df["arcLength"] >= segLen_quints[2])].index
-        segLen_q5Inds = df["arcLength"].loc[df["arcLength"] >= segLen_quints[3]].index
-
-
-        with open(output_dir + imageID + "_all_imageStats.tsv", 'w') as f:
-            f.write("DF1st\tDF2nd\tDF3rd\tDF4th\tDF5th\n")
+                elif (eucl_dist(pos1[i][0], pos2[i][0], pos1[j][-1], pos2[j][-1]) < seg_pixel_distance) & (np.sign(AVScores[i]) == np.sign(AVScores[j])):
+                    candidates.append(j)
+                    candidates_type.append(1)
             
-            if VESSEL_TYPE != 'ArteryVeinDiff':
-                # .loc for diam/segLen, .iloc for dist
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q1Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q2Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q3Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q4Inds]))
-                f.write("%s\n" % np.median(df['DF'].loc[segLen_q5Inds]))
-            else:
-                # .loc for diam/segLen, .iloc for dist
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q1Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q1Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q2Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q2Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q3Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q3Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q4Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q4Inds])))
-                f.write("%s\n" % np.subtract(np.median(df['medianDiameter'].loc[diam_q5Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q5Inds])))
-# %%
+            if candidates != []:
+
+                chosen_index = candidates[0]
+                chosen_type = candidates_type[0]
+                for k, candidate in enumerate(candidates[1:]):
+                    if medianDiameters[k] > medianDiameters[chosen_index]:
+                        chosen_index = candidate
+                        chosen_type = candidates_type[k]
+
+    
+
+                # removing segments that have been merged from the initial list
+                # chosen_type = 0: beginning of 2nd segemnt added to end of 1st segment
+                # chosen_type = 1: beginning of 1st segment added to end of 2nd segment
+                if chosen_type == 0:
+                    # print(chosen_index, chosen_type, i)
+                    pos1[i] = pos1[i] + pos1[chosen_index]
+                    pos2[i] = pos2[i] + pos2[chosen_index]
+                    medianDiameters[i] = (medianDiameters[i] * len(pos1[i]) + medianDiameters[chosen_index] * len(pos1[chosen_index])) / (len(pos1[i]) + len(pos1[chosen_index]))
+                    DFs[i] = (DFs[i] * len(pos1[i]) + DFs[chosen_index] * len(pos1[chosen_index])) / (len(pos1[i]) + len(pos1[chosen_index]))
+                    AVScores.pop(chosen_index)
+                    medianDiameters.pop(chosen_index)
+                    DFs.pop(chosen_index)
+                    pos1.pop(chosen_index)
+                    pos2.pop(chosen_index)
+                    break_out = True
+                    # print('hi')
+
+                else:
+                    pos1[i] = pos1[chosen_index] + pos1[i]
+                    pos2[i] = pos2[chosen_index] + pos2[i]
+                    medianDiameters[i] = (medianDiameters[i] * len(pos1[i]) + medianDiameters[chosen_index] * len(pos1[chosen_index])) / (len(pos1[i]) + len(pos1[chosen_index]))
+                    DFs[i] = (DFs[i] * len(pos1[i]) + DFs[chosen_index] * len(pos1[chosen_index])) / (len(pos1[i]) + len(pos1[chosen_index]))
+                    AVScores.pop(chosen_index)
+                    medianDiameters.pop(chosen_index)
+                    DFs.pop(chosen_index)
+                    pos1.pop(chosen_index)
+                    pos2.pop(chosen_index)
+                    break_out = True
+                    # print('hooray')
+            
+            # if break_out == True:
+            #     break
+        if break_out == False:
+            exit_status = 0
+    
+    print(len(pos1))
+
+
+    # plt.figure()
+    # plt.imshow(img)
+    # plt.scatter(center[1], center[0])
+    # plt.savefig(output_dir + imageID + ".png")
+
+    # plotting all segments, to see how they were linked
+    len_top_artery = 0
+    len_top_vein = 0
+    len_bottom_artery = 0
+    len_bottom_vein = 0
+    top_artery_index = -1
+    bottom_artery_index = -1
+    top_vein_index = -1
+    bottom_vein_index = -1
+
+    for i in range(0,len(pos1)):
+
+        # if AVScores[i] > 0:
+        #     plt.scatter(pos2[i], pos1[i], s=0.5, c='red')
+        # elif AVScores[i] < 0:
+        #     plt.scatter(pos2[i], pos1[i], s=0.5, c='blue')
+        # else:
+        #     plt.scatter(pos2[i], pos1[i], s=0.5, c='purple')
+
+        # one artery and vein on top and bottom each, SELECTED FOR MAX LENGTH
+        # if (dist_to_disc_center(pos1[i],pos2[i],center) < MAX_DIST_TO_DISC_CENTER):
+        #     if (np.mean(pos1[i]) < center[0]) & (AVScores[i] > 0):
+        #         if len(pos1[i]) > len_top_artery:
+        #             len_top_artery = len(pos1[i])
+        #             top_artery_index = i
+        #     elif (np.mean(pos1[i]) > center[0]) & (AVScores[i] > 0):
+        #         if len(pos1[i]) > len_bottom_artery:
+        #             len_bottom_artery = len(pos1[i])
+        #             bottom_artery_index = i
+        #     elif (np.mean(pos1[i]) < center[0]) & (AVScores[i] < 0):
+        #         if len(pos1[i]) > len_top_vein:
+        #             len_top_vein = len(pos1[i])
+        #             top_vein_index = i
+        #     elif (np.mean(pos1[i]) > center[0]) & (AVScores[i] < 0):
+        #         if len(pos1[i]) > len_bottom_vein:
+        #             len_bottom_vein = len(pos1[i])
+        #             bottom_vein_index = i
+        
+        # SELECTED FOR MAX THICKNESS, given longer than minimal length
+        if (len(pos1[i]) > MIN_LENGTH_FINAL) & (dist_to_disc_center(pos1[i],pos2[i],center) < MAX_DIST_TO_DISC_CENTER):
+            if (np.mean(pos1[i]) < center[0]) & (AVScores[i] > 0):
+                if medianDiameters[i] > len_top_artery:
+                    len_top_artery = medianDiameters[i]
+                    top_artery_index = i
+            elif (np.mean(pos1[i]) > center[0]) & (AVScores[i] > 0):
+                if medianDiameters[i] > len_bottom_artery:
+                    len_bottom_artery = medianDiameters[i]
+                    bottom_artery_index = i
+            elif (np.mean(pos1[i]) < center[0]) & (AVScores[i] < 0):
+                if medianDiameters[i] > len_top_vein:
+                    len_top_vein = medianDiameters[i]
+                    top_vein_index = i
+            elif (np.mean(pos1[i]) > center[0]) & (AVScores[i] < 0):
+                if medianDiameters[i] > len_bottom_vein:
+                    len_bottom_vein = medianDiameters[i]
+                    bottom_vein_index = i
+        
+        
+        if top_artery_index != -1:
+            top_artery = DFs[top_artery_index]
+        else:
+            top_artery = np.nan
+        
+        if bottom_artery_index != -1:
+            bottom_artery = DFs[bottom_artery_index]
+        else:
+            bottom_artery = np.nan
+        if top_vein_index != -1:
+            top_vein = DFs[top_vein_index]
+        else:
+            top_vein = np.nan
+        if bottom_vein_index != -1:
+            bottom_vein = DFs[bottom_vein_index]
+        else:
+            bottom_vein = np.nan
+
+        arteries_mean = np.nanmean([top_artery, bottom_artery])
+        veins_mean = np.nanmean([top_vein, bottom_vein])
+        all_mean = np.mean([arteries_mean, veins_mean])
+
+    # plt.figure()
+    # plt.imshow(img)
+    # plt.scatter(pos2[top_artery_index], pos1[top_artery_index], s=0.5, c='red')
+    # plt.scatter(pos2[bottom_artery_index], pos1[bottom_artery_index], s=0.5, c='red')
+    # plt.scatter(pos2[top_vein_index], pos1[top_vein_index], s=0.5, c='blue')
+    # plt.scatter(pos2[bottom_vein_index], pos1[bottom_vein_index], s=0.5, c='blue')
+    # plt.savefig(output_dir + imageID + "_2.png")
+
+
+    print(top_artery_index, bottom_artery_index, top_vein_index, bottom_vein_index)
+    with open(output_dir + imageID + "_all_imageStats.tsv", 'w') as f:
+        f.write("major_mean\tmajor_arteries\tmajor_veins\ttop_artery\tbottom_artery\n")
+        
+        f.write("%s\t" % all_mean)
+        f.write("%s\t" % arteries_mean)
+        f.write("%s\t" % veins_mean)
+        f.write("%s\t" % top_artery)
+        f.write("%s\n" % bottom_artery)
