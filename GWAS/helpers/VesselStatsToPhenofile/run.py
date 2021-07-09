@@ -36,11 +36,11 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     # add stats columns to dataframe
 
 #    stats_phenotypes['DF'] = None
-    stats_phenotypes['DF1st'] = None
-    stats_phenotypes['DF2nd'] = None
-    stats_phenotypes['DF3rd'] = None
-    stats_phenotypes['DF4th'] = None
-    stats_phenotypes['DF5th'] = None
+    stats_phenotypes['major_mean'] = None
+    stats_phenotypes['major_arteries'] = None
+    stats_phenotypes['major_veins'] = None
+    stats_phenotypes['top_artery'] = None
+    stats_phenotypes['bottom_artery'] = None
    
     # import stats for each input file
     print("Starting loop over files:")

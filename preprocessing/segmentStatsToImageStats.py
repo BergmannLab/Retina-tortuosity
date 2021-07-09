@@ -84,12 +84,12 @@ MAX_DIST_TO_DISC_CENTER = 300
 MIN_LENGTH_FINAL = 200
 SEGMENT_DISTANCE = 5
 
-# input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"
-input_dir = "/Users/mbeyele5/retina_tortuosity/data/2021_02_22_rawMeasurements/"
-# image_dir = jura_path
-image_dir = "/Users/mbeyele5/retina_tortuosity/data/rawMeasurements_first50Images/"
-# output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + DATE + "_" + QUINTILE_TYPE + "QuintilesImageStats" + VESSEL_TYPE + "/"
-output_dir = "/Users/mbeyele5/Desktop/tmp/"
+input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"
+# input_dir = "/Users/mbeyele5/retina_tortuosity/data/2021_02_22_rawMeasurements/"
+image_dir = "/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/CLRIS/"
+# image_dir = "/Users/mbeyele5/retina_tortuosity/data/rawMeasurements_first50Images/"
+output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + DATE + "_majorVessels/"
+# output_dir = "/Users/mbeyele5/Desktop/tmp/"
 
 imageIDs= []
 with open("imageIDs.txt") as file:
@@ -106,7 +106,7 @@ pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
 
 
 
-for imageID in imageIDs[0:100]:
+for imageID in imageIDs:
     print(imageID)
     
     pos1 = []
