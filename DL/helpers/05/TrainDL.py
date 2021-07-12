@@ -82,7 +82,7 @@ class TrainParameters:
         # --- training params
         self.batch_size=128
         #patch_size=224
-        self.num_epochs = 50
+        self.num_epochs = 5
         self.phases = ["train", "val"] #how many phases did we create databases for?
         #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
         #additionally, using simply [], will skip validation entirely, drastically speeding things up
