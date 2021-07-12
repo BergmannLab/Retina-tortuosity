@@ -188,7 +188,7 @@ def TrainDL(db_dir, gpuid, output_dir):
     image_process = ImageProcess()
     #set normal image process
     train_data_path = f"{db_dir}/{dataname}_"+"train"+".pytable"
-    ip = image_process.set_norm_img_transform(train_data_path)
+    image_process.set_norm_img_transform(train_data_path)
 
     dataset={}
     dataLoader={}
@@ -197,13 +197,13 @@ def TrainDL(db_dir, gpuid, output_dir):
 
     # We use data augmentation for training
     phase = "train"
-    dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=ip.norm_transform_train)
+    dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=image_process.norm_transform_train)
     dataLoader[phase]=DataLoader(dataset[phase], batch_size=batch_size, shuffle=True, num_workers=16, pin_memory=True)
     print(f"{phase} dataset size:\t{len(dataset[phase])}")
 
     # We only normalize the validation dataset
     phase = "val"
-    dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=ip.norm_transform_val)
+    dataset[phase]=Dataset(f"{db_dir}/{dataname}_{phase}.pytable", img_transform=image_process.norm_transform_val)
     dataLoader[phase]=DataLoader(dataset[phase], batch_size=batch_size, shuffle=True, num_workers=16, pin_memory=True)
     print(f"{phase} dataset size:\t{len(dataset[phase])}")
 
