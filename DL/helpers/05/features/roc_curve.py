@@ -19,7 +19,6 @@ import sys
 sys.path.insert(1, '../')
 from TrainDL import TrainParameters,ImageProcess,Dataset
 
-
 #set train parameters
 tp = TrainParameters()
 
@@ -53,15 +52,15 @@ for data_idx,data_label in enumerate(data_label_list):
 	pytables_data = tables.open_file(data_path,'r')
 	patient_id = pytables_data.root.filenames.read()
 	pytables_data.close()
-	
+
 	prediction_val = []
-	correct_val = []	
+	correct_val = []
 
 	for ii , (img, label, img_orig) in enumerate(dataLoader):
 		img = img.to(device)  # [Nbatch, 3, H, W]
 		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
 		label = label.detach().numpy()[0]
-		
+
 		#make a prediction
 		prediction = model(img)  # [N, Nclass]
 
@@ -74,7 +73,7 @@ for data_idx,data_label in enumerate(data_label_list):
 	correct_val = np.asarray(correct_val,dtype=int)
 	prediction_val = np.asarray(prediction_val,dtype=float)
 	print(correct_val,prediction_val)
-	fpr, tpr, thresholds = roc_curve(correct_val, prediction_val) # hyperclass = 0
+	fpr, tpr, thresholds = roc_curve(correct_val, prediction_val,pos_label=0) # hyperclass = 0
 	roc_auc = auc(fpr, tpr)
 
 	plt.figure(figsize=(7, 7))
