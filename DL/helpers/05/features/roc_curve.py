@@ -57,9 +57,9 @@ for data_idx,data_label in enumerate(data_label_list):
 	correct_val = []
 
 	for ii , (img, label, img_orig) in enumerate(dataLoader):
-		print(label)
-		if ii % 100 == 0:
-			print(ii,"images processed")
+		#print(label)
+		#if ii % 100 == 0:
+		#	print(ii,"images processed")
 		img = img.to(device)  # [Nbatch, 3, H, W]
 		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
 		label = label.detach().numpy()[0]
@@ -75,7 +75,7 @@ for data_idx,data_label in enumerate(data_label_list):
 
 	correct_val = np.asarray(correct_val,dtype=int)
 	prediction_val = np.asarray(prediction_val,dtype=float)
-	print(correct_val,prediction_val)
+	#print(correct_val,prediction_val)
 	fpr, tpr, thresholds = roc_curve(correct_val, prediction_val,pos_label=0) # hyperclass = 0
 	roc_auc = auc(fpr, tpr)
 
