@@ -46,7 +46,7 @@ im_pro.set_norm_img_transform(train_path)
 for data_idx,data_label in enumerate(data_label_list):
 
 	#load dataset
-    data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
+	data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
 	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_val) # use "val" because we are testing and do not want data augmentation
 	dataLoader=DataLoader(dataset, batch_size=1, num_workers=16, pin_memory=True)
 
