@@ -1,0 +1,6 @@
+
+Inactive Modules:
+  1) py-biopython     2) python/3.7.7
+
+/var/spool/slurmd/job2809655/slurm_script: line 18: 22880 Killed                  python3.7 ./roc_curve.py
+slurmstepd: error: Detected 1 oom-kill event(s) in step 2809655.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.

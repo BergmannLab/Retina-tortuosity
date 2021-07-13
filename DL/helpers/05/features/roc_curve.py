@@ -44,13 +44,13 @@ for data_idx,data_label in enumerate(data_label_list):
 	im_pro = ImageProcess()
 	im_pro.set_norm_img_transform(data_path)
 
-    #load dataset
-    if data_label == "train":
-        dataset=Dataset(data_path, img_transform=im_pro.norm_transform_train)
-    else:
-        dataset=Dataset(data_path, img_transform=im_pro.norm_transform_val)
+	#load dataset
+	if data_label == "train":
+		dataset=Dataset(data_path, img_transform=im_pro.norm_transform_train)
+	else:
+		dataset=Dataset(data_path, img_transform=im_pro.norm_transform_val)
 
-    dataLoader=DataLoader(dataset, batch_size=1, num_workers=16, pin_memory=True)
+	dataLoader=DataLoader(dataset, batch_size=1, num_workers=16, pin_memory=True)
 
 	#load patient ids
 	pytables_data = tables.open_file(data_path,'r')
