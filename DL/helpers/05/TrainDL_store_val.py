@@ -14,6 +14,7 @@ from sklearn.metrics import roc_curve, auc
 from matplotlib.ticker import MaxNLocator
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+import os
 
 class AddGaussianNoise(object):
     def __init__(self, mean=0., std=1.):
@@ -31,8 +32,9 @@ class Dataset(object):
     def __init__(self, fname ,img_transform=None):
         #nothing special here, just internalizing the constructor parameters
         self.fname=fname
-
         self.img_transform=img_transform
+        num_file = len([l for l in os.listdir("./") if "filenames" in l])
+        self.f_object = open("filenames_%d.txt"%(num_file+1,),"w+")
 
         with tables.open_file(self.fname,'r') as db:
             self.classsizes=db.root.classsizes[:]
@@ -53,14 +55,18 @@ class Dataset(object):
             img = self.imgs[index,:,:,:]
             label = self.labels[index]
 
+            #filename
+            filename = db.root.filenames.read()[index]
+            print(filename)
+            self.f_object.write(str(filename)+"\n")
 
         img_new = img
 
         if self.img_transform is not None:
             img_new = self.img_transform(img)
 
-
         return img_new, label, img
+
     def __len__(self):
         return self.nitems
 
@@ -82,7 +88,7 @@ class TrainParameters:
         # --- training params
         self.batch_size=128
         #patch_size=224
-        self.num_epochs = 5
+        self.num_epochs = 50
         self.phases = ["train", "val"] #how many phases did we create databases for?
         #when should we do validation? note that validation is *very* time consuming, so as opposed to doing for both training and validation, we do it only for validation at the end of the epoch
         #additionally, using simply [], will skip validation entirely, drastically speeding things up
@@ -239,6 +245,7 @@ def TrainDL(db_dir, gpuid, output_dir):
             cmatrix = {key: np.zeros((n_classes,n_classes)) for key in phases}
             prediction_val = []
             correct_val = []
+            filename_list = [] #ALEX BUTTON
 
             for phase in phases: #iterate through both training and validation states
 
@@ -250,7 +257,6 @@ def TrainDL(db_dir, gpuid, output_dir):
                 for ii , (X, label, img_orig) in enumerate(dataLoader[phase]): #for each of the batches
                     X = X.to(device)  # [Nbatch, 3, H, W]
                     label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
-
                     with torch.set_grad_enabled(phase == 'train'): #dynamically set gradient computation, in case of validation, this isn't needed
                                                                     #disabling is good practice and improves inference time
 
@@ -325,6 +331,14 @@ def TrainDL(db_dir, gpuid, output_dir):
                  'num_classes':num_classes}
 
                 torch.save(state, f"{output_dir}/{dataname}_densenet_best_model.pth")
+
+                #save output to check results - ALEX BUTTON
+                check_out = open("results_ab.csv","w+")
+                check_out.write("image name,label,predictive value\n")
+                for image_idx,image_fname in enumerate(filename_list):
+                    check_out.write(image_fname+","+str(correct_val[image_idx])+","+str(prediction_val[image_idx])+"\n")
+
+                check_out.close()
 
                 fpr, tpr, thresholds = roc_curve(correct_val, prediction_val, pos_label=0) # hyperclass = 0
                 roc_auc = auc(fpr, tpr)
