@@ -40,6 +40,8 @@ missing_keys = model.load_state_dict(state_dict)
 data_label_list = ["train","val"]
 write_header=True
 
+model.eval()
+
 for data_idx,data_label in enumerate(data_label_list):
 	data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
 	im_pro = ImageProcess()
@@ -76,7 +78,9 @@ for data_idx,data_label in enumerate(data_label_list):
 
 	correct_val = np.asarray(correct_val,dtype=int)
 	prediction_val = np.asarray(prediction_val,dtype=float)
-	print(correct_val,prediction_val)
+	#log values
+	np.save("pred.npy",prediction_val)
+	np.save("label.npy",correct_val)
 	fpr, tpr, thresholds = roc_curve(correct_val, prediction_val) # hyperclass = 0
 	roc_auc = auc(fpr, tpr)
 
