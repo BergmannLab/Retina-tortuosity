@@ -58,6 +58,7 @@ for data_idx,data_label in enumerate(data_label_list):
 	correct_val = []	
 
 	for ii , (img, label, img_orig) in enumerate(dataLoader):
+		print(label)
 		if ii % 100 == 0:
 			print(ii,"images processed")
 		img = img.to(device)  # [Nbatch, 3, H, W]
