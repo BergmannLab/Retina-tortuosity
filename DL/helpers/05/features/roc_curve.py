@@ -33,7 +33,8 @@ model = DenseNet(growth_rate=tp.growth_rate,
 # load model from state_dict
 dict_path="/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/05_DL/retina_densenet_best_model.pth"
 state_dict = torch.load(dict_path)["model_dict"]
-missing_keys = model.load_state_dict(state_dict)
+model.load_state_dict(state_dict)
+model.eval()
 
 #set image processing methods
 data_label_list = ["train","val"]
