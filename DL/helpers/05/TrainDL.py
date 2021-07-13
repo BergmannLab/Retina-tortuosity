@@ -338,7 +338,7 @@ def TrainDL(db_dir, gpuid, output_dir):
                 plt.ylim([0.0, 1.05])
                 plt.xlabel('False Positive Rate')
                 plt.ylabel('True Positive Rate')
-                plt.title('ROC curve over a batch for model at epoch = '+str(epoch+1))
+                plt.title('ROC curve for model at epoch = '+str(epoch+1))
                 plt.legend(loc="lower right")
 
                 pdf.savefig()
