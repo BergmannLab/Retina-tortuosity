@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --account=sbergman_retina
 #SBATCH --job-name=RocCurve
-#SBATCH --output=./slurm_runs/slurm-%x_%j.out
-#SBATCH --error=./slurm_runs/slurm-%x_%j.err
+#SBATCH --output=./slurm-%x_%j.out
+#SBATCH --error=./slurm-%x_%j.err
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 8
