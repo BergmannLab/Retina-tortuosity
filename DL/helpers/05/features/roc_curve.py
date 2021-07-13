@@ -39,13 +39,15 @@ missing_keys = model.load_state_dict(state_dict)
 data_label_list = ["train","val"]
 write_header=True
 
+train_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_train.pytable"
+im_pro = ImageProcess()
+im_pro.set_norm_img_transform(train_path)
+
 for data_idx,data_label in enumerate(data_label_list):
-	data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
-	im_pro = ImageProcess()
-	im_pro.set_norm_img_transform(data_path)
 
 	#load dataset
-	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_val)
+    data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
+	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_val) # use "val" because we are testing and do not want data augmentation
 	dataLoader=DataLoader(dataset, batch_size=1, num_workers=16, pin_memory=True)
 
 	#load patient ids
