@@ -19,7 +19,6 @@ import sys
 sys.path.insert(1, '../')
 from TrainDL import TrainParameters,ImageProcess,Dataset
 
-
 #set train parameters
 tp = TrainParameters()
 
@@ -34,39 +33,40 @@ model = DenseNet(growth_rate=tp.growth_rate,
 # load model from state_dict
 dict_path="/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/05_DL/retina_densenet_best_model.pth"
 state_dict = torch.load(dict_path)["model_dict"]
-missing_keys = model.load_state_dict(state_dict)
+model.load_state_dict(state_dict)
+model.eval()
 
 #set image processing methods
 data_label_list = ["train","val"]
 write_header=True
 
-model.eval()
+train_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_train.pytable"
+im_pro = ImageProcess()
+im_pro.set_norm_img_transform(train_path)
 
 for data_idx,data_label in enumerate(data_label_list):
-	data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
-	im_pro = ImageProcess()
-	im_pro.set_norm_img_transform(data_path)
 
 	#load dataset
-	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_train)
+	data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
+	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_val) # use "val" because we are testing and do not want data augmentation
 	dataLoader=DataLoader(dataset, batch_size=1, num_workers=16, pin_memory=True)
 
 	#load patient ids
 	pytables_data = tables.open_file(data_path,'r')
 	patient_id = pytables_data.root.filenames.read()
 	pytables_data.close()
-	
+
 	prediction_val = []
-	correct_val = []	
+	correct_val = []
 
 	for ii , (img, label, img_orig) in enumerate(dataLoader):
-		print(label)
-		if ii % 100 == 0:
-			print(ii,"images processed")
+		#print(label)
+		#if ii % 100 == 0:
+		#	print(ii,"images processed")
 		img = img.to(device)  # [Nbatch, 3, H, W]
 		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
 		label = label.detach().numpy()[0]
-		
+
 		#make a prediction
 		prediction = model(img)  # [N, Nclass]
 
@@ -78,10 +78,11 @@ for data_idx,data_label in enumerate(data_label_list):
 
 	correct_val = np.asarray(correct_val,dtype=int)
 	prediction_val = np.asarray(prediction_val,dtype=float)
+
 	#log values
 	np.save("pred.npy",prediction_val)
 	np.save("label.npy",correct_val)
-	fpr, tpr, thresholds = roc_curve(correct_val, prediction_val) # hyperclass = 0
+	fpr, tpr, thresholds = roc_curve(correct_val, prediction_val,pos_label=0) # hyperclass = 0
 	roc_auc = auc(fpr, tpr)
 
 	plt.figure(figsize=(7, 7))
