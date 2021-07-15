@@ -1,0 +1,4 @@
+/data/soin/_archive/retina/
+/data/soin/_archive/retina/preprocessing
+/data/soin/_archive/retina/preprocessing/output
+/data/soin/_archive/retina/preprocessing/output/StoreMeasurements

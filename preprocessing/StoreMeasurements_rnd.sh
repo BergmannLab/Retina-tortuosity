@@ -27,7 +27,7 @@ backup_dir=$archive/retina/preprocessing/output/StoreMeasurements/$(date +%Y_%m_
 mkdir $backup_dir
 
 tot_png_files=$(find $raw_data_dir -name *png | wc -l) # count the number of raw input inputs
-tot_mat_files=$(find $input_dir -name *_stats.tsv | wc -l) # count the number of measured images
+tot_mat_files=$(find $input_dir -name *imageStats.tsv | wc -l) # count the number of measured images
 echo "$tot_mat_files measurements"
 echo "$tot_png_files original raw images"
 
