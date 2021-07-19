@@ -60,18 +60,23 @@ model = DenseNet(growth_rate=tp.growth_rate,
 dict_path="/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/05_DL/retina_densenet_best_model.pth"
 state_dict = torch.load(dict_path)["model_dict"]
 missing_keys = model.load_state_dict(state_dict)
+model.eval()
 
 #set image processing methods
 data_label_list = ["train","val"]
 write_header=True
 
+data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_train.pytable"
+im_pro = ImageProcess()
+im_pro.set_norm_img_transform(data_path)
+
 for data_idx,data_label in enumerate(data_label_list):
 	data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
-	im_pro = ImageProcess()
-	im_pro.set_norm_img_transform(data_path)
+	#im_pro = ImageProcess()
+	#im_pro.set_norm_img_transform(data_path)
 
 	#load dataset
-	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_train)
+	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_val)
 	dataLoader=DataLoader(dataset, batch_size=1, num_workers=16, pin_memory=True)
 
 	#load patient ids
