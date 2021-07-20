@@ -83,12 +83,13 @@ DATE = datetime.now().strftime("%Y_%m_%d")# CONSTANTS
 MAX_DIST_TO_DISC_CENTER = 300
 MIN_LENGTH_FINAL = 200
 SEGMENT_DISTANCE = 5
+MAX_DF = 1.25
 
 input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"
 # input_dir = "/Users/mbeyele5/retina_tortuosity/data/2021_02_22_rawMeasurements/"
 image_dir = "/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/CLRIS/"
 # image_dir = "/Users/mbeyele5/retina_tortuosity/data/rawMeasurements_first50Images/"
-output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + DATE + "_majorVessels/"
+output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + DATE + "_majorVesselsCapped/"
 # output_dir = "/Users/mbeyele5/Desktop/tmp/"
 
 imageIDs= []
@@ -122,7 +123,7 @@ for imageID in imageIDs:
     AVScores = segmentStats['AVScore'].tolist()
     medianDiameters = segmentStats['medianDiameter'].tolist()
     DFs = segmentStats['DF'].tolist()
-
+    medianDF = np.median(DFs)
 
     img = mpimg.imread(image_dir + imageID + ".png")
 
@@ -301,20 +302,20 @@ for imageID in imageIDs:
                     bottom_vein_index = i
         
         
-        if top_artery_index != -1:
+        if (top_artery_index != -1) & (DFs[top_artery_index] < MAX_DF):
             top_artery = DFs[top_artery_index]
         else:
             top_artery = np.nan
         
-        if bottom_artery_index != -1:
+        if (bottom_artery_index != -1) & (DFs[bottom_artery_index] < MAX_DF):
             bottom_artery = DFs[bottom_artery_index]
         else:
             bottom_artery = np.nan
-        if top_vein_index != -1:
+        if (top_vein_index != -1) & (DFs[top_vein_index] < MAX_DF):
             top_vein = DFs[top_vein_index]
         else:
             top_vein = np.nan
-        if bottom_vein_index != -1:
+        if (bottom_vein_index != -1) & (DFs[bottom_vein_index] < MAX_DF):
             bottom_vein = DFs[bottom_vein_index]
         else:
             bottom_vein = np.nan
@@ -323,13 +324,17 @@ for imageID in imageIDs:
         veins_mean = np.nanmean([top_vein, bottom_vein])
         all_mean = np.mean([arteries_mean, veins_mean])
 
-    # plt.figure()
-    # plt.imshow(img)
-    # plt.scatter(pos2[top_artery_index], pos1[top_artery_index], s=0.5, c='red')
-    # plt.scatter(pos2[bottom_artery_index], pos1[bottom_artery_index], s=0.5, c='red')
-    # plt.scatter(pos2[top_vein_index], pos1[top_vein_index], s=0.5, c='blue')
-    # plt.scatter(pos2[bottom_vein_index], pos1[bottom_vein_index], s=0.5, c='blue')
-    # plt.savefig(output_dir + imageID + "_2.png")
+        # AV ratio
+        if (top_artery != np.nan) & (bottom_artery != np.nan) & (top_vein != np.nan) & (bottom_vein != np.nan):
+            ratio = (medianDiameters[top_artery_index] + medianDiameters[bottom_artery_index]) / (medianDiameters[top_vein_index] + medianDiameters[bottom_vein_index])
+
+    #plt.figure()
+    #plt.imshow(img)
+    #plt.scatter(pos2[top_artery_index], pos1[top_artery_index], s=0.5, c='red')
+    #plt.scatter(pos2[bottom_artery_index], pos1[bottom_artery_index], s=0.5, c='red')
+    #plt.scatter(pos2[top_vein_index], pos1[top_vein_index], s=0.5, c='blue')
+    #plt.scatter(pos2[bottom_vein_index], pos1[bottom_vein_index], s=0.5, c='blue')
+    #plt.savefig(output_dir + imageID + "_2.png")
 
 
     print(top_artery_index, bottom_artery_index, top_vein_index, bottom_vein_index)
@@ -340,4 +345,4 @@ for imageID in imageIDs:
         f.write("%s\t" % arteries_mean)
         f.write("%s\t" % veins_mean)
         f.write("%s\t" % top_artery)
-        f.write("%s\n" % bottom_artery)
+        f.write("%s\n" % ratio)
