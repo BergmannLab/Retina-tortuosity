@@ -80,8 +80,8 @@ for data_idx,data_label in enumerate(data_label_list):
 	prediction_val = np.asarray(prediction_val,dtype=float)
 
 	#log values
-	np.save("pred.npy",prediction_val)
-	np.save("label.npy",correct_val)
+	np.save("pred_%s.npy"%(data_label,),prediction_val)
+	np.save("label_%s.npy"%(data_label,),correct_val)
 	fpr, tpr, thresholds = roc_curve(correct_val, prediction_val,pos_label=0) # hyperclass = 0
 	roc_auc = auc(fpr, tpr)
 

@@ -14,7 +14,7 @@ from sklearn.metrics import roc_curve, auc
 from matplotlib.ticker import MaxNLocator
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-
+import pickle
 import sys
 sys.path.insert(1, '../')
 from TrainDL import TrainParameters,ImageProcess,Dataset
@@ -66,9 +66,10 @@ model.eval()
 data_label_list = ["train","val"]
 write_header=True
 
-data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_train.pytable"
+train_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_train.pytable"
+val_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_val.pytable"
 im_pro = ImageProcess()
-im_pro.set_norm_img_transform(data_path)
+im_pro.set_norm_img_transform(train_path)
 
 for data_idx,data_label in enumerate(data_label_list):
 	data_path = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/04_DB/retina_%s.pytable"%(data_label,)
@@ -76,7 +77,7 @@ for data_idx,data_label in enumerate(data_label_list):
 	#im_pro.set_norm_img_transform(data_path)
 
 	#load dataset
-	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_val)
+	dataset=Dataset(data_path, img_transform=im_pro.norm_transform_val) #transform needs to be set to the val transform
 	dataLoader=DataLoader(dataset, batch_size=1, num_workers=16, pin_memory=True)
 
 	#load patient ids
@@ -86,12 +87,14 @@ for data_idx,data_label in enumerate(data_label_list):
 
 	#set index
 	index=0
-	for ii , (img, label, img_orig) in enumerate(dataLoader):
+	for ii , (img, label, img_orig) in enumerate(dataLoader):	
+		if ii % 100 == 0:
+			print(ii)
 		img = img.to(device)  # [Nbatch, 3, H, W]
 		label = label.type('torch.LongTensor').to(device)  # [Nbatch, 1] with class indices (0, 1, 2,...n_classes)
-		label = label.detach()/numpy()[0]
+		label = label.detach().numpy()[0]
 		p_id = str(patient_id[index]).split("/")[-1].split("_")[0]
-		
+
 		index += 1
 
 		#set the features hooks to extract the layer activations
@@ -102,18 +105,20 @@ for data_idx,data_label in enumerate(data_label_list):
 		output = model(img)
 		pred_output = output.detach().numpy()
 		pred_file.write(str(p_id)+","+str(pred_output[0][0])+","+str(pred_output[0][1])+","+str(label)+","+data_label+"\n")
-		continue	
+
 		feature_value = []
+		active_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/21_7_21/"
+		active_dict = {}
 		for f_idx,f in enumerate(model.features):
 			active = activation[f_idx].detach().numpy()
-			print("layer shape :",f,active.shape)
-			#store layer activations
-			active_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/"
-			np.save(active_dir+str(p_id)+"_"+data_label+"_feature_"+str(f_idx)+"_activation.npy",active)
+			#store layer activations	
+			active_dict["feature_%d"%(f_idx,)] = active		
+			#np.save(active_dir+str(p_id)+"_"+data_label+"_feature_"+str(f_idx)+"_activation.npy",active)
 			#save images of the features for the first sample
 			if index == 0:
 				plt.imshow(active[0][0])
 				plt.savefig("img/feature%d_dataset_%s.png"%(f_idx,data_label))
 				plt.close()
+		pickle.dump(active_dict,open(active_dir+str(p_id)+"_"+data_label+"_activation.pk","wb+"))
 output_file.close()
 pred_file.close()

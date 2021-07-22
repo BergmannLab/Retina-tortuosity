@@ -6,6 +6,7 @@ import math
 import os 
 import matplotlib.pyplot as plt
 from sklearn.decomposition import pca
+import pickle
 
 #feature extractoin functions
 def abs_max(layer_activation):
@@ -39,24 +40,22 @@ def load_node_id_list(node_file):
 	return node_id
 
 node_id = load_node_id_list("analysis/max_mean_node_intensity.csv")
-selected_layer = 0
-#node_coord = [2,2]
-#node_id = 1190
+selected_feature = "feature_0"
 
 output_file = open("output/ave_across_channel_layer0.out","w+")
 output_file.write("Subject ID,feature value,Dataset\n")
 
-layer_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/01_03_2021"
-extracted_layers = [l for l in os.listdir(layer_dir) if "feature_"+str(selected_layer) in l]
+layer_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/21_7_21"
+extracted_layers = os.listdir(layer_dir)
 st = time.time()
 for layer_idx,layer_file in enumerate(extracted_layers):
 	if layer_idx % 100 == 0:
 		print(layer_idx,"processed")
-	layer = np.load(layer_dir+"/"+layer_file)
+	layer_dict = pickle.load(open(layer_dir+"/"+layer_file,"rb"))
 	subject_id = layer_file.split("_")[0]
 	data_label = layer_file.split("_")[1]
 
-	feature_value = ave_across_channels(layer[0])[0]
+	feature_value = ave_across_channels(layer_dict[selected_feature])[0]
 	output_file.write(subject_id+","+str(feature_value)+","+data_label+"\n")
 print("time taken :",time.time()-st)
 output_file.close()
