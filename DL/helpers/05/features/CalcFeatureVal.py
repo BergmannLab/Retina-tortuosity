@@ -55,7 +55,7 @@ dict_keys = list(pickle.load(open(layer_dir+"/"+extracted_layers[0],"rb")).keys(
 
 feature_header = ",".join(dict_keys)
 
-output_file = open("output/ave_across_channel_all_features.out","w+")
+output_file = open("output/last_layer_nodes.out","w+")
 #output_file.write("Subject ID,%s,Dataset\n"%(feature_header,))
 output_file.write("Subject ID,"+",".join(["node_"+str(i) for i in range(49)])+",Dataset\n")
 
