@@ -39,14 +39,19 @@ def load_node_id_list(node_file):
 		node_id.append(int(line.strip("\n").split(",")[1]))
 	return node_id
 
-node_id = load_node_id_list("analysis/max_mean_node_intensity.csv")
-selected_feature = "feature_0"
-
-output_file = open("output/ave_across_channel_layer0.out","w+")
-output_file.write("Subject ID,feature value,Dataset\n")
+#node_id = load_node_id_list("analysis/max_mean_node_intensity.csv")
+#selected_feature = "feature_0"
 
 layer_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/21_7_21"
 extracted_layers = os.listdir(layer_dir)
+
+dict_keys = list(pickle.load(open(layer_dir+"/"+extracted_layers[0],"rb")).keys())
+
+feature_header = ",".join(dict_keys)
+
+output_file = open("output/ave_across_channel_all_features.out","w+")
+output_file.write("Subject ID,%s,Dataset\n"%(feature_header,))
+
 st = time.time()
 for layer_idx,layer_file in enumerate(extracted_layers):
 	if layer_idx % 100 == 0:
@@ -55,7 +60,9 @@ for layer_idx,layer_file in enumerate(extracted_layers):
 	subject_id = layer_file.split("_")[0]
 	data_label = layer_file.split("_")[1]
 
-	feature_value = ave_across_channels(layer_dict[selected_feature])[0]
-	output_file.write(subject_id+","+str(feature_value)+","+data_label+"\n")
+	feature_value = []
+	for feature_key in dict_keys:
+		feature_value.append(str(ave_across_channels(layer_dict[feature_key])[0]))
+	output_file.write(subject_id+","+",".join(feature_value)+","+data_label+"\n")
 print("time taken :",time.time()-st)
 output_file.close()
