@@ -19,7 +19,8 @@ function remove_files(){
   done < $input
 }
 
-remove_files "w43805_20200204.csv"
-remove_files "w43805_20200820.csv"
+##remove_files "w43805_20200204.csv" #DONE
+#remove_files "w43805_20200820.csv" #DONE
+remove_files "w43805_20210809.csv"
 
 echo Done.
