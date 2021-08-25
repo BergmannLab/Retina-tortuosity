@@ -20,23 +20,29 @@ PARAM=$(sed "${SLURM_ARRAY_TASK_ID}q;d" $j_array_params)
 chromosome_number=$(echo $PARAM | cut -d" " -f1)
 
 experiment_id=$1 # RENAME EXPERIMENT APPROPRIATELY
-pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_qqnorm.csv
+sample_no=$2
+pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/$sample_no/phenofile_qqnorm.csv
+
 #UKBiob
-#chromosome_name=ukb_imp_chr"$chromosome_number"_v3
-#chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_mini.bgen # for full rslist, use _subset instead of _subset_mini
-#covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar.csv
-#sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
+
+chromosome_name=ukb_imp_chr"$chromosome_number"_v3
+chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_mini.bgen # for full rslist, use _subset instead of _subset_mini
+covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar.csv
+sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
+
 #CoLaus
-chromosome_name=CoLaus.HRC.chr"$chromosome_number"
-covar_file=$data/retina/colaus/phenotypes/covar.csv
-chromosome_file=$data/retina/colaus/genotypes/colaus_axiom_hrc.r1.1.2016_imputed/"$chromosome_name".bgen # for full rslist, use _subset instead of _subset_mini
-sample_file=$data/retina/colaus/genotypes/colaus_axiom_hrc.r1.1.2016_imputed/CoLaus.sample
+
+#chromosome_name=CoLaus.HRC.chr"$chromosome_number".MAFsubsetted
+#covar_file=$data/retina/colaus/phenotypes/covar.csv
+#covar_file=$data/retina/colaus/phenotypes/covar_including_PCs_for_DF.csv
+#chromosome_file=$data/retina/colaus/genotypes/colaus_axiom_hrc.r1.1.2016_imputed/"$chromosome_name".bgen # for full rslist, use _subset instead of _subset_mini
+#sample_file=$data/retina/colaus/genotypes/colaus_axiom_hrc.r1.1.2016_imputed/CoLaus.sample
 
 
 output_file_name=output_"$chromosome_name".txt
 
 # prepare output dir
-output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"
+output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"/$sample_no
 mkdir -p $output_dir
 
 function validate_inputs(){ # check input files have matching number of samples
