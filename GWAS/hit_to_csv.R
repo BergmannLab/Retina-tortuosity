@@ -1,4 +1,5 @@
-setwd("/Users/mbeyele5/retina_tortuosity/output/GWAS_all/2021_07_30_colausHeightControl_full")
+args = commandArgs(trailingOnly=TRUE)
+setwd(paste("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/RunGWAS/2021_08_26_subsampleGWAS_N1000/", args[1], sep=""))
 
 # INSTRUCTIONS
 # - take chromosome files outputted by BGENIE, ungzip them (run "gzip -d *")
@@ -15,8 +16,8 @@ setwd("/Users/mbeyele5/retina_tortuosity/output/GWAS_all/2021_07_30_colausHeight
 # INITIALIZE APPROPRIATELY ####################################################
 #pheno_list <- c("median_diameter","D9_diameter","short_tortuosity","D9_tortuosity","D95_tortuosity")
 # pheno_list <- c("median_tortuosity","tau2","tau3","tau4","tau5","tau6","tau7","tau1")
-# pheno_list <- c("DF","DF1st","DF2nd","DF3rd","DF4th","DF5th","tau1","tau2","tau3","tau4","tau5","tau6","tau7", "nVessels")
-pheno_list <- c("ht","ht_INT")
+pheno_list <- c("DF","DF1st","DF2nd","DF3rd","DF4th","DF5th","tau1","tau2","tau3","tau4","tau5","tau6","tau7", "nVessels")
+# pheno_list <- c("ht","ht_INT")
 # pheno_list <- c("major_mean","major_arteries","major_veins","top_artery","bottom_artery")
 #pheno_list <- c("DF5th")
 # pheno_list <- c("DF1st","DF2nd","DF3rd","DF4th","DF5th")
@@ -39,9 +40,9 @@ for (pheno_name in pheno_list) { # FOR EACH PHENOTYPE in GWAS
     write(paste("chromosome",chromo_numb), stdout())
     
     # ukbb
-    # chromo_name <- paste("output_ukb_imp_chr",chromo_numb,"_v3.txt", sep="")
+    chromo_name <- paste("output_ukb_imp_chr",chromo_numb,"_v3.txt", sep="")
     # colaus
-    chromo_name <- paste("output_CoLaus.HRC.chr",chromo_numb,".txt", sep="")
+    # chromo_name <- paste("output_CoLaus.HRC.chr",chromo_numb,".txt", sep="")
     gwasResults <- read.table(chromo_name, sep=" ",header=T, stringsAsFactors= F)
     gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1)
     

@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task 8
 #SBATCH --mem 16G
 ####SBATCH --time 01-10:00:00
-#SBATCH --time 00-06:00:00
+#SBATCH --time 00-00:30:00
 #SBATCH --partition normal
 #SBATCH --array=1-22
 
@@ -26,7 +26,7 @@ pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/$
 #UKBiob
 
 chromosome_name=ukb_imp_chr"$chromosome_number"_v3
-chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_mini.bgen # for full rslist, use _subset instead of _subset_mini
+chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset.bgen # for full rslist, use _subset instead of _subset_mini
 covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar.csv
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
 
@@ -42,7 +42,7 @@ sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
 output_file_name=output_"$chromosome_name".txt
 
 # prepare output dir
-output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"/$sample_no
+output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"/"$sample_no"_leadSNPs
 mkdir -p $output_dir
 
 function validate_inputs(){ # check input files have matching number of samples
@@ -95,7 +95,9 @@ $bgenie_dir/bgenie_v1.3_static2 \
 --covar $covar_file \
 --out $output_file \
 --thread 8 \
---pvals
+--pvals \
+--rsid 1:3253678
+#--include_rsids /scratch/beegfs/FAC/FBM/DBC/sbergman/retina/subsample/lead_rsIDs.txt \
 }
 
 # RUN GWAS

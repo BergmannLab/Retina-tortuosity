@@ -1,9 +1,9 @@
 #install.packages("qqman")
 #install.packages("BiocManager")
 #BiocManager::install("GWASTools")
-library(qqman)
-library(GWASTools)
-setwd("/Users/mbeyele5/retina_tortuosity/output/GWAS_all/2021_07_19_ophthalmolausRawMeasurements_withPCs")
+#library(qqman)
+#library(GWASTools)
+setwd("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/RunGWAS/2021_08_26_subsampleGWAS_N1000/1/")
 
 # INSTRUCTIONS 
 # - take GWAS output files from Jura and ungz-them (run gzip -d *)
@@ -87,15 +87,15 @@ for (i in c(1:22)){
   write(paste0("processing chromo",i), stdout())
   
   #UKBB
-  # gwasResults <- read.table(paste("output_ukb_imp_chr", i,"_v3.txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
+  gwasResults <- read.table(paste("output_ukb_imp_chr", i,"_v3.txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
   #COLAUS
-  gwasResults <- read.table(paste("output_CoLaus.HRC.chr", i,".txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
+  # gwasResults <- read.table(paste("output_CoLaus.HRC.chr", i,".txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
   
     # gwasResults <- subset( gwasResults, select = -c( 36  : 39 )) #sofia deleting tau0, beacuse is always NA
   #gwasResults[is.na(gwasResults)] <- 0 #sofia
   gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1) 
   # filtering for AF, done in colaus cohort
-  gwasResults <- gwasResults[gwasResults$af>0.05,]
+  #gwasResults <- gwasResults[gwasResults$af>0.05,]
   
   # # ht
   # ht <- subset(gwasResults, select = c("chr","rsid","pos","ht.log10p"))
