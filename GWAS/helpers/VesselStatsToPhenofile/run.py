@@ -10,13 +10,19 @@ def read_samples(sample_file):
     # keep non-missing samples only
     samples = samples[samples['missing'] == 0]
     # drop column that are not needed (missing and sex)
-    samples.drop(samples.columns[[1,2,3]], axis=1, inplace=True)
+    try:
+        samples.drop(samples.columns[[1,2,3]], axis=1, inplace=True)
+    except:
+        print("only three rather than 4 sample columns (should be fine)")
+        samples.drop(samples.columns[[1,2]], axis=1, inplace=True)    
     # rename the one column that is needed: eid
     samples.rename(columns = {'ID_1':'eid'}, inplace = True)
     samples.set_index("eid", inplace = True)
     return samples
 
 def calculate_average(stats_i, stats_collision):
+    #print(stats_i)
+    #print(stats_collision)
     return (stats_i.values + stats_collision.values) / 2
 
 def read_stats(stats_dir,i):
@@ -34,12 +40,12 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     # index = eid from sample file (to respect UKBB ordering)
     stats_phenotypes = read_samples(sample_file)
     # add stats columns to dataframe
-    stats_phenotypes['median_diameter'] = None
-    stats_phenotypes['D9_diameter'] = None
-    stats_phenotypes['median_tortuosity'] = None
-    stats_phenotypes['short_tortuosity'] = None
-    stats_phenotypes['D9_tortuosity'] = None
-    stats_phenotypes['D95_tortuosity'] = None
+    stats_phenotypes['DF'] = None
+    stats_phenotypes['DF1st'] = None
+    stats_phenotypes['DF2nd'] = None
+    stats_phenotypes['DF3rd'] = None
+    stats_phenotypes['DF4th'] = None
+    stats_phenotypes['DF5th'] = None
     stats_phenotypes['tau1'] = None
     stats_phenotypes['tau2'] = None
     stats_phenotypes['tau3'] = None
@@ -47,20 +53,20 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     stats_phenotypes['tau5'] = None
     stats_phenotypes['tau6'] = None
     stats_phenotypes['tau7'] = None
-    #stats_phenotypes['tau0'] = None
+    stats_phenotypes['nVessels'] = None
    
     # import stats for each input file
     add_once=0
     replace=0
     not_in_sample=[]
     for i in os.listdir(stats_dir):
-        if not i.endswith("stats.tsv"): 
+        if not i.endswith("imageStats.tsv"):
             ###print("WARNING: " + i + " will be ignored (not a stats file)")
             continue # process stats files only
         # import file stats to dataframe
         stats_i = read_stats(stats_dir,i)
         #eid_i = float(i[0:6]) # SkiPOGH
-        eid_i = float(i[0:7]) # loat(i.split("_")[0]) 
+        eid_i = float(i.split("_")[0]) #float(i[0:7])
         try: # eid might not be present in stats_phenotypes
             collision = stats_phenotypes.loc[eid_i] 
             not_present = collision[0] == None
