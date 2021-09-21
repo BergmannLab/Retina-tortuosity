@@ -41,7 +41,6 @@ def get_activation(name):
 feature_func = flat_layer
 
 #set output file
-output_file = open("output/all_block_layers_ave.out","w+")
 pred_file = open("output/prediction.out","w+")
 pred_file.write("Subject ID, Prediction Value1, Prediction Value2, Label, Dataset\n")
 
@@ -107,7 +106,7 @@ for data_idx,data_label in enumerate(data_label_list):
 		pred_file.write(str(p_id)+","+str(pred_output[0][0])+","+str(pred_output[0][1])+","+str(label)+","+data_label+"\n")
 
 		feature_value = []
-		active_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/21_7_21/"
+		active_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/all_images_18_8_21/"
 		active_dict = {}
 		for f_idx,f in enumerate(model.features):
 			active = activation[f_idx].detach().numpy()
@@ -120,5 +119,4 @@ for data_idx,data_label in enumerate(data_label_list):
 				plt.savefig("img/feature%d_dataset_%s.png"%(f_idx,data_label))
 				plt.close()
 		pickle.dump(active_dict,open(active_dir+str(p_id)+"_"+data_label+"_activation.pk","wb+"))
-output_file.close()
 pred_file.close()
