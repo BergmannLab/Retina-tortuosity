@@ -27,6 +27,8 @@ output=$output_dir/phenofile.csv
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
 stats_dir=$scratch/retina/preprocessing/output/backup/$1/$2
 
+echo $1
+
 #SkiPOGH
 #sample_file=$data/retina/SkiPOGH/genotypes/SkiPOGH.sample
 #stats_dir=$scratch/retina/preprocessing/output/backup/2020_04_16__20_56_55__1133_SkiPOGH/

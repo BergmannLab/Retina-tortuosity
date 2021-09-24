@@ -13,9 +13,7 @@
 #SBATCH --time 00-03:30:00
 
 ####### --array=1-582 #UKBB
-
-# change 5th line 901	150
-#SBATCH --array=1-5 
+#SBATCH --array=1-26 #CoLaus is_color=False
 
 mcr_cache_root=/tmp/$USER/MCR_CACHE_ROOT${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}
 mkdir -pv $mcr_cache_root
