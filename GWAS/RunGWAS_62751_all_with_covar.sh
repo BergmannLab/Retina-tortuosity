@@ -10,7 +10,8 @@
 ####SBATCH --time 01-10:00:00
 #SBATCH --time 00-06:00:00
 #SBATCH --partition normal
-#SBATCH --array=1-22
+#SBATCH --array=1-3
+
 
 source $HOME/retina/configs/config.sh
 begin=$(date +%s)
@@ -26,19 +27,12 @@ pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/$
 #UKBiob
 
 chromosome_name=ukb_imp_chr"$chromosome_number"_v3
-chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_mini.bgen # for full rslist, use _subset instead of _subset_mini
-covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar.csv
-sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
+chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_fundus.bgen # for full rslist, use _subset (or _subset_fundus) instead of _subset_mini
+sample_file=$SAMPLE_FILE
 
-#CoLaus
-
-#chromosome_name=CoLaus.HRC.chr"$chromosome_number".MAFsubsetted
-#covar_file=$data/retina/colaus/phenotypes/covar.csv
-#covar_file=$data/retina/colaus/phenotypes/covar_including_PCs_for_DF.csv
-#chromosome_file=$data/retina/colaus/genotypes/colaus_axiom_hrc.r1.1.2016_imputed/"$chromosome_name".bgen # for full rslist, use _subset instead of _subset_mini
-#sample_file=$data/retina/colaus/genotypes/colaus_axiom_hrc.r1.1.2016_imputed/CoLaus.sample
-
-
+experiment_id=$1 # RENAME EXPERIMENT APPROPRIATELY
+pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_qqnorm.csv
+covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar_fundus.csv # now using bgen containing only  participants with at least one fundus image taken
 output_file_name=output_"$chromosome_name".txt
 
 # prepare output dir

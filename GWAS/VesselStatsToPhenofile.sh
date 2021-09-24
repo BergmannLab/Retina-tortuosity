@@ -24,10 +24,10 @@ mkdir -p $output_dir
 output=$output_dir/phenofile.csv
 
 #UKBB
-sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
+sample_file=$SAMPLE_FILE
 stats_dir=$scratch/retina/preprocessing/output/backup/$1/$2
 
-echo $1
+echo $1 $2
 
 #SkiPOGH
 #sample_file=$data/retina/SkiPOGH/genotypes/SkiPOGH.sample
