@@ -1,5 +1,11 @@
 # CONFIG FILE for Retina pipeline
 
+# GENOTYPE INFO
+GENOTYPE_DIR=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/
+SAMPLE_FILE="$GENOTYPE_DIR"ukb_imp_v3_subset_fundus.sample
+RSIDS_MINI=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/rsid_lists/rsids_mini.txt
+
+
 # RAW IMAGE DATA
 ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/ # UKBB
 ###ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/SkiPOGH/fundus/REVIEW/ # SkiPOGH
