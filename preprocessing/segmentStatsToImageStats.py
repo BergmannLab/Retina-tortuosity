@@ -10,7 +10,7 @@ from matplotlib import cm
 import csv
 
 DATE = datetime.now().strftime("%Y_%m_%d")
-QUINTILE_TYPE = "segmentLengths"
+QUINTILE_TYPE = "diameterSegmentLength"
 VESSEL_TYPE  = '' # Arteries, Veins, or ArteryVeinDiff
 
 
@@ -107,8 +107,15 @@ for imageID in imageIDs:
         #        & (df_vein["medianDiameter"] >= diamVein_quints[2])].index
         #    diamVein_q5Inds = df_vein["medianDiameter"].loc[df_vein["medianDiameter"] >= diamVein_quints[3]].index
         
+        # global quintiles UKBB
 
-        segLen_quints = np.quantile(df["arcLength"], [0.2,0.4,0.6,0.8])
+        segLen_quints = [23.3,44.3,77.7,135.8]
+        
+        # local way
+        
+        #segLen_quints = np.quantile(df["arcLength"], [0.2,0.4,0.6,0.8])
+        
+        # quintile indices
         segLen_q1Inds = df["arcLength"].loc[df["arcLength"] < segLen_quints[0]].index
         segLen_q2Inds = df["arcLength"].loc[(df["arcLength"] < segLen_quints[1]) \
             & (df["arcLength"] >= segLen_quints[0])].index
@@ -123,12 +130,13 @@ for imageID in imageIDs:
             f.write("DF1st\tDF2nd\tDF3rd\tDF4th\tDF5th\n")
             
             if VESSEL_TYPE != 'ArteryVeinDiff':
+                pheno='medianDiameter'
                 # .loc for diam/segLen, .iloc for dist
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q1Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q2Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q3Inds]))
-                f.write("%s\t" % np.median(df['DF'].loc[segLen_q4Inds]))
-                f.write("%s\n" % np.median(df['DF'].loc[segLen_q5Inds]))
+                f.write("%s\t" % np.median(df[pheno].loc[segLen_q1Inds]))
+                f.write("%s\t" % np.median(df[pheno].loc[segLen_q2Inds]))
+                f.write("%s\t" % np.median(df[pheno].loc[segLen_q3Inds]))
+                f.write("%s\t" % np.median(df[pheno].loc[segLen_q4Inds]))
+                f.write("%s\n" % np.median(df[pheno].loc[segLen_q5Inds]))
             else:
                 # .loc for diam/segLen, .iloc for dist
                 f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q1Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q1Inds])))
