@@ -12,5 +12,5 @@
 
 export SINGULARITY_BINDPATH="/users,/data,/scratch,/db"
 
-singularity run /dcsrsoft/singularity/containers/R-Rocker.sif Rscript ./plotGWAS_new.R
+singularity run /dcsrsoft/singularity/containers/R-Rocker.sif Rscript ./plotGWAS_new.R $1
 

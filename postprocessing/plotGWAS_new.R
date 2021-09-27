@@ -3,7 +3,10 @@
 #BiocManager::install("GWASTools")
 #library(qqman)
 #library(GWASTools)
-setwd("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/RunGWAS/2021_08_26_subsampleGWAS_N1000/1/")
+
+
+args = commandArgs(trailingOnly=TRUE)
+setwd(paste("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/RunGWAS/",args[1],sep="")
 
 
 # FUNCTIONS
