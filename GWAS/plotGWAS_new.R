@@ -5,15 +5,10 @@
 #library(GWASTools)
 setwd("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/RunGWAS/2021_08_26_subsampleGWAS_N1000/1/")
 
-# INSTRUCTIONS 
-# - take GWAS output files from Jura and ungz-them (run gzip -d *)
-# - place resulting txt files in the same folder as this script
-# OUTPUT
-# - for each phenotype: genomewide qqplot and manhattan plot
+
+# FUNCTIONS
 
 
-
-########################## FUNCTIONS ###############################
 plotPvals <- function(name,pheno,do_qqplot,do_manhattan){
   # rename according to qqman requirements: SNP CHR BP P
   colnames(pheno) <- c("CHR","SNP","BP","P")
@@ -50,7 +45,8 @@ Plot_QQ_Manhattan <- function(pheno, inputs )
 }
 
 
-################################## INIT ####################################
+# INIT
+
 
 # aggregate GWAS results from each chromo
 

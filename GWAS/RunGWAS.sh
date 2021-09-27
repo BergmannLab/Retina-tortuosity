@@ -10,7 +10,8 @@
 ####SBATCH --time 01-10:00:00
 #SBATCH --time 00-06:00:00
 #SBATCH --partition normal
-#SBATCH --array=20-22
+#SBATCH --array=21
+
 
 source $HOME/retina/configs/config.sh
 begin=$(date +%s)

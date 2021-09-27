@@ -10,5 +10,7 @@
 #SBATCH --partition normal
 #SBATCH --array=1
 
-Rscript ./plotGWAS_new.R
+export SINGULARITY_BINDPATH="/users,/data,/scratch,/db"
+
+singularity run /dcsrsoft/singularity/containers/R-Rocker.sif Rscript ./plotGWAS_new.R
 
