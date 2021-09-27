@@ -3,7 +3,7 @@
 # GENOTYPE INFO
 GENOTYPE_DIR=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/
 SAMPLE_FILE="$GENOTYPE_DIR"ukb_imp_v3_subset_fundus.sample
-RSIDS_MINI=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/rsid_lists/rsids_mini.txt
+RSIDS_MINI=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/rsid_lists/rsids_mini_first100.txt
 
 
 # RAW IMAGE DATA
