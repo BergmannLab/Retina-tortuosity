@@ -7,11 +7,17 @@
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 8
 #SBATCH --mem 16G
-####SBATCH --time 01-10:00:00
-#SBATCH --time 00-06:00:00
+#####SBATCH --time 01-10:00:00
+#SBATCH --time 00-10:00:00
 #SBATCH --partition normal
-#SBATCH --array=21
+#SBATCH --array=1-22
 
+experiment_id=$1 # RENAME EXPERIMENT APPROPRIATELY
+if [ $2 != "" ]; then 
+	rsID_subset=_"$2"
+else
+	rsID_subset=$2
+fi
 
 source $HOME/retina/configs/config.sh
 begin=$(date +%s)
@@ -27,19 +33,19 @@ pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/$
 #UKBiob
 
 chromosome_name=ukb_imp_chr"$chromosome_number"_v3
-chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_fundus.bgen # for full rslist, use _subset (or _subset_fundus) instead of _subset_mini
+chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_fundus"$rsID_subset".bgen # for full rslist, use _subset (or _subset_fundus) instead of _subset_mini
 sample_file=$SAMPLE_FILE
 
-experiment_id=$1 # RENAME EXPERIMENT APPROPRIATELY
-do_mini=$2
-echo $do_mini
 pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_qqnorm.csv
+
 covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar_fundus.csv # now using bgen containing only  participants with at least one fundus image taken
 output_file_name=output_"$chromosome_name".txt
 
 # prepare output dir
 output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"/$sample_no
 mkdir -p $output_dir
+head -n1 $pheno_file > "$output_dir"/phenotypes.txt
+
 
 function validate_inputs(){ # check input files have matching number of samples
 	sample_file=$1
@@ -85,27 +91,23 @@ echo RUNNING GWAS on CHROMOSOME $chromosome_file
 echo phenopyte: $pheno_file 
 echo covars: $covar_file
 
-echo $do_mini
-if [ "$do_mini" = "mini" ]; then
-	echo "running MINI GWAS!"
-	$bgenie_dir/bgenie_v1.3_static2 \
---bgen $chromosome_file \
---pheno $pheno_file \
---covar $covar_file \
---out $output_file \
---thread 8 \
---pvals
---include_rsids $RSIDS_MINI
+if [ "$rsID_subset" = "_mini" ]; then
+	echo "running m i n i GWAS!"
+elif [ "$rsID_subset" = "_affymetrix" ]; then
+	echo "running a f f y m e t r i x GWAS"
 else
-        echo "running FULL GWAS!"
-	$bgenie_dir/bgenie_v1.3_static2 \
+	echo "running f u l l GWAS"
+fi
+
+$bgenie_dir/bgenie_v1.3_static2 \
 --bgen $chromosome_file \
 --pheno $pheno_file \
 --covar $covar_file \
 --out $output_file \
 --thread 8 \
 --pvals
-fi
+#--rsid rs78390460 # these options don't work with our version of BGENIE; instead one has to always generate rsID-subsetted bgen files
+#--include_rsids $RSIDS_MINI
 }
 
 # RUN GWAS

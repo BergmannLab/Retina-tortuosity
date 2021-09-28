@@ -5,8 +5,6 @@ GENOTYPE_DIR=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/
 # contain only participants whose eyes were imaged, to increase speed
 COVAR_FILE=/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar_fundus.csv
 SAMPLE_FILE="$GENOTYPE_DIR"ukb_imp_v3_subset_fundus.sample
-RSIDS_MINI=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/rsid_lists/rsids_mini.txt
-RSIDS_LEAD="$GENOTYPE_DIR"
 
 # RAW IMAGE DATA
 ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/ # UKBB
@@ -58,3 +56,6 @@ conda_dir=/data/FAC/FBM/DBC/sbergman/retina/software/miniconda3/
 # AV classification
 av_uncertain_dir=/data/FAC/FBM/DBC/sbergman/retina/software/a_v_uncertain-master/
 lwnet_dir=/data/FAC/FBM/DBC/sbergman/retina/software/lwnet/
+
+# OUTPUT DIRECTORIES
+GWAS_DIR="$scratch"retina/GWAS/output/RunGWAS/

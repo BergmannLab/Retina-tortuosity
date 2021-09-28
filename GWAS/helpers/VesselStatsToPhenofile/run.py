@@ -13,7 +13,7 @@ def read_samples(sample_file):
     try:
         samples.drop(samples.columns[[1,2,3]], axis=1, inplace=True)
     except:
-        print("only three rather than 4 sample columns (should be fine)")
+        # only three rather than 4 sample columns, some sample files are like this
         samples.drop(samples.columns[[1,2]], axis=1, inplace=True)    
     # rename the one column that is needed: eid
     samples.rename(columns = {'ID_1':'eid'}, inplace = True)
@@ -39,22 +39,14 @@ def VesselStats_to_phenofile(output, sample_file, stats_dir):
     # create an empty dataframe to hold stats
     # index = eid from sample file (to respect UKBB ordering)
     stats_phenotypes = read_samples(sample_file)
+
+    # get phenotypes as list
+    first_img=pd.read_csv(stats_dir+"/"+os.listdir(stats_dir)[0], delimiter='\t')
     # add stats columns to dataframe
-    stats_phenotypes['DF'] = None
-    stats_phenotypes['DF1st'] = None
-    stats_phenotypes['DF2nd'] = None
-    stats_phenotypes['DF3rd'] = None
-    stats_phenotypes['DF4th'] = None
-    stats_phenotypes['DF5th'] = None
-    stats_phenotypes['tau1'] = None
-    stats_phenotypes['tau2'] = None
-    stats_phenotypes['tau3'] = None
-    stats_phenotypes['tau4'] = None
-    stats_phenotypes['tau5'] = None
-    stats_phenotypes['tau6'] = None
-    stats_phenotypes['tau7'] = None
-    stats_phenotypes['nVessels'] = None
-   
+
+    for i in first_img.columns:
+        stats_phenotypes[i] = None
+    print(stats_phenotypes.columns)   
     # import stats for each input file
     add_once=0
     replace=0
