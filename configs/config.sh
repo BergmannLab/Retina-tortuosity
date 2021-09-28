@@ -3,8 +3,6 @@
 # GENOTYPE INFO
 GENOTYPE_DIR=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/
 SAMPLE_FILE="$GENOTYPE_DIR"ukb_imp_v3_subset_fundus.sample
-RSIDS_MINI=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/rsid_lists/rsids_mini_first100.txt
-
 
 # RAW IMAGE DATA
 ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/ # UKBB
@@ -56,3 +54,6 @@ conda_dir=/data/FAC/FBM/DBC/sbergman/retina/software/miniconda3/
 # AV classification
 av_uncertain_dir=/data/FAC/FBM/DBC/sbergman/retina/software/a_v_uncertain-master/
 lwnet_dir=/data/FAC/FBM/DBC/sbergman/retina/software/lwnet/
+
+# OUTPUT DIRECTORIES
+GWAS_DIR="$scratch"retina/GWAS/output/RunGWAS/

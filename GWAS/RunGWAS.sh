@@ -7,8 +7,8 @@
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 8
 #SBATCH --mem 16G
-#SBATCH --time 01-10:00:00
-#######SBATCH --time 00-04:00:00
+#####SBATCH --time 01-10:00:00
+#SBATCH --time 00-10:00:00
 #SBATCH --partition normal
 #SBATCH --array=1-22
 
@@ -31,12 +31,15 @@ chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_fundus"$
 sample_file=$SAMPLE_FILE
 
 pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_qqnorm.csv
+
 covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar_fundus.csv # now using bgen containing only  participants with at least one fundus image taken
 output_file_name=output_"$chromosome_name".txt
 
 # prepare output dir
 output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"
 mkdir -p $output_dir
+head -n1 $pheno_file > "$output_dir"/phenotypes.txt
+
 
 function validate_inputs(){ # check input files have matching number of samples
 	sample_file=$1
