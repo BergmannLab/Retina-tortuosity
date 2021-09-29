@@ -104,7 +104,7 @@ $bgenie_dir/bgenie_v1.3_static2 \
 #--include_rsids $RSIDS_MINI
 }
 
-# run gwAS
+# run gwas
 validate_inputs $sample_file $chromosome_file $pheno_file $covar_file
 run_BGENIE $chromosome_file $pheno_file $covar_file $output_dir/$output_file_name
 
