@@ -8,7 +8,5 @@ PARENT=/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/VesselStatsToPhen
 for (( c=1; c<=$N_RUNS; c++ ))
   do
   echo $c
-  sbatch RunGWAS.sh $ID $c
+  sbatch RunGWAS_multiPhenofile.sh $ID $c affymetrix
 done
-
-

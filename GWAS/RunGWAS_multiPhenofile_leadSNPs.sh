@@ -8,17 +8,12 @@
 #SBATCH --cpus-per-task 8
 #SBATCH --mem 16G
 #####SBATCH --time 01-10:00:00
-#SBATCH --time 00-10:00:00
+#SBATCH --time 00-00:30:00
 #SBATCH --partition normal
 #SBATCH --array=1-22
 
 experiment_id=$1 # RENAME EXPERIMENT APPROPRIATELY
-sample_no=$2
-if [ $3 != "" ]; then 
-	rsID_subset=_"$3"
-else
-	rsID_subset=$3
-fi
+n_samples=$2
 
 source $HOME/retina/configs/config.sh
 begin=$(date +%s)
@@ -28,17 +23,21 @@ PARAM=$(sed "${SLURM_ARRAY_TASK_ID}q;d" $j_array_params)
 chromosome_number=$(echo $PARAM | cut -d" " -f1)
 
 
+for sample_no in $(seq 1 $n_samples); do
+	
 #UKBiob
+	
+chromosome_name=ukb_imp_chr"$chromosome_number"_v3_subset_fundus
 
-chromosome_name=ukb_imp_chr"$chromosome_number"_v3
-chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_fundus"$rsID_subset".bgen # for full rslist, use _subset (or _subset_fundus) instead of _subset_mini
+# line specific to leadSNP GWAS
+chromosome_file=$data/retina/UKBiob/genotypes/tortuosityLeadSNPs_bgen/"$chromosome_name".bgen # for full rslist, use _subset (or _subset_fundus) instead of _subset_mini
 sample_file=$SAMPLE_FILE
 pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/$sample_no/phenofile_qqnorm.csv
 covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar_fundus.csv # now using bgen containing only  participants with at least one fundus image taken
 output_file_name=output_"$chromosome_name".txt
 
 # prepare output dir
-output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"/$sample_no
+output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"/"$sample_no"_leadSNPs
 mkdir -p $output_dir
 head -n1 $pheno_file > "$output_dir"/phenotypes.txt
 
@@ -109,6 +108,8 @@ $bgenie_dir/bgenie_v1.3_static2 \
 # run gwas
 validate_inputs $sample_file $chromosome_file $pheno_file $covar_file
 run_BGENIE $chromosome_file $pheno_file $covar_file $output_dir/$output_file_name
+
+done
 
 echo
 echo FINISHED: output has been written to:
