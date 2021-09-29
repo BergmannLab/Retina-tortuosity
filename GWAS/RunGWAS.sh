@@ -13,10 +13,11 @@
 #SBATCH --array=1-22
 
 experiment_id=$1 # RENAME EXPERIMENT APPROPRIATELY
-if [ $2 != "" ]; then 
-	rsID_subset=_"$2"
+sample_no=$2
+if [ $3 != "" ]; then 
+	rsID_subset=_"$3"
 else
-	rsID_subset=$2
+	rsID_subset=$3
 fi
 
 source $HOME/retina/configs/config.sh
@@ -26,18 +27,13 @@ j_array_params=$PWD/helpers/RunGWAS/j_array_params.txt
 PARAM=$(sed "${SLURM_ARRAY_TASK_ID}q;d" $j_array_params)
 chromosome_number=$(echo $PARAM | cut -d" " -f1)
 
-experiment_id=$1 # RENAME EXPERIMENT APPROPRIATELY
-sample_no=$2
-pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/$sample_no/phenofile_qqnorm.csv
 
 #UKBiob
 
 chromosome_name=ukb_imp_chr"$chromosome_number"_v3
 chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_fundus"$rsID_subset".bgen # for full rslist, use _subset (or _subset_fundus) instead of _subset_mini
 sample_file=$SAMPLE_FILE
-
-pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_qqnorm.csv
-
+pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/$sample_no/phenofile_qqnorm.csv
 covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar_fundus.csv # now using bgen containing only  participants with at least one fundus image taken
 output_file_name=output_"$chromosome_name".txt
 
