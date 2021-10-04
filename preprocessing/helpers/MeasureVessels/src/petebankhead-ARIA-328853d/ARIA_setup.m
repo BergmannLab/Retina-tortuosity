@@ -24,7 +24,8 @@ if ~isempty(arias)
     for ii = 1:numel(arias)
         arias_pth = fileparts(arias{ii});
         if ~isequal(arias_pth, pth)
-            rmpath(genpath(arias_pth));
+           disp("Warning, rmpath not executed anymore as of Matlab 2019b") 
+           %rmpath(genpath(arias_pth));
         end
     end
 end
