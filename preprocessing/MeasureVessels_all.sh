@@ -14,7 +14,7 @@
 
 ####### --array=1-582 for full ingestion
 ####### --array=1-36 for 7k sample
-#SBATCH --array=1-582
+#SBATCH --array=1 ###-582
 
 mcr_cache_root=/tmp/$USER/MCR_CACHE_ROOT${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}
 mkdir -pv $mcr_cache_root

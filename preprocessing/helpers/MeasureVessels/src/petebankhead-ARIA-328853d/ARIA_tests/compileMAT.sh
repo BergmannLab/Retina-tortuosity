@@ -2,6 +2,7 @@
 
 set +x
 
+source /dcsrsoft/spack/bin/setup_old_dcsrsoft
 module purge
 module load Development/Languages/Matlab_Compiler_Runtime/96
 module list
