@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task 8
 #SBATCH --mem 16G
 #####SBATCH --time 01-10:00:00
-#SBATCH --time 00-01:00:00
+#SBATCH --time 00-10:00:00
 #SBATCH --partition normal
 #SBATCH --array=1-22
 
