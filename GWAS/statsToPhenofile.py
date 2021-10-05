@@ -1,5 +1,5 @@
-# raw ARIA measurements -> phenofile
-# segment stats and image stats -> phenofile
+# a) raw ARIA measurements -> phenofile
+# or b) segment stats and image stats -> phenofile
 # ignores all images that don't pass QC!
 
 #%%
@@ -12,47 +12,33 @@ from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib import cm
 import csv
+from multiprocessing import Pool
 
-DATE = datetime.now().strftime("%Y_%m_%d")
-EXPERIMENT_ID = "newQC"
-VESSEL_TYPE  = '' # Arteries, Veins, or ArteryVeinDiff
+def getPhenotypes(participant):
+	participant_imgs = [img for img in imgs if participant in img]
+	phenotypes = []
+	
+	imagesToParticipant(participant_imgs)
+	#phenotypes=phenotypes + getDF(participant_imgs)
+   	# loading image-specific segment stats:
 
-
-input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_10_04_rawMeasurementsWithoutQC/"
-output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + DATE + "_" + EXPERIMENT_ID + "/"
-
-imageIDs= []
-with open("imageIDs.txt") as file:
-    for i, line in enumerate(file):
-        if((i>=int(sys.argv[1])) & (i<=int(sys.argv[2]))):
-            imageIDs.append(line.rstrip('\n'))
-print(imageIDs)
-
-
-
-os.chdir(input_dir)
-pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
-
-for imageID in imageIDs:
-    # loading image-specific segment stats:
-    df = pd.read_csv(imageID+"_all_segmentStats.tsv", delimiter='\t')
- 
+def oldStuff(): 
     if VESSEL_TYPE == 'Arteries':
         df = df.loc[df['AVScore']>0]
         # in case less than 5 remaining vessels (need 5 for quintiles):
         if df.shape[0] < 5:
-            continue
+            print("hi")
     elif VESSEL_TYPE == 'Veins':
         df = df.loc[df['AVScore']<0]
         # in case less than 5 remaining vessels (need 5 for quintiles):
         if df.shape[0] < 5:
-            continue
+            print('hi')#continue
     elif VESSEL_TYPE == 'ArteryVeinDiff':
         df_vein   = df.loc[df['AVScore']<0]
         df = df.loc[df['AVScore']>0]
         # in case less than 5 remaining vessels (need 5 for quintiles):
         if (df.shape[0] < 5) | (df_vein.shape[0] < 5):
-            continue
+            print('hi')#continue
 
     if 1==1:    
 	# DISTANCE QUINTILES
@@ -149,3 +135,48 @@ for imageID in imageIDs:
                 f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q4Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q4Inds])))
                 f.write("%s\n" % np.subtract(np.median(df['medianDiameter'].loc[diam_q5Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q5Inds])))
 # %%
+
+def segmentStatToMedian(df, phenotype, vesselType):
+	if vesselType == 'all':
+		return [np.median(df[stat])]
+	elif vesselType == 'artery':
+		return [np.median(df[stat].loc[df['AVScore'] > 0])]
+	elif vesselType == 'vein':
+                return [np.median(df[stat].loc[df['AVScore'] < 0])]
+
+def imagesToParticipant(imgs):
+	all_medians = []
+	artery_medians = []
+	vein_medians = []
+	for i in imgs:
+		try:
+			df = pd.read_csv(input_dir+i, delimiter='\t')
+			all_medians.append(df.median(axis=1))
+			artery_medians.append(df[df['AVScore'] > 0].median(axis=1))
+			vein_medians.append(df[df['AVScore'] < 0].median(axis=1))
+		except:
+			print("ARIA didn't have stats for img", i)
+	# at the moment we are weighting all images equally. we could also weigh them by total vasculature size as a proxy for image quality
+	means = np.mean(np.array(all_medians),axis=0) + np.mean(np.array(artery_medians),axis=0) + np.mean(np.array(vein_medians),axis=0)
+	print(means)
+
+
+if __name__ == '__main__':
+	DATE = datetime.now().strftime("%Y_%m_%d")
+	EXPERIMENT_NAME = "newQC"
+	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
+
+	input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"#2021_10_04_rawMeasurementsWithoutQC/"
+	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/" + EXPERIMENT_ID + "/"
+
+	imgs = pd.read_csv(sys.argv[1], header=None)
+	imgs = imgs[0].values
+	participants = list(set([i.split("_")[0] for i in imgs]))
+	
+	#os.chdir(input_dir)
+	#pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
+
+	pool = Pool()
+	out = pool.map(getPhenotypes, participants[0:10])
+#	phenofile = pd.DataFrame(out, columns=PHENOTYPES)
+        # saving to blub
