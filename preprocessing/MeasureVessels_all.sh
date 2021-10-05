@@ -10,7 +10,7 @@
 #SBATCH --partition normal
 
 ####### --time 00-01:00:00
-#SBATCH --time 00-02:30:00
+#SBATCH --time 00-06:30:00
 
 ####### --array=1-582 for full ingestion
 ####### --array=1-36 for 7k sample
