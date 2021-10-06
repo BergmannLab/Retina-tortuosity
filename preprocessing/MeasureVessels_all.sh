@@ -12,9 +12,9 @@
 ####### --time 00-01:00:00
 #SBATCH --time 00-24:30:00
 
-####### --array=1-582 for full ingestion
+####### --array=1-581 for full ingestion
 ####### --array=1-36 for 7k sample
-#SBATCH --array=1-582
+#SBATCH --array=1-581
 mcr_cache_root=/tmp/$USER/MCR_CACHE_ROOT${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}
 mkdir -pv $mcr_cache_root
 export MCR_CACHE_ROOT=$mcr_cache_root
