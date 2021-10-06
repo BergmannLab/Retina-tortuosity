@@ -273,7 +273,7 @@ if __name__ == '__main__':
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
 
 	#input and output locations
-	input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"#2021_10_04_rawMeasurementsWithoutQC/"
+	input_dir = "/data/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"#2021_10_04_rawMeasurementsWithoutQC/"
 	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/VesselStatsToPhenofile/" + EXPERIMENT_ID + "/"
 	os.chdir(input_dir)
 	pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
@@ -322,6 +322,6 @@ delimiter=" ",skiprows=2, header=None,dtype=str)
 	phenofile_out.to_csv(output_dir+"phenofile.csv", index=False, sep=" ")
 
 	phenofile_out_rbINT = phenofile_out_rbINT.astype(str)
-        phenofile_out_rbINT = phenofile_out_rbINT.replace('nan', '-999')
-        phenofile_out_rbINT.to_csv(output_dir+"phenofile_qqnorm.csv", index=False, sep=" ")
+	phenofile_out_rbINT = phenofile_out_rbINT.replace('nan', '-999')
+	phenofile_out_rbINT.to_csv(output_dir+"phenofile_qqnorm.csv", index=False, sep=" ")
 
