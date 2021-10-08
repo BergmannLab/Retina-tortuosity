@@ -19,7 +19,7 @@
 % If some are not multiples of 9, it means something went wrong during the measurement process.
 
 % Also check if all images were scored, via
-% ls | awk -F "_all_" '{print $1}' | wc -l
+% ls | awk -F "_all_" '{print $1}' | uniq | wc -l
 
 % This should equal the number of raw images. If that's the case, we are really done!
 
