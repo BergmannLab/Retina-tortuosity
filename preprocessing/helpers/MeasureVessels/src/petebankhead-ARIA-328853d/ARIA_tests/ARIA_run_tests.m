@@ -1,4 +1,4 @@
-% ARIA_run_tests 0 REVIEW ../../fundus_UKBB/REVIEW/ ../../AV_maps/ [artery|vein|all] 0.79 ./ 1 3 11000 20000 100 250 ../../output
+% ARIA_run_tests 0 REVIEW /home/mbeyele5/ARIA_test /data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/AV_maps all 0.79 ./ 1 1 -1 999999 -1 999999 /home/mbeyele5
 function ARIA_run_tests(f_name, test_name, path_to_raw, path_to_AV_classified, AV_option, AV_thr, script_dir, chunk_start, chunk_size, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, path_to_output)
 % Run all the tests using ARIA to create the results reported in the paper
 % 'Fast retinal vessel detection and measurement using wavelets and edge
