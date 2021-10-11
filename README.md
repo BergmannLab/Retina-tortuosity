@@ -1,3 +1,15 @@
+# Running GWAS
+0) Generate your phenofile, and put it in the appropriate *EXPERIMENT_ID* folder
+1) Run your GWAS:
+
+`sbatch RunGWAS.sh *EXPERIMENT_ID* [mini/affymetrix/*empty for full gwas*]`
+
+(For exploration, I recommend using the `affymetrix` option instead of `mini`)
+
+**Example:**
+
+`sbatch RunGWAS.sh 2021_10_11_myAwesomeTrait affymetrix`
+
 # retina
 
 Run retina/configs/dir_structure/init.sh
