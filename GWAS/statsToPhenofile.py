@@ -2,7 +2,6 @@
 # or b) segment stats and image stats -> phenofile
 # ignores all images that don't pass QC!
 
-#%%
 import os, pathlib
 import sys
 from datetime import datetime
@@ -44,9 +43,10 @@ def segmentStatToMedian(df, phenotype, vesselType):
 	elif vesselType == 'vein':
                 return [np.median(df[stat].loc[df['AVScore'] < 0])]
 
+# INPUT: images belonging to single participant
 # 1) segment stats for img -> median
 # 2) if multiple images -> mean of all participant img stats
-# splits all stats into all, artery, and vein
+# computs all the stats for: all (combined), artery, and vein
 def allSegmentStats(imgs):
 	all_medians = []
 	artery_medians = []
@@ -272,21 +272,26 @@ if __name__ == '__main__':
 	EXPERIMENT_NAME = "testingNewPhenofile"
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
 
+	imagesThatPassQC = sys.argv[1]
+
 	#input and output locations
-	input_dir = "/data/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_02_22_rawMeasurements/"#2021_10_04_rawMeasurementsWithoutQC/"
+	input_dir = "/data/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/" #2021_02_22_rawMeasurements/"
 	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/VesselStatsToPhenofile/" + EXPERIMENT_ID + "/"
 	os.chdir(input_dir)
 	pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
 
-	#images, dependent on QC
-	imgs = pd.read_csv(sys.argv[1], header=None)
+	#images that pass QC
+	imgs = pd.read_csv(imagesThatPassQC, header=None)
 	imgs = imgs[0].values
 	participants = sorted(list(set([i.split("_")[0] for i in imgs])))
 	nTest = len(participants) # len(participants) for production
+
+	#generating list of lists: each element contains one participant's images passing QC
 	pool1 = Pool()
 	statfiles = list(pool1.map(getParticipantStatfiles, participants[0:nTest]))	
 
 	#computing statfile phenotypes for all, artery, vein
+	#based on ARIA stats
 	pool = Pool()
 	out = pool.map(allSegmentStats, statfiles)
 	names = statfilePhenotypes(statfiles)
