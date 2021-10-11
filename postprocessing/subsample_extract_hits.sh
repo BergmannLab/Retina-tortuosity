@@ -9,12 +9,12 @@
 #SBATCH --mem 8G
 #SBATCH --time 00-01:30:00
 #SBATCH --partition normal
-#SBATCH --array=50
+#SBATCH --array=1
 
 id=${SLURM_ARRAY_TASK_ID}
 
 cd /users/mbeyele5/scratch_sbergman/retina/GWAS/output/RunGWAS/2021_08_26_subsampleGWAS_N1000/"$id"
-gunzip *
+gunzip -f *.gz
 
 source /dcsrsoft/spack/bin/setup_dcsrsoft
 module load gcc r
