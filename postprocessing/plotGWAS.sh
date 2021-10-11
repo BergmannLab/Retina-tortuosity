@@ -9,6 +9,13 @@
 #SBATCH --partition normal
 #####SBATCH --array=1
 
+
+
+# HOW-TO
+# sbatch plotGWAS.sh *EXPERIMENT_ID* 
+
+
+
 source ../configs/config.sh
 
 output_dir="$GWAS_DIR"/$1/
@@ -21,4 +28,3 @@ echo Proceeding with loading special R environment now
 export SINGULARITY_BINDPATH="/users,/data,/scratch,/db"
 echo Loaded! Running R script now
 singularity run /dcsrsoft/singularity/containers/R-Rocker.sif Rscript ./manhattanAndQQ.R $output_dir
-
