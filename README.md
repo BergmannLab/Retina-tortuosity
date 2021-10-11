@@ -10,7 +10,14 @@
 
 `sbatch RunGWAS.sh 2021_10_11_myAwesomeTrait affymetrix`
 
-# retina
+# Plotting
+If the GWAS has run successfully, this command stores QQ and Manhattan plots in the appropriate folder:
+
+`sbatch plotGWAS.sh *EXPERIMENT_ID*`
+
+(The script is located in retina/postprocessing.)
+
+# Initializing the repository
 
 Run retina/configs/dir_structure/init.sh
   Assumes the following are configured as in Jura
