@@ -49,7 +49,7 @@ if [ ${SLURM_ARRAY_TASK_ID} = 1 ]; then
 	n_pheno=$(awk -F" " '{print NF; exit}' $pheno_file)
 	head -n1 $pheno_file > "$output_dir"/sample_sizes.txt
 	ss=""
-	for i in $(seq 1 $n_pheno); do ss="$ss $(tail -n+2 $pheno_file |  cut -f$i -d"_" | grep -ve "-999" | wc -l)"; done
+	for i in $(seq 1 $n_pheno); do ss="$ss $(tail -n+2 $pheno_file |  cut -f$i -d" " | grep -ve "-999" | wc -l)"; done
 	echo $ss >> "$output_dir"/sample_sizes.txt
 fi
 
