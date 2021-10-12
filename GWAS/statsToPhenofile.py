@@ -43,16 +43,27 @@ def segmentStatToMedian(df, phenotype, vesselType):
 	elif vesselType == 'vein':
                 return [np.median(df[stat].loc[df['AVScore'] < 0])]
 
+def nanmeanOrNan(medians, n_phenotypes):
+	if medians != []:
+		return np.nanmean(np.array(medians),axis=0)
+	else:
+		#print("caught!!")
+		return np.array([np.nan for i in range(0,n_phenotypes)])
+
 # INPUT: images belonging to single participant
 # 1) segment stats for img -> median
 # 2) if multiple images -> mean of all participant img stats
 # computs all the stats for: all (combined), artery, and vein
-def allSegmentStats(imgs):
+def allSegmentStats(inputs):
+	imgs = inputs[0]
+	n_phenotypes = inputs[1]
+
 	all_medians = []
 	artery_medians = []
 	vein_medians = []
 	for i in imgs:
-		try:
+		try: # because for any image passing QC, ARIA might have failed
+		# df is segment stat file
 			df = pd.read_csv(i, delimiter='\t')
 			all_medians.append(df.median(axis=0))
 			artery_medians.append(df[df['AVScore'] > 0].median(axis=0))
@@ -60,7 +71,7 @@ def allSegmentStats(imgs):
 		except:
 			print("ARIA didn't have stats for img", i)
 	# at the moment we are weighting all images equally. we could also weigh them by total vasculature size as a proxy for image quality
-	means = np.concatenate((np.nanmean(np.array(all_medians),axis=0), np.nanmean(np.array(artery_medians),axis=0), np.nanmean(np.array(vein_medians),axis=0)))
+	means = np.concatenate((nanmeanOrNan(all_medians, n_phenotypes), nanmeanOrNan(artery_medians, n_phenotypes), nanmeanOrNan(vein_medians, n_phenotypes)))
 	if np.isnan(means).any():
 		print("WARNING, at least one allSegmentStats phenotype is nan")
 	return(means)
@@ -292,9 +303,11 @@ if __name__ == '__main__':
 
 	#computing statfile phenotypes for all, artery, vein
 	#based on ARIA stats
-	pool = Pool()
-	out = pool.map(allSegmentStats, statfiles)
 	names = statfilePhenotypes(statfiles)
+	n_stats = int(len(names)/3) # /3 because names appends _all _artery _vein
+	pool = Pool()
+	inputs = [(i,n_stats) for i in statfiles]
+	out = pool.map(allSegmentStats, inputs)
 	phenofile = pd.DataFrame(out, columns=names)
 	phenofile['participant'] = participants[0:nTest]
 	phenofile = phenofile.set_index('participant')	
