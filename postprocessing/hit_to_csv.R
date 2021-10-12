@@ -1,10 +1,15 @@
+library(parallel)
+
 args = commandArgs(trailingOnly=TRUE)
-setwd(paste("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/RunGWAS/2021_08_26_subsampleGWAS_N1000/", args[1], sep=""))
+setwd(args[1])
+
+phenos=read.table("phenotypes.txt")
+phenos=as.character(as.vector(phenos[1,]))
+print(phenos)
+
+
 
 # INSTRUCTIONS
-# - take chromosome files outputted by BGENIE, ungzip them (run "gzip -d *")
-# - place resulting txt files in the same folder as this script
-# - initialize pheno_list
 # - (if some chromosomes are missing, initialize chromo_list accordingly)
 # OUTPUT
 # - [pheno]__topHits: csv of GWAS hits (the text version of a Manhattan plot)
@@ -14,13 +19,7 @@ setwd(paste("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/RunGWAS/202
 # - [pheno]__ldcsInput: for LDSC (LD score regression)
 
 # INITIALIZE APPROPRIATELY ####################################################
-#pheno_list <- c("median_diameter","D9_diameter","short_tortuosity","D9_tortuosity","D95_tortuosity")
-# pheno_list <- c("median_tortuosity","tau2","tau3","tau4","tau5","tau6","tau7","tau1")
-pheno_list <- c("DF","DF1st","DF2nd","DF3rd","DF4th","DF5th","tau1","tau2","tau3","tau4","tau5","tau6","tau7", "nVessels")
-# pheno_list <- c("ht","ht_INT")
-# pheno_list <- c("major_mean","major_arteries","major_veins","top_artery","bottom_artery")
-#pheno_list <- c("DF5th")
-# pheno_list <- c("DF1st","DF2nd","DF3rd","DF4th","DF5th")
+pheno_list = phenos
 
 
 # pheno_list <- c("longCenter","longPeriphery","longAndMidDiam","longOrMidDiam")
@@ -28,7 +27,7 @@ chromo_list <- c(1:22)
 # INITIALIZE APPROPRIATELY ####################################################
 
 
-for (pheno_name in pheno_list) { # FOR EACH PHENOTYPE in GWAS
+process_pheno = function(pheno_name) { # FOR EACH PHENOTYPE in GWAS
   write(paste("phenotype:",pheno_name), stdout())
   top_hits <- data.frame() # genomewide hits: merge all chromosomes
   locusZoomInput <- data.frame() # also used for FUMA
@@ -91,11 +90,12 @@ for (pheno_name in pheno_list) { # FOR EACH PHENOTYPE in GWAS
 #  names(pascal2Input)[4] <- "pvalue" # rename headers appropriately
 #  write.csv(pascal2Input,paste(pheno_name,"__pascal2Input.csv",sep=""),row.names = FALSE,quote=FALSE)
   # output for LDSC
- names(ldscInput) <- c("rsid","A1","A2","P","beta")
- write.table(ldscInput, file=paste(pheno_name,"__ldscInput.csv",sep=""),row.names = FALSE, quote=FALSE, sep='\t')
+  names(ldscInput) <- c("rsid","A1","A2","P","beta")
+  write.table(ldscInput, file=paste(pheno_name,"__ldscInput.csv",sep=""),row.names = FALSE, quote=FALSE, sep='\t')
+  ldscInput <- read.table(paste(pheno_name, "__ldscInput.csv", sep=""), sep="\t",header=T, stringsAsFactors= F)
+  ldscInput['N']=63247 # add a column with sample size
+  write.table(ldscInput, file=paste(pheno_name, "__ldscInput_withN.txt", sep=""),row.names = FALSE, quote=FALSE, sep='\t')
+
 }
 
-
-
-
-
+mclapply(pheno_list, process_pheno, mc.cores=200) # setting "cores" to very high so that all phenotypes are processed simultaneously -> multithreading
