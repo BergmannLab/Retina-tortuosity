@@ -308,12 +308,12 @@ if __name__ == '__main__':
 	pool = Pool()
 	inputs = [(i,n_stats) for i in statfiles]
 	out = pool.map(allSegmentStats, inputs)
-	phenofile = pd.DataFrame(out, columns=names)
-	phenofile['participant'] = participants[0:nTest]
-	phenofile = phenofile.set_index('participant')	
+	participants_stats = pd.DataFrame(out, columns=names)
+	participants_stats['participant'] = participants[0:nTest]
+	participants_stats = participants_stats.set_index('participant')	
 	print(len(imgs),len(statfiles))
 	# quick check of how many nans we picked up along the way
-	print(phenofile.isna().sum())
+	print(participants_stats.isna().sum())
 
 
 	# your other cool phenotypes go here
@@ -325,13 +325,14 @@ if __name__ == '__main__':
 
 	fundus_samples = pd.read_csv("/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/ukb_imp_v3_subset_fundus.sample",\
 delimiter=" ",skiprows=2, header=None,dtype=str)
-	phenofile_out = pd.DataFrame(index = fundus_samples[0], columns = phenofile.columns, data=np.nan)
+	phenofile_out = pd.DataFrame(index = fundus_samples[0], columns = participants_stats.columns, data=np.nan)
 	
-	#accounting for missing genotypes
-	idx = [i for i in phenofile.index if i in phenofile_out.index]
+	#creating phenofile, accounting for missing genotypes
+	idx = [i for i in participants_stats.index if i in phenofile_out.index]
 	print(len(idx))	
 	phenofile_out.loc[idx] = phenofile.loc[idx]
-
+	
+	#creating rbINT phenofile
 	phenofile_out_rbINT = phenofile_out.apply(rank_INT)
 	
 	# saving both raw and rank-based INT
