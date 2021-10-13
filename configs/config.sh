@@ -10,11 +10,13 @@ ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/ # UKBB
 raw_data_dir=$ARIA_data_dir"CLRIS/"
 raw_data_dir_av_test=$ARIA_data_dir/CLRIS_AV_test/
 
+# QC
+KEPT_IMAGES=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/mattiaQC_images.txt
 # quality thresholds for ARIA
-min_QCthreshold_1=11000
-max_QCthreshold_1=20000
-min_QCthreshold_2=100
-max_QCthreshold_2=250
+#min_QCthreshold_1=11000
+#max_QCthreshold_1=20000
+#min_QCthreshold_2=100
+#max_QCthreshold_2=250
 
 # AV CLASSIFICATION IMAGE DATA
 ###AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/uncertainty/ # AVUncertain UKBB

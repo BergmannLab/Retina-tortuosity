@@ -8,11 +8,14 @@
 #SBATCH --cpus-per-task 8
 #SBATCH --mem 16G
 #####SBATCH --time 01-10:00:00
-#SBATCH --time 00-10:00:00
+#SBATCH --time 00-20:00:00 # new GWAS takes around 4 hours, but occasionally one node might compute slowly
 #SBATCH --partition normal
 #SBATCH --array=1-22
 
-experiment_id=$1 # RENAME EXPERIMENT APPROPRIATELY
+# HOW-TO
+# sbatch RunGWAS.sh *experiment_id* [affymetrix/mini/*empty for full GWAS*]
+
+experiment_id=$1
 if [ $2 != "" ]; then 
 	rsID_subset=_"$2"
 else
@@ -38,8 +41,19 @@ output_file_name=output_"$chromosome_name".txt
 # prepare output dir
 output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"
 mkdir -p $output_dir
-head -n1 $pheno_file > "$output_dir"/phenotypes.txt
 
+# storing phenotype list and sample sizes, doing it only once
+if [ ${SLURM_ARRAY_TASK_ID} = 1 ]; then
+	# store phenotype list
+	head -n1 $pheno_file > "$output_dir"/phenotypes.txt
+	
+	# store sample sizes
+	n_pheno=$(awk -F" " '{print NF; exit}' $pheno_file)
+	head -n1 $pheno_file > "$output_dir"/sample_sizes.txt
+	ss=""
+	for i in $(seq 1 $n_pheno); do ss="$ss $(tail -n+2 $pheno_file |  cut -f$i -d" " | grep -ve "-999" | wc -l)"; done
+	echo $ss >> "$output_dir"/sample_sizes.txt
+fi
 
 function validate_inputs(){ # check input files have matching number of samples
 	sample_file=$1
