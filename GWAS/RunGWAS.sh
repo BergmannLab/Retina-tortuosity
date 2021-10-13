@@ -8,11 +8,14 @@
 #SBATCH --cpus-per-task 8
 #SBATCH --mem 16G
 #####SBATCH --time 01-10:00:00
-#SBATCH --time 00-10:00:00
+#SBATCH --time 00-20:00:00 # new GWAS takes around 4 hours, but occasionally one node might compute slowly
 #SBATCH --partition normal
 #SBATCH --array=1-22
 
-experiment_id=$1 # RENAME EXPERIMENT APPROPRIATELY
+# HOW-TO
+# sbatch RunGWAS.sh *experiment_id* [affymetrix/mini/*empty for full GWAS*]
+
+experiment_id=$1
 if [ $2 != "" ]; then 
 	rsID_subset=_"$2"
 else
@@ -38,7 +41,6 @@ output_file_name=output_"$chromosome_name".txt
 # prepare output dir
 output_dir=$scratch/retina/GWAS/output/RunGWAS/"$experiment_id"
 mkdir -p $output_dir
-
 
 # storing phenotype list and sample sizes, doing it only once
 if [ ${SLURM_ARRAY_TASK_ID} = 1 ]; then
