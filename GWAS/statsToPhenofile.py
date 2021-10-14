@@ -303,24 +303,25 @@ if __name__ == '__main__':
 
 	#computing participant-wise phenotypes for all the phenotypes present in ARIA segmentStats files
 	# doing so for all, artery, vein
-	names = getStatfilePhenotypes(statfiles)
-	n_stats = int(len(names)/3) # /3 because names appends _all _artery _vein
-	pool = Pool()
-	inputs = [(i,n_stats) for i in statfiles] # tuple inputs for pool
-	out = pool.map(allSegmentStats, inputs)
+	#names = getStatfilePhenotypes(statfiles)
+	#n_stats = int(len(names)/3) # /3 because names appends _all _artery _vein
+	#pool = Pool()
+	#inputs = [(i,n_stats) for i in statfiles] # tuple inputs for pool
+	#out = pool.map(allSegmentStats, inputs)
 	#curating participant-wise output
-	participants_stats = pd.DataFrame(out, columns=names)
-	participants_stats['participant'] = participants[0:nTest]
-	participants_stats = participants_stats.set_index('participant')	
-	print('Nb of images that pass QC:',len(imgs),'\nNb of participants with QCd images:',len(statfiles))
+	#participants_stats = pd.DataFrame(out, columns=names)
+	#participants_stats['participant'] = participants[0:nTest]
+	#participants_stats = participants_stats.set_index('participant')	
+	#print('Nb of images that pass QC:',len(imgs),'\nNb of participants with QCd images:',len(statfiles))
 	# quick check of how many nans we picked up along the way
-	print('\nNans per phenotype\n',participants_stats.isna().sum())
+	#print('\nNans per phenotype\n',participants_stats.isna().sum())
 
 
 	# your other cool phenotypes go here
 	# you can then concatenate with existing phenofile
 	# needs function -> image\tmeasurement1\tmeasurement2... -> participant stats
-
+	imgfiles = list(pool1.map(getParticipantImages, participants[0:nTest]))
+	FD_stats = imageToParticipant("/home/mbeyele5/retina/preprocessing/fractal_dimension.csv",)
 
 	# now that all is measured, we reorder to match sample file, then storing into phenofile
 	# also saving rank-based INT version of phenotype and storing it
