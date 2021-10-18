@@ -4,7 +4,7 @@
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 2
-#SBATCH --mem 30G
+#SBATCH --mem 50G
 #SBATCH --time 02:00:00
 #SBATCH --partition normal
 #####SBATCH --array=1

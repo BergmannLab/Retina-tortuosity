@@ -20,6 +20,13 @@ def getParticipantStatfiles(participant):
 def getParticipantImages(participant):
         return [img for img in imgs if participant in img]
 
+def getParticipantPhenotype(participant):
+	if participant in (fd_participants & set(participants)):
+		idxes=[k for k in FD_stats.index if k.split("_")[0] == participant]
+		return np.nanmean(FD_stats["fractal_dimension"].loc[idxes])
+	else:
+		return np.nan
+
 def getStatfilePhenotypes(statfiles):
         
         # because of non-ARIA QC, some predicted statfiles might not actually exist (hence they had no ARIA output)
@@ -247,6 +254,8 @@ def rank_INT(series, c=3.0/8, stochastic=False):
     # Take original series indexes
     orig_idx = series.index
 
+    print(1)
+
     # Drop NaNs
     series = series.loc[~pd.isnull(series)]
 
@@ -261,12 +270,16 @@ def rank_INT(series, c=3.0/8, stochastic=False):
         # Get rank, ties are averaged
         rank = ss.rankdata(series, method="average")
 
+    print(2)
+
     # Convert numpy array back to series
     rank = pd.Series(rank, index=series.index)
 
+    print(3)
+
     # Convert rank to normal distribution
     transformed = rank.apply(rank_to_normal, c=c, n=len(rank))
-    
+    print(4)
     return transformed[orig_idx]
 
 def rank_to_normal(rank, c, n):
@@ -278,10 +291,10 @@ def rank_to_normal(rank, c, n):
 # MAIN
 
 if __name__ == '__main__':
-	
+	print('hallo freun')	
 	# experiment id
 	DATE = datetime.now().strftime("%Y_%m_%d")
-	EXPERIMENT_NAME = "tortuosityPlusPaper"
+	EXPERIMENT_NAME = "fractalDimension"
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
 
 	#input and output dirs
@@ -289,17 +302,17 @@ if __name__ == '__main__':
 	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/VesselStatsToPhenofile/" + EXPERIMENT_ID + "/"
 	os.chdir(input_dir)
 	pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
-
+	print(-3)
 	#QC
 	qcFile = sys.argv[1]
 	imgs = pd.read_csv(qcFile, header=None) # images that pass QC of choice
 	imgs = imgs[0].values
 	participants = sorted(list(set([i.split("_")[0] for i in imgs]))) # participants with at least one img passing QC
 	nTest = len(participants) # len(participants) for production
-
+	print(-3.1)
 	#statfiles is a participant list: each element contains list of segment stat files belonging to a participant's QCd images
-	pool1 = Pool()
-	statfiles = list(pool1.map(getParticipantStatfiles, participants[0:nTest]))	
+	#pool1 = Pool()
+	#statfiles = list(pool1.map(getParticipantStatfiles, participants[0:nTest]))	
 
 	#computing participant-wise phenotypes for all the phenotypes present in ARIA segmentStats files
 	# doing so for all, artery, vein
@@ -320,24 +333,36 @@ if __name__ == '__main__':
 	# your other cool phenotypes go here
 	# you can then concatenate with existing phenofile
 	# needs function -> image\tmeasurement1\tmeasurement2... -> participant stats
+	pool1=Pool()
 	imgfiles = list(pool1.map(getParticipantImages, participants[0:nTest]))
-	FD_stats = imageToParticipant("/home/mbeyele5/retina/preprocessing/fractal_dimension.csv",)
-
+	FD_stats = pd.read_csv("/home/mbeyele5/retina/preprocessing/fractal_dimension.csv", index_col=0)
+	print(-3.2)
 	# now that all is measured, we reorder to match sample file, then storing into phenofile
 	# also saving rank-based INT version of phenotype and storing it
 
 	fundus_samples = pd.read_csv("/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/ukb_imp_v3_subset_fundus.sample",\
 delimiter=" ",skiprows=2, header=None,dtype=str)
-	phenofile_out = pd.DataFrame(index = fundus_samples[0], columns = participants_stats.columns, data=np.nan)
+	phenofile_out = pd.DataFrame(index = fundus_samples[0], columns = ["fractal_dimension"], data=np.nan)
+	print(-3.25)
+	#fractal dimension to phenofile
+	fd_participants = set([i.split("_")[0] for i in FD_stats.index])
+	mypheno=[]
+	print(-3.3)
 	
+	pool1=Pool()
+	out=list(pool1.map(getParticipantPhenotype, fundus_samples[0]))
+	
+	print(0.1)
+	phenofile_out["fractal_dimension"] = out
+
 	#creating phenofile, accounting for missing genotypes
-	idx = [i for i in participants_stats.index if i in phenofile_out.index]
-	print(len(idx))	
-	phenofile_out.loc[idx] = participants_stats.loc[idx]
+	#idx = [i for i in participants_stats.index if i in phenofile_out.index]
+	#print(len(idx))	
+	#phenofile_out.loc[idx] = participants_stats.loc[idx]
 	
 	#creating rank-based INT phenofile
 	phenofile_out_rbINT = phenofile_out.apply(rank_INT)
-	
+	print(0.2)
 	# saving both raw and rank-based INT
 	phenofile_out = phenofile_out.astype(str)
 	phenofile_out = phenofile_out.replace('nan', '-999')
