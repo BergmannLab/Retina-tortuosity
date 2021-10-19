@@ -98,4 +98,4 @@ process_pheno = function(pheno_name) { # FOR EACH PHENOTYPE in GWAS
 
 }
 
-mclapply(pheno_list, process_pheno, mc.cores=200) # setting "cores" to very high so that all phenotypes are processed simultaneously -> multithreading
+mclapply(pheno_list, process_pheno, mc.cores=15) # too many cores will use too much memory

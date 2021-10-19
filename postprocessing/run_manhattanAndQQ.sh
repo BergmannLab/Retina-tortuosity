@@ -1,18 +1,18 @@
 #!/bin/bash
 #SBATCH --account=sbergman_retina
-#SBATCH --job-name=plotGWAS
+#SBATCH --job-name=QQ-Man
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
-#SBATCH --cpus-per-task 2
-#SBATCH --mem 30G
-#SBATCH --time 02:00:00
+#SBATCH --cpus-per-task 20
+#SBATCH --mem 150G
+#SBATCH --time 24:00:00
 #SBATCH --partition normal
 #####SBATCH --array=1
 
 
 
 # HOW-TO
-# sbatch plotGWAS.sh *EXPERIMENT_ID* 
+# sbatch run_manhattanAndQQ.sh *EXPERIMENT_ID* 
 
 
 
