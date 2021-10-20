@@ -280,10 +280,8 @@ def rank_to_normal(rank, c, n):
 if __name__ == '__main__':
 	# modify experiment name appropriately
 	DATE = datetime.now().strftime("%Y_%m_%d")
-	EXPERIMENT_NAME = "testingNewPhenofile"
+	EXPERIMENT_NAME = "comparingQCs"
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
-
-	imagesThatPassQC = sys.argv[1]
 
 	#input and output locations
 	input_dir = "/data/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/" #2021_02_22_rawMeasurements/"
@@ -291,47 +289,61 @@ if __name__ == '__main__':
 	os.chdir(input_dir)
 	pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
 
-	#images that pass QC
-	imgs = pd.read_csv(imagesThatPassQC, header=None)
-	imgs = imgs[0].values
-	participants = sorted(list(set([i.split("_")[0] for i in imgs])))
-	nTest = len(participants) # len(participants) for production
+	qcDir = "/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/index_files/"
+	qcFiles = os.listdir(qcDir)
 
-	#generating list of lists: each element contains one participant's images passing QC
-	pool1 = Pool()
-	statfiles = list(pool1.map(getParticipantStatfiles, participants[0:nTest]))	
+	for k,qcFile in enumerate(qcFiles):
 
-	#computing statfile phenotypes for all, artery, vein
-	#based on ARIA stats
-	names = statfilePhenotypes(statfiles)
-	n_stats = int(len(names)/3) # /3 because names appends _all _artery _vein
-	pool = Pool()
-	inputs = [(i,n_stats) for i in statfiles]
-	out = pool.map(allSegmentStats, inputs)
-	phenofile = pd.DataFrame(out, columns=names)
-	phenofile['participant'] = participants[0:nTest]
-	phenofile = phenofile.set_index('participant')	
-	print(len(imgs),len(statfiles))
-	# quick check of how many nans we picked up along the way
-	print(phenofile.isna().sum())
+		print("Doing", qcFile)
+
+		#images that pass QC
+		imgs = pd.read_csv(qcDir+qcFile, header=None)
+		imgs = imgs[0].values
+		participants = sorted(list(set([i.split("_")[0] for i in imgs])))
+		nTest = len(participants) # len(participants) for production
+
+		#generating list of lists: each element contains one participant's images passing QC
+		pool1 = Pool()
+		statfiles = list(pool1.map(getParticipantStatfiles, participants[0:nTest]))	
+
+		#computing statfile phenotypes for all, artery, vein
+		#based on ARIA stats
+		names = statfilePhenotypes(statfiles)
+		n_stats = int(len(names)/3) # /3 because names appends _all _artery _vein
+		pool = Pool()
+		inputs = [(i,n_stats) for i in statfiles]
+		out = pool.map(allSegmentStats, inputs)
+		
+		participants_stats = pd.DataFrame(out, columns=names)
+		participants_stats['participant'] = participants[0:nTest]
+		participants_stats = participants_stats.set_index('participant')	
+		print(len(imgs),len(statfiles))
+		# quick check of how many nans we picked up along the way
+		print(participants_stats.isna().sum())
 
 
-	# your other cool phenotypes go here
-	# you can then concatenate with existing phenofile
-	
+		# your other cool phenotypes go here
+		# you can then concatenate with existing phenofile
+		
 
-	# once all is measured, now reordering to match sample file, then storing
-	# also saving rank-based INT version of phenotype and storing it
+		# once all is measured, now reordering to match sample file, then storing
+		# also saving rank-based INT version of phenotype and storing it
+		
+		fundus_samples = pd.read_csv("/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/ukb_imp_v3_subset_fundus.sample",\
+	delimiter=" ",skiprows=2, header=None,dtype=str)
+		phenofile_i = pd.DataFrame(index = fundus_samples[0], columns = participants_stats.columns, data=np.nan)
+		
+		#creating phenofile, accounting for missing genotypes
+		idx = [i for i in participants_stats.index if i in phenofile_i.index]
+		print("Sample size after removing missing genotypes:", len(idx))	
+		phenofile_i.loc[idx] = participants_stats.loc[idx]
+		if k == 0:
+			phenofile_i[qcFile] = phenofile_i["DF_all"]
+			phenofile_out = phenofile_i[[qcFile]]
+		else:
+			phenofile_out[qcFile] = phenofile_i["DF_all"]
 
-	fundus_samples = pd.read_csv("/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/ukb_imp_v3_subset_fundus.sample",\
-delimiter=" ",skiprows=2, header=None,dtype=str)
-	phenofile_out = pd.DataFrame(index = fundus_samples[0], columns = phenofile.columns, data=np.nan)
-	
-	#accounting for missing genotypes
-	idx = [i for i in phenofile.index if i in phenofile_out.index]
-	print(len(idx))	
-	phenofile_out.loc[idx] = phenofile.loc[idx]
-
+	#creating rbINT phenofile
 	phenofile_out_rbINT = phenofile_out.apply(rank_INT)
 	
 	# saving both raw and rank-based INT
