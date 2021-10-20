@@ -13,7 +13,7 @@ import matplotlib.image as mpimg
 from matplotlib import cm
 import csv
 from multiprocessing import Pool
-
+characteristic_measure = 'coef_var_pearson'
 def getParticipantStatfiles(participant):
 	return [img.split(".png")[0]+"_all_segmentStats.tsv" for img in imgs if participant in img]
 
@@ -36,12 +36,37 @@ def getStatfilePhenotypes(statfiles):
 			pass
 
 def segmentStatToMedian(df, phenotype, vesselType):
-	if vesselType == 'all':
-		return [np.median(df[stat])]
-	elif vesselType == 'artery':
-		return [np.median(df[stat].loc[df['AVScore'] > 0])]
-	elif vesselType == 'vein':
+    if characteristic_measure == 'median':
+        if vesselType == 'all':
+            return [np.median(df[stat])]
+        elif vesselType == 'artery':
+            return [np.median(df[stat].loc[df['AVScore'] > 0])]
+        elif vesselType == 'vein':
                 return [np.median(df[stat].loc[df['AVScore'] < 0])]
+    elif characteristic_measure == 'mean':
+        if vesselType == 'all':
+            return [np.mean(df[stat])]
+        elif vesselType == 'artery':
+            return [np.mean(df[stat].loc[df['AVScore'] > 0])]
+        elif vesselType == 'vein':
+                return [np.mean(df[stat].loc[df['AVScore'] < 0])]
+    elif characteristic_measure == 'std':
+        if vesselType == 'all':
+            return [np.std(df[stat])]
+        elif vesselType == 'artery':
+            return [np.std(df[stat].loc[df['AVScore'] > 0])]
+        elif vesselType == 'vein':
+                return [np.std(df[stat].loc[df['AVScore'] < 0])]
+    elif characteristic_measure == 'coef_var_pearson':
+        if vesselType == 'all':
+            return [np.std(df[stat])/np.mean(df[stat])]
+        elif vesselType == 'artery':
+            return [np.std(df[stat])/np.mean(df[stat].loc[df['AVScore'] > 0])]
+        elif vesselType == 'vein':
+                return [np.std(df[stat])/np.mean(df[stat].loc[df['AVScore'] < 0])]
+
+
+    
 
 def nanmeanOrNan(medians, n_phenotypes):
 	if medians != []:
@@ -62,14 +87,27 @@ def allSegmentStats(inputs):
 	artery_medians = []
 	vein_medians = []
 	for i in imgs:
-		try: # because for any image passing QC, ARIA might have failed
-		# df is segment stat file
-			df = pd.read_csv(i, delimiter='\t')
-			all_medians.append(df.median(axis=0))
-			artery_medians.append(df[df['AVScore'] > 0].median(axis=0))
-			vein_medians.append(df[df['AVScore'] < 0].median(axis=0))
-		except:
-			print("ARIA didn't have stats for img", i)
+            try: # because for any image passing QC, ARIA might have failed
+            # df is segment stat file
+                    df = pd.read_csv(i, delimiter='\t')
+                    if characteristic_measure == 'mean':
+                        all_medians.append(df.mean(axis=0))
+                        artery_medians.append(df[df['AVScore'] > 0].mean(axis=0))
+                        vein_medians.append(df[df['AVScore'] < 0].mean(axis=0))
+                    elif characteristic_measure == 'median':
+                        all_medians.append(df.median(axis=0))
+                        artery_medians.append(df[df['AVScore'] > 0].median(axis=0))
+                        vein_medians.append(df[df['AVScore'] < 0].median(axis=0))
+                    elif characteristic_measure == 'std':
+                        all_medians.append(df.std(axis=0))
+                        artery_medians.append(df[df['AVScore'] > 0].std(axis=0))
+                        vein_medians.append(df[df['AVScore'] < 0].std(axis=0))
+                    elif characteristic_measure == 'coef_var_pearson':
+                        all_medians.append(df.std(axis=0)/df.median(axis=0))
+                        artery_medians.append((df[df['AVScore'] > 0].std(axis=0))/(df[df['AVScore'] > 0].median(axis=0)))
+                        vein_medians.append((df[df['AVScore'] < 0].std(axis=0))/(df[df['AVScore'] > 0].median(axis=0)))
+            except:
+                print("ARIA didn't have stats for img", i)
 	# at the moment we are weighting all images equally. we could also weigh them by total vasculature size as a proxy for image quality
 	means = np.concatenate((nanmeanOrNan(all_medians, n_phenotypes), nanmeanOrNan(artery_medians, n_phenotypes), nanmeanOrNan(vein_medians, n_phenotypes)))
 	if np.isnan(means).any():
@@ -182,22 +220,78 @@ def oldStuff():
 
         with open(output_dir + imageID + "_all_imageStats.tsv", 'w') as f:
             f.write("DF1st\tDF2nd\tDF3rd\tDF4th\tDF5th\n")
+            if characteristic_measure == 'median':
+                if VESSEL_TYPE != 'ArteryVeinDiff':
+                    pheno='medianDiameter'
+
+                    # .loc for diam/segLen, .iloc for dist
+                    f.write("%s\t" % np.median(df[pheno].loc[segLen_q1Inds]))
+                    f.write("%s\t" % np.median(df[pheno].loc[segLen_q2Inds]))
+                    f.write("%s\t" % np.median(df[pheno].loc[segLen_q3Inds]))
+                    f.write("%s\t" % np.median(df[pheno].loc[segLen_q4Inds]))
+                    f.write("%s\n" % np.median(df[pheno].loc[segLen_q5Inds]))
+                else:
+                    # .loc for diam/segLen, .iloc for dist
+                    f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q1Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q1Inds])))
+                    f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q2Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q2Inds])))
+                    f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q3Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q3Inds])))
+                    f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q4Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q4Inds])))
+                    f.write("%s\n" % np.subtract(np.median(df['medianDiameter'].loc[diam_q5Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q5Inds])))
             
-            if VESSEL_TYPE != 'ArteryVeinDiff':
-                pheno='medianDiameter'
-                # .loc for diam/segLen, .iloc for dist
-                f.write("%s\t" % np.median(df[pheno].loc[segLen_q1Inds]))
-                f.write("%s\t" % np.median(df[pheno].loc[segLen_q2Inds]))
-                f.write("%s\t" % np.median(df[pheno].loc[segLen_q3Inds]))
-                f.write("%s\t" % np.median(df[pheno].loc[segLen_q4Inds]))
-                f.write("%s\n" % np.median(df[pheno].loc[segLen_q5Inds]))
-            else:
-                # .loc for diam/segLen, .iloc for dist
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q1Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q1Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q2Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q2Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q3Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q3Inds])))
-                f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q4Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q4Inds])))
-                f.write("%s\n" % np.subtract(np.median(df['medianDiameter'].loc[diam_q5Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q5Inds])))
+            elif characteristic_measure == 'mean':
+                if VESSEL_TYPE != 'ArteryVeinDiff':
+                    pheno='meanDiameter'
+
+                    # .loc for diam/segLen, .iloc for dist
+                    f.write("%s\t" % np.mean(df[pheno].loc[segLen_q1Inds]))
+                    f.write("%s\t" % np.mean(df[pheno].loc[segLen_q2Inds]))
+                    f.write("%s\t" % np.mean(df[pheno].loc[segLen_q3Inds]))
+                    f.write("%s\t" % np.mean(df[pheno].loc[segLen_q4Inds]))
+                    f.write("%s\n" % np.mean(df[pheno].loc[segLen_q5Inds]))
+                else:
+                    # .loc for diam/segLen, .iloc for dist
+                    f.write("%s\t" % np.subtract(np.mean(df['meanDiameter'].loc[diam_q1Inds]),np.mean(df_vein['meanDiameter'].loc[diamVein_q1Inds])))
+                    f.write("%s\t" % np.subtract(np.mean(df['meanDiameter'].loc[diam_q2Inds]),np.mean(df_vein['meanDiameter'].loc[diamVein_q2Inds])))
+                    f.write("%s\t" % np.subtract(np.mean(df['meanDiameter'].loc[diam_q3Inds]),np.mean(df_vein['meanDiameter'].loc[diamVein_q3Inds])))
+                    f.write("%s\t" % np.subtract(np.mean(df['meanDiameter'].loc[diam_q4Inds]),np.mean(df_vein['meanDiameter'].loc[diamVein_q4Inds])))
+                    f.write("%s\n" % np.subtract(np.mean(df['meanDiameter'].loc[diam_q5Inds]),np.mean(df_vein['meanDiameter'].loc[diamVein_q5Inds])))
+                       
+            elif characteristic_measure == 'std':
+                if VESSEL_TYPE != 'ArteryVeinDiff':
+                    pheno='stdDiameter'
+
+                    # .loc for diam/segLen, .iloc for dist
+                    f.write("%s\t" % np.std(df[pheno].loc[segLen_q1Inds]))
+                    f.write("%s\t" % np.std(df[pheno].loc[segLen_q2Inds]))
+                    f.write("%s\t" % np.std(df[pheno].loc[segLen_q3Inds]))
+                    f.write("%s\t" % np.std(df[pheno].loc[segLen_q4Inds]))
+                    f.write("%s\n" % np.std(df[pheno].loc[segLen_q5Inds]))
+                else:
+                    # .loc for diam/segLen, .iloc for dist
+                    f.write("%s\t" % np.subtract(np.std(df['stdDiameter'].loc[diam_q1Inds]),np.std(df_vein['stdDiameter'].loc[diamVein_q1Inds])))
+                    f.write("%s\t" % np.subtract(np.std(df['stdDiameter'].loc[diam_q2Inds]),np.std(df_vein['stdDiameter'].loc[diamVein_q2Inds])))
+                    f.write("%s\t" % np.subtract(np.std(df['stdDiameter'].loc[diam_q3Inds]),np.std(df_vein['stdDiameter'].loc[diamVein_q3Inds])))
+                    f.write("%s\t" % np.subtract(np.std(df['stdDiameter'].loc[diam_q4Inds]),np.std(df_vein['stdDiameter'].loc[diamVein_q4Inds])))
+                    f.write("%s\n" % np.subtract(np.std(df['stdDiameter'].loc[diam_q5Inds]),np.std(df_vein['stdDiameter'].loc[diamVein_q5Inds])))
+
+                                   
+            elif characteristic_measure == 'coef_var_pearson':
+                if VESSEL_TYPE != 'ArteryVeinDiff':
+                    pheno='coefvarpearsonDiameter'
+
+                    # .loc for diam/segLen, .iloc for dist
+                    f.write("%s\t" % np.std(df[pheno].loc[segLen_q1Inds])/np.mean(df[pheno].loc[segLen_q1Inds]))
+                    f.write("%s\t" % np.std(df[pheno].loc[segLen_q2Inds])/np.mean(df[pheno].loc[segLen_q2Inds]))
+                    f.write("%s\t" % np.std(df[pheno].loc[segLen_q3Inds])/np.mean(df[pheno].loc[segLen_q3Inds]))
+                    f.write("%s\t" % np.std(df[pheno].loc[segLen_q4Inds])/np.mean(df[pheno].loc[segLen_q4Inds]))
+                    f.write("%s\n" % np.std(df[pheno].loc[segLen_q5Inds])/np.mean(df[pheno].loc[segLen_q5Inds]))
+                else:
+                    # .loc for diam/segLen, .iloc for dist
+                    f.write("%s\t" % np.subtract(np.std(df['coefvarpearsonDiameter'].loc[diam_q1Inds])/np.mean(df['meanDiameter'].loc[diam_q1Inds]),np.std(df_vein['coefvarpearsonDiameter'].loc[diamVein_q1Inds])/np.mean(df_vein['coefvarpearsonDiameter'].loc[diamVein_q1Inds])))
+                    f.write("%s\t" % np.subtract(np.std(df['coefvarpearsonDiameter'].loc[diam_q2Inds])/np.mean(df['meanDiameter'].loc[diam_q2Inds]),np.std(df_vein['coefvarpearsonDiameter'].loc[diamVein_q2Inds])/np.mean(df_vein['coefvarpearsonDiameter'].loc[diamVein_q2Inds])))
+                    f.write("%s\t" % np.subtract(np.std(df['coefvarpearsonDiameter'].loc[diam_q3Inds])/np.mean(df['meanDiameter'].loc[diam_q3Inds]),np.std(df_vein['coefvarpearsonDiameter'].loc[diamVein_q3Inds])/np.mean(df_vein['coefvarpearsonDiameter'].loc[diamVein_q3Inds])))
+                    f.write("%s\t" % np.subtract(np.std(df['coefvarpearsonDiameter'].loc[diam_q4Inds])/np.mean(df['meanDiameter'].loc[diam_q4Inds]),np.std(df_vein['coefvarpearsonDiameter'].loc[diamVein_q4Inds])/np.mean(df_vein['coefvarpearsonDiameter'].loc[diamVein_q4Inds])))
+                    f.write("%s\n" % np.subtract(np.std(df['coefvarpearsonDiameter'].loc[diam_q5Inds])/np.mean(df['meanDiameter'].loc[diam_q5Inds]),np.std(df_vein['coefvarpearsonDiameter'].loc[diamVein_q5Inds])/np.mean(df_vein['coefvarpearsonDiameter'].loc[diamVein_q5Inds])))
 
 # for the following code block, the corresponding MIT License
 
