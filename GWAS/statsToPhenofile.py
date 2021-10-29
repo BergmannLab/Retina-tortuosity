@@ -280,7 +280,7 @@ def rank_to_normal(rank, c, n):
 if __name__ == '__main__':
 	# modify experiment name appropriately
 	DATE = datetime.now().strftime("%Y_%m_%d")
-	EXPERIMENT_NAME = "comparingQCs"
+	EXPERIMENT_NAME = "comparingQCs_ageCorrected"
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
 
 	#input and output locations
@@ -289,22 +289,27 @@ if __name__ == '__main__':
 	os.chdir(input_dir)
 	pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
 
-	qcDir = "/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/index_files/"
-	qcFiles = os.listdir(qcDir)
-
+	qcDir = "/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/index_files_ageCorrectedQC/"
+	qcFiles = list(os.listdir(qcDir))
+	qcFiles.sort()
+	print(qcFiles)
 	for k,qcFile in enumerate(qcFiles):
 
 		print("Doing", qcFile)
 
 		#images that pass QC
 		imgs = pd.read_csv(qcDir+qcFile, header=None)
+		print("N imgs in this QC:", len(imgs))
 		imgs = imgs[0].values
 		participants = sorted(list(set([i.split("_")[0] for i in imgs])))
 		nTest = len(participants) # len(participants) for production
+		print("N participants in this QC:",len(participants))
+		print("A -> done")
 
 		#generating list of lists: each element contains one participant's images passing QC
 		pool1 = Pool()
 		statfiles = list(pool1.map(getParticipantStatfiles, participants[0:nTest]))	
+		print("pooling participant statfiles -> done")
 
 		#computing statfile phenotypes for all, artery, vein
 		#based on ARIA stats
@@ -313,6 +318,7 @@ if __name__ == '__main__':
 		pool = Pool()
 		inputs = [(i,n_stats) for i in statfiles]
 		out = pool.map(allSegmentStats, inputs)
+		print('C')
 		
 		participants_stats = pd.DataFrame(out, columns=names)
 		participants_stats['participant'] = participants[0:nTest]
@@ -320,7 +326,7 @@ if __name__ == '__main__':
 		print(len(imgs),len(statfiles))
 		# quick check of how many nans we picked up along the way
 		print(participants_stats.isna().sum())
-
+		print('D')
 
 		# your other cool phenotypes go here
 		# you can then concatenate with existing phenofile
@@ -332,7 +338,8 @@ if __name__ == '__main__':
 		fundus_samples = pd.read_csv("/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/ukb_imp_v3_subset_fundus.sample",\
 	delimiter=" ",skiprows=2, header=None,dtype=str)
 		phenofile_i = pd.DataFrame(index = fundus_samples[0], columns = participants_stats.columns, data=np.nan)
-		
+		print('E')
+
 		#creating phenofile, accounting for missing genotypes
 		idx = [i for i in participants_stats.index if i in phenofile_i.index]
 		print("Sample size after removing missing genotypes:", len(idx))	
@@ -342,6 +349,8 @@ if __name__ == '__main__':
 			phenofile_out = phenofile_i[[qcFile]]
 		else:
 			phenofile_out[qcFile] = phenofile_i["DF_all"]
+		print('F')
+
 
 	#creating rbINT phenofile
 	phenofile_out_rbINT = phenofile_out.apply(rank_INT)
