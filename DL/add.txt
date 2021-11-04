@@ -1,0 +1,1 @@
+ pip install --user --no-index --find-links=/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/pk numexpr numpy pillow scipy

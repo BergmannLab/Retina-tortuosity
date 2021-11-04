@@ -1,0 +1,2 @@
+pip install --user --no-index --find-links=/dcsrsoft/spack/downloads/pypi biopython
+pip install --user --no-index --find-links=/dcsrsoft/spack/downloads/pypi matplotlib

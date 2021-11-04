@@ -9,7 +9,7 @@
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 16
 #SBATCH --mem 40G
-#SBATCH --time 00-01:00:00
+#SBATCH --time 00-20:00:00
 #SBATCH --partition normal
 
 # To install the Python3 libraries tables, opencv_python, Pillow and sklearn:
@@ -41,16 +41,22 @@ controls_dir=$input_dir/controls/
 cases_dir=$input_dir/cases/
 
 # clear previous run
-output_dir=$scratch/retina/DL/output/04_DB/
+output_dir=$scratch/retina/DL/output/all_images/
 rm -f $output_dir/*pytable
 
 # build DB
 source /dcsrsoft/spack/bin/setup_dcsrsoft
 module purge
-module load gcc/8.3.0
-module load python/3.7.7
-module load py-biopython
-python3.7 helpers/04/BuildDB.py $controls_dir $cases_dir $output_dir
+#module load gcc/8.3.0
+#module load python/3.7.7
+#module load gcc/9.3.0
+module load gcc
+module load python/3.7.10
+pip install --user --no-index --find-links=/dcsrsoft/spack/downloads/pypi biopython
+pip install --user --no-index --find-links=/dcsrsoft/spack/downloads/pypi matplotlib
+pip install --user --no-index --find-links=/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/pk numexpr numpy pillow scipy
+#module load py-biopython
+python helpers/04/BuildDB_all_images.py $controls_dir $cases_dir $output_dir
 module purge
 
 echo FINISHED: output has been written to $output_dir

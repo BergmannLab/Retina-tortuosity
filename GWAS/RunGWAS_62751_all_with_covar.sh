@@ -23,8 +23,8 @@ chromosome_name=ukb_imp_chr"$chromosome_number"_v3
 chromosome_file=$data/retina/UKBiob/genotypes/"$chromosome_name"_subset_mini.bgen # for full rslist, use _subset instead of _subset_mini
 sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
 
-experiment_id=2021_04_30_ave_last_layer # RENAME EXPERIMENT APPROPRIATELY
-pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/ave_across_channel_layer11_phenofile.csv
+experiment_id=2021_1_9_DL_feature_16/ # RENAME EXPERIMENT APPROPRIATELY
+pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/phenofile_qqnorm.csv
 covar_file=$scratch/retina/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar.csv
 output_file_name=output_"$chromosome_name".txt
 

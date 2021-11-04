@@ -78,7 +78,7 @@ def get_id_num(table):
 
 dl_id = np.concatenate([get_id_num(train_id),get_id_num(val_id)])
 
-overlap_id = np.in1d(get_id_num(patient_id),dl_id,invert=True)
+overlap_id = np.in1d(get_id_num(patient_id),dl_id,invert=False)
 
 prediction_val = []
 correct_val = []
