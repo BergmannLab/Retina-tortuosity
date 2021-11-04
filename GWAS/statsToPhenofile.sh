@@ -3,10 +3,10 @@
 #SBATCH --job-name=statsToPhenofile
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
-#SBATCH --cpus-per-task 20
-#SBATCH --mem 32GB
+#SBATCH --cpus-per-task 40
+#SBATCH --mem 100GB
 #SBATCH --partition normal
-#SBATCH --time 00-03:00:00
+#SBATCH --time 00-24:00:00
 
 source ../configs/config.sh
 
