@@ -10,7 +10,7 @@ para = P.para
 
 #local the extraction function
 try:
-    extract_func = locals()[(para.extract_func]
+    extract_func = locals()[para.extract_func]
 except:
     print("extraction function does not exist!")
     exit()

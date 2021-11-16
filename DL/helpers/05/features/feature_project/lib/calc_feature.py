@@ -26,7 +26,7 @@ class CalcFeature:
 
         	feature_value = []
             #select the layers to calculate the feautres for
-            if feature_idx != None:
+	    if feature_idx != None:
                 feature_values = [self.dict_keys[i] for i in feature_idx]
             else:
                 feature_values = self.dict_keys
