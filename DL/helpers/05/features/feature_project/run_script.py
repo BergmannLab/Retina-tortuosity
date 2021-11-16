@@ -5,7 +5,7 @@ from lib.extraction_func import *
 
 #load parameters
 P = Parameters()
-P.calc_feature()
+P.calc_feat()
 para = P.para
 
 #local the extraction function
