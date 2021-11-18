@@ -15,5 +15,8 @@ except:
     print("extraction function does not exist!")
     exit()
 
+if para.feature_idx != []:
+   para.feature_idx = np.asarray(para.feature_idx.split(","),dtype=int)
+
 CF = CalcFeature(para.layer_dir,para.output_file,extract_func)
-CF.main()
+CF.main(para.feature_idx)

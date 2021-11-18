@@ -1,0 +1,1 @@
+python run_script.py --layer_dir "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/features/all_images_18_8_21" --output output/test --extract_func ave_across_channels --feature_idx '1,2'

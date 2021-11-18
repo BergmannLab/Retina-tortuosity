@@ -10,7 +10,8 @@ import pickle
 
 #feature extractoin functions
 def abs_max(layer_activation):
-	return [np.max(abs(layer_activation.flatten()))]
+	#return [np.max(abs(layer_activation.flatten()))]
+	return str(np.max(abs(layer_activation.flatten())))
 
 def ave_channel(layer_activation,channel):
 	return [np.average(layer_activation[channel].flatten())]
@@ -19,10 +20,10 @@ def ave_across_channels(layer_activation):
 	ave_channel = []
 	for layer_channel in layer_activation:
 		ave_channel.append(np.average(layer_activation.flatten()))
-	return [np.average(ave_channel)]
+	return str(np.average(ave_channel))
 
 def flat_layer(layer_activation):
-	return layer_activation.flatten()
+	return ",".join(np.asarray(layer_activation.flatten(),dtype="str"))
 
 def extract_node_value(layer_activation,node_id):
 	return [layer_activation.flatten()[node_id]]

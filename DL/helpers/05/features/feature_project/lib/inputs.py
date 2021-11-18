@@ -10,6 +10,7 @@ class Parameters:
         self.calc_feature_parser.add_argument('--layer_dir', default='input.txt', help='input file')
         self.calc_feature_parser.add_argument("--output_file", default='',help='')
         self.calc_feature_parser.add_argument("--extract_func", default='',help='')
+        self.calc_feature_parser.add_argument("--feature_idx", default=[],help='')
         #set parameters
         self.para = self.calc_feature_parser.parse_args()
 
