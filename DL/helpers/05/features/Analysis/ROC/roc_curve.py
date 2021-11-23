@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 import sys
-sys.path.insert(1, '../')
+sys.path.insert(1, '../../../')
 from TrainDL import TrainParameters,ImageProcess,Dataset
 
 #set train parameters
@@ -31,8 +31,11 @@ model = DenseNet(growth_rate=tp.growth_rate,
             num_classes=tp.num_classes).to(device)
 
 # load model from state_dict
-dict_path="/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/05_DL/retina_densenet_best_model.pth"
-state_dict = torch.load(dict_path)["model_dict"]
+#dict_path="/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/DL/output/05_DL/retina_densenet_best_model.pth"
+dict_path="/home/abutton/Desktop/DL-retina/retina-dl/output/phil/models/model_EPOCH20.pt"
+#state_dict = torch.load(dict_path)["model_dict"]
+state_dict = torch.load(dict_path)
+print(state_dict)
 model.load_state_dict(state_dict)
 model.eval()
 

@@ -1,0 +1,55 @@
+
+Inactive Modules:
+  1) python/3.7.7
+
+Traceback (most recent call last):
+  File "./roc_curve.py", line 38, in <module>
+    model.load_state_dict(state_dict)
+  File "/users/abutton/.local/lib/python3.7/site-packages/torch/nn/modules/module.py", line 1045, in load_state_dict
+    self.__class__.__name__, "\n\t".join(error_msgs)))
+RuntimeError: Error(s) in loading state_dict for DenseNet:
+	size mismatch for features.conv0.weight: copying a param with shape torch.Size([6, 3, 7, 7]) from checkpoint, the shape in current model is torch.Size([24, 3, 7, 7]).
+	size mismatch for features.norm0.weight: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([24]).
+	size mismatch for features.norm0.bias: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([24]).
+	size mismatch for features.norm0.running_mean: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([24]).
+	size mismatch for features.norm0.running_var: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([24]).
+	size mismatch for features.denseblock1.denselayer1.norm1.weight: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([24]).
+	size mismatch for features.denseblock1.denselayer1.norm1.bias: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([24]).
+	size mismatch for features.denseblock1.denselayer1.norm1.running_mean: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([24]).
+	size mismatch for features.denseblock1.denselayer1.norm1.running_var: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([24]).
+	size mismatch for features.denseblock1.denselayer1.conv1.weight: copying a param with shape torch.Size([24, 6, 1, 1]) from checkpoint, the shape in current model is torch.Size([24, 24, 1, 1]).
+	size mismatch for features.transition1.norm.weight: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([30]).
+	size mismatch for features.transition1.norm.bias: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([30]).
+	size mismatch for features.transition1.norm.running_mean: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([30]).
+	size mismatch for features.transition1.norm.running_var: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([30]).
+	size mismatch for features.transition1.conv.weight: copying a param with shape torch.Size([6, 12, 1, 1]) from checkpoint, the shape in current model is torch.Size([15, 30, 1, 1]).
+	size mismatch for features.denseblock2.denselayer1.norm1.weight: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([15]).
+	size mismatch for features.denseblock2.denselayer1.norm1.bias: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([15]).
+	size mismatch for features.denseblock2.denselayer1.norm1.running_mean: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([15]).
+	size mismatch for features.denseblock2.denselayer1.norm1.running_var: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([15]).
+	size mismatch for features.denseblock2.denselayer1.conv1.weight: copying a param with shape torch.Size([24, 6, 1, 1]) from checkpoint, the shape in current model is torch.Size([24, 15, 1, 1]).
+	size mismatch for features.transition2.norm.weight: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([21]).
+	size mismatch for features.transition2.norm.bias: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([21]).
+	size mismatch for features.transition2.norm.running_mean: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([21]).
+	size mismatch for features.transition2.norm.running_var: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([21]).
+	size mismatch for features.transition2.conv.weight: copying a param with shape torch.Size([6, 12, 1, 1]) from checkpoint, the shape in current model is torch.Size([10, 21, 1, 1]).
+	size mismatch for features.denseblock3.denselayer1.norm1.weight: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([10]).
+	size mismatch for features.denseblock3.denselayer1.norm1.bias: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([10]).
+	size mismatch for features.denseblock3.denselayer1.norm1.running_mean: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([10]).
+	size mismatch for features.denseblock3.denselayer1.norm1.running_var: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([10]).
+	size mismatch for features.denseblock3.denselayer1.conv1.weight: copying a param with shape torch.Size([24, 6, 1, 1]) from checkpoint, the shape in current model is torch.Size([24, 10, 1, 1]).
+	size mismatch for features.transition3.norm.weight: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for features.transition3.norm.bias: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for features.transition3.norm.running_mean: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for features.transition3.norm.running_var: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for features.transition3.conv.weight: copying a param with shape torch.Size([6, 12, 1, 1]) from checkpoint, the shape in current model is torch.Size([8, 16, 1, 1]).
+	size mismatch for features.denseblock4.denselayer1.norm1.weight: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([8]).
+	size mismatch for features.denseblock4.denselayer1.norm1.bias: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([8]).
+	size mismatch for features.denseblock4.denselayer1.norm1.running_mean: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([8]).
+	size mismatch for features.denseblock4.denselayer1.norm1.running_var: copying a param with shape torch.Size([6]) from checkpoint, the shape in current model is torch.Size([8]).
+	size mismatch for features.denseblock4.denselayer1.conv1.weight: copying a param with shape torch.Size([24, 6, 1, 1]) from checkpoint, the shape in current model is torch.Size([24, 8, 1, 1]).
+	size mismatch for features.norm5.weight: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([14]).
+	size mismatch for features.norm5.bias: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([14]).
+	size mismatch for features.norm5.running_mean: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([14]).
+	size mismatch for features.norm5.running_var: copying a param with shape torch.Size([12]) from checkpoint, the shape in current model is torch.Size([14]).
+	size mismatch for classifier.weight: copying a param with shape torch.Size([2, 12]) from checkpoint, the shape in current model is torch.Size([2, 14]).
