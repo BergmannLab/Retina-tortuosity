@@ -12,6 +12,7 @@ Using a defined QC file to be decided, the script `tbd` combines image measureme
 Here, all phenotypes we decide to use will be combined into a single phenofile `multiTrait_phenofile_qqnorm.csv`, which we will use as the basis for all downstream analyses.
 
 # How-to for running the new, faster GWAS
+## Running GWAS
 0) Generate your phenofile, and put it in the appropriate *EXPERIMENT_ID* folder
 1) Run your GWAS:
 
@@ -23,14 +24,16 @@ Here, all phenotypes we decide to use will be combined into a single phenofile `
 
 `sbatch RunGWAS.sh 2021_10_11_myAwesomeTrait affymetrix`
 
-# Plotting
+## Plotting GWAS results
 If the GWAS has run successfully, this command stores QQ and Manhattan plots in the appropriate folder:
 
 `sbatch plotGWAS.sh *EXPERIMENT_ID*`
 
 (The script is located in retina/postprocessing.)
 
-# Initializing the repository
+## Further processing GWAS results
+
+# Initializing the repository on Jura
 
 Run retina/configs/dir_structure/init.sh
   Assumes the following are configured as in Jura
