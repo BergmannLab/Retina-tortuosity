@@ -35,9 +35,9 @@ def getFractalDimension(imgname):
 		img=Image.open(imageID+"_bin_seg.png")
 		img_artery=replaceRGB(img,(255,0,0),(0,0,0))
 		img_vein=replaceRGB(img,(0,0,255),(0,0,0))
-		img.save('/home/mbeyele5/im1.png')
-		img_artery.save('/home/mbeyele5/im2.png')
-		img_vein.save('/home/mbeyele5/im3.png')
+		#img.save('/home/mbeyele5/im1.png')
+		#img_artery.save('/home/mbeyele5/im2.png')
+		#img_vein.save('/home/mbeyele5/im3.png')
 		w,h=img.size
 		
 		box_sidelengths = [2,4,8,16,32,64,128,256,512]
@@ -74,17 +74,155 @@ def getFractalDimension(imgname):
 		print("image", imgname, "does not exist")
 		return np.nan,np.nan,np.nan
 
+def getBifurcations(imgname):
+
+	try:
+		X,Y = [],[]	
+
+		imageID = imgname.split(".")[0]
+		with open(aria_measurements_dir + imageID + "_all_center2Coordinates.tsv") as fd:
+			rd = csv.reader(fd, delimiter='\t')
+			for row in rd:
+				X.append([float(j) for j in row])
+
+		with open(aria_measurements_dir + imageID + "_all_center1Coordinates.tsv") as fd:
+			rd = csv.reader(fd, delimiter='\t')
+			for row in rd:
+				Y.append([float(j) for j in row])
+
+		with open(aria_measurements_dir + imageID + "_all_segmentStats.tsv") as fd:
+			rd = pd.read_csv(fd, sep='\t')
+			segmentStats = rd["AVScore"]
+
+		df = pd.DataFrame([])
+		df["segmentStats"] = segmentStats
+
+		df_results = pd.DataFrame([])
+		df_aux = pd.DataFrame([])
+		aux = int(df.count(axis=0))
+
+		# 'Arteries' if df['AVScore'] > 0
+		# 'Veins' if df['AVScore'] < 0
+		for i in range(aux):
+			df_aux = pd.DataFrame(pd.DataFrame([X[i][0], X[i][len(X[i])-1]]))
+			df_aux["Y"] = pd.DataFrame([Y[i][0], Y[i][len(Y[i])-1]])
+			df_aux["type"] = segmentStats[i]
+			df_aux["i"] = i
+			df_results = df_results.append(df_aux, True)
+
+		df_results.columns = ['X', 'Y', 'type', 'i']
+		df_results['type'] = np.sign(df_results['type'])
+		df_results.sort_values(by=['X'], inplace=True, ascending=False)
+
+		cross_counter = 0
+		df_cross_x = pd.DataFrame([])
+		df_cross_previous = pd.DataFrame([])
+		aux_num_x = 0.0
+		aux_num_y = 0.0
+		aux_num_type = 0.0
+		aux_num_i = 0.0
+		aux = []
+		cte = 3.5
+		for s in range(len(df_results)):
+			aux_num_x = df_results['X'].iloc[s]
+			aux_num_y = df_results['Y'].iloc[s]
+			aux_num_i = df_results['i'].iloc[s]
+			aux_num_type = df_results['type'].iloc[s]
+		 
+			for j in range(len(df_results)-s):
+				j = j + s
+				if (df_results['X'].iloc[j] >= aux_num_x - cte) and (df_results['X'].iloc[j] <= aux_num_x + cte):
+					if (df_results['Y'].iloc[j] >= aux_num_y - cte) and (df_results['Y'].iloc[j] <= aux_num_y + cte):
+						if df_results['i'].iloc[j] != aux_num_i:
+							if (df_results['type'].iloc[j] == aux_num_type) and \
+									(df_results['type'].iloc[j] != 0 or aux_num_type != 0):
+								cross_counter = cross_counter + 1
+					else:
+						continue
+		return cross_counter
+	
+	except Exception as e:
+		print(e)
+		return np.nan
+
+def getAVCrossings(imgname):
+
+	try:
+		X,Y = [],[]
+		
+		imageID = imgname.split(".")[0]	
+		with open(aria_measurements_dir + imageID + "_all_center2Coordinates.tsv") as fd:
+			rd = csv.reader(fd, delimiter='\t')
+			for row in rd:
+				X.append([float(j) for j in row])
+
+		with open(aria_measurements_dir + imageID + "_all_center1Coordinates.tsv") as fd:
+			rd = csv.reader(fd, delimiter='\t')
+			for row in rd:
+				Y.append([float(j) for j in row])
+
+		with open(aria_measurements_dir + imageID + "_all_segmentStats.tsv") as fd:
+			rd = pd.read_csv(fd, sep='\t')
+			segmentStats = rd["AVScore"]
+
+		df = pd.DataFrame([])
+		df["segmentStats"] = segmentStats
+
+		df_results = pd.DataFrame([])
+		df_aux = pd.DataFrame([])
+		aux = int(df.count(axis=0))
+		#print("La mitad")
+
+		# 'Arteries' if df['AVScore'] > 0
+		# 'Veins' if df['AVScore'] < 0
+		for i in range(aux):
+			df_aux = pd.DataFrame(X[i])
+			df_aux["Y"] = pd.DataFrame(Y[i])
+			df_aux["type"] = segmentStats[i]
+			df_aux["i"] = i
+			df_results = df_results.append(df_aux, True)
+
+		df_results.columns = ['X', 'Y', 'type', 'i']
+		df_results['type'] = np.sign(df_results['type'])
+		df_results.sort_values(by=['X'], inplace=True, ascending=False)
+
+		cross_counter = 0
+		df_cross_x = pd.DataFrame([])
+		df_cross_previous = pd.DataFrame([])
+		aux_num_x = 0.0
+		aux_num_y = 0.0
+		aux_num_type = 0.0
+		aux = []
+		cte = 12
+
+		for j in range(len(df_results)):
+			if (df_results['X'].iloc[j] >= aux_num_x - cte) and (df_results['X'].iloc[j] <= aux_num_x + cte):
+				if (df_results['Y'].iloc[j] >= aux_num_y - cte) and (df_results['Y'].iloc[j] <= aux_num_y + cte):
+					if (df_results['type'].iloc[j] == aux_num_type) or (df_results['type'].iloc[j] == 0) or (aux_num_type == 0):
+						continue
+					else:
+						cross_counter = cross_counter + 1
+
+			aux_num_x = df_results['X'].iloc[j]
+			aux_num_y = df_results['Y'].iloc[j]
+			aux_num_type = df_results['type'].iloc[j]
+
+		return cross_counter
+
+	except Exception as e:
+		print(e)
+		return np.nan
 
 if __name__ == '__main__':
 	
 	# command line arguments
-	qcFile = sys.argv[1]
+	qcFile = sys.argv[1] # qcFile used is noQC as we measure for all images
 	phenotype_dir = sys.argv[2]
 	aria_measurements_dir = sys.argv[3]
 	lwnet_dir = sys.argv[4]
 
-	#QC
-	imgfiles = pd.read_csv(qcFile, header=None) # images that pass QC of choice
+	# all the images
+	imgfiles = pd.read_csv(qcFile, header=None)
 	imgfiles = imgfiles[0].values
 
 	# development param
@@ -93,9 +231,20 @@ if __name__ == '__main__':
 	#computing the phenotype as a parallel process
 	os.chdir(lwnet_dir)	
 	pool = Pool()
-	out = pool.map(getFractalDimension, imgfiles[0:testLen])
+	out = pool.map(getBifurcations, imgfiles[0:testLen])
 	
 	# storing the phenotype	
-	df = pd.DataFrame(out, columns=["FD_all", "FD_artery", "FD_vein"])
+	
+	# fractal dimension
+	# df = pd.DataFrame(out, columns=["FD_all", "FD_artery", "FD_vein"])
+	# bifurcations
+	df = pd.DataFrame(out, columns=["bifurcations"])
+	# AV crossings
+	# df = pd.DataFrame(out, columns=["AV_crossings"])
 	df=df.set_index(imgfiles[0:testLen])
-	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_fractalDimension.csv')
+
+	print(len(df), "image measurements taken")
+	print("NAs per phenotype")
+	print(df.isna().sum())
+
+	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_bifurcations.csv')

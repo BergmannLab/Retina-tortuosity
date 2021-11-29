@@ -1,10 +1,17 @@
 # How-to for the new multi-trait analysis
-For the new analysis, we decoupled image measurements from quality control, and running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration.
+For the new analysis, we decoupled image measurements from quality control. Also, running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration.
 
 ## Phenotype measurements
 The new script `measurePhenotype.py` contains the functions for measuring all the non-basic phenotypes. Measurements can be taken on ARIA and LWNET output, or on the raw images directly.
 
+The existing functions so far:
+* fractal dimension
+* bifurcations
+* AV crossings
+
 To measure a specific phenotype, add a function to `measurePhenotype.py`, modify `__MAIN__` accordingly to use this function, and then run the measurements using `sbatch run_measurePhenotype.sh`.
+
+All phenotype measurements are stored in `/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/`.
 
 ## From image measurements to phenofile
 Using a defined QC file to be decided, the script `tbd` combines image measurements into participant-wise single-number statistics, which will be used in the GWAS.

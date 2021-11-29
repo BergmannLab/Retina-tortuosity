@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=sbergman_retina
-#SBATCH --job-name=fractals
+#SBATCH --job-name=measurePhenotype
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 32
