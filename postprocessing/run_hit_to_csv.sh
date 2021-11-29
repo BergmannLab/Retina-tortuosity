@@ -4,8 +4,8 @@
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 15
-#SBATCH --mem 150G
-#SBATCH --time 05:00:00
+#SBATCH --mem 200G
+#SBATCH --time 24:00:00
 #SBATCH --partition normal
 #####SBATCH --array=1
 
