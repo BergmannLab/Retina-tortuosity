@@ -10,8 +10,13 @@ ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/ # UKBB
 raw_data_dir=$ARIA_data_dir"CLRIS/"
 raw_data_dir_av_test=$ARIA_data_dir/CLRIS_AV_test/
 
+ARIA_MEASUREMENTS_DIR=/data/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/
+LWNET_DIR=/users/mbeyele5/data_sbergman/retina/UKBiob/fundus/AV_maps/
+FUNDUS_PHENOTYPE_DIR=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/
+
 # QC
-KEPT_IMAGES=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/mattiaQC_images.txt
+ALL_IMAGES=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/index_files/noQC.txt
+KEPT_IMAGES=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/index_files/mattiaQC_images.txt
 # quality thresholds for ARIA
 #min_QCthreshold_1=11000
 #max_QCthreshold_1=20000

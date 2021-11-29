@@ -1,10 +1,12 @@
 #install.packages("qqman")
 #install.packages("BiocManager")
 #BiocManager::install("GWASTools")
-#library(qqman)
-#library(GWASTools)
+library(qqman)
+library(GWASTools)
+library(parallel)
 
 args = commandArgs(trailingOnly=TRUE)
+print(args[1])
 setwd(args[1])
 
 phenos=read.table("phenotypes.txt")
@@ -39,8 +41,14 @@ plotPv <- function(name,pheno,do_qqplot,coleur, adding){
   }
 }
 
-Plot_QQ_Manhattan <- function(pheno, inputs )
+Plot_QQ_Manhattan <- function( i, inputs )
 {
+  pheno=phenos[i]
+  inputs=get(df_names[i])
+
+  print(pheno)
+  print(df_names)
+  
   jpeg(file= paste(pheno, "_QQPLOT", sep=""), width=2000,height=1000)
   plotPvals(paste(pheno), inputs ,TRUE,FALSE)
   dev.off()
@@ -88,9 +96,13 @@ for (i in c(1:22)){
   }
 }
 
-for (j in seq_along(phenos)){
-  Plot_QQ_Manhattan(phenos[j], get(df_names[j]))
-}
+print(phenos)
+print(df_names)
+mclapply(seq_along(phenos), Plot_QQ_Manhattan, mc.cores=20)
+
+#for (j in seq_along(phenos)){
+#  Plot_QQ_Manhattan(phenos[j], get(df_names[j]))
+#}
 # old way, just hardcode for all phenotypes:
 #Plot_QQ_Manhattan("DF", gwasResults_allChr__DF)
 #Plot_QQ_Manhattan("DF1st", gwasResults_allChr__DF1st)
