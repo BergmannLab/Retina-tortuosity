@@ -13,7 +13,12 @@ import matplotlib.image as mpimg
 from matplotlib import cm
 import csv
 from multiprocessing import Pool
+<<<<<<< HEAD
 characteristic_measure = 'coef_var_pearson'
+=======
+# DEFINE the characteristic measure of interest
+characteristic_measure = 'median'
+>>>>>>> 15cee55fbfe2704a491191e705d574166f55b8a2
 def getParticipantStatfiles(participant):
 	return [img.split(".png")[0]+"_all_segmentStats.tsv" for img in imgs if participant in img]
 
