@@ -375,7 +375,7 @@ if __name__ == '__main__':
 	
 	# experiment id
 	DATE = datetime.now().strftime("%Y_%m_%d")
-	EXPERIMENT_NAME = "tortuosityPlusPaper"
+	EXPERIMENT_NAME = "coefvarpearson"
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
 
 	#input and output dirs
