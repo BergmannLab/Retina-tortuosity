@@ -1,5 +1,5 @@
-# How-to for the new multi-trait analysis
-For the new analysis, we decoupled image measurements from quality control. Also, running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration.
+# How-to for the new multi-trait fundus project
+For this project, we decoupled image measurements from quality control. Also, running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration, as well as easy plotting (Manhattan, QQ) and further postprocessing of GWAS results.
 
 ## Phenotype measurements
 The new script `measurePhenotype.py` contains the functions for measuring all the non-basic phenotypes. Measurements can be taken on ARIA and LWNET output, or on the raw images directly.
@@ -18,7 +18,7 @@ Using a defined QC file to be decided, the script `tbd` combines image measureme
 
 Here, all phenotypes we decide to use will be combined into a single phenofile `multiTrait_phenofile_qqnorm.csv`, which we will use as the basis for all downstream analyses.
 
-# How-to for running the new, faster GWAS
+# General how-to for the faster GWAS
 ## Running GWAS
 0) Generate your phenofile, and put it in the appropriate *EXPERIMENT_ID* folder
 1) Run your GWAS:
@@ -37,6 +37,8 @@ If the GWAS has run successfully, this command stores QQ and Manhattan plots in 
 `sbatch plotGWAS.sh *EXPERIMENT_ID*`
 
 (The script is located in retina/postprocessing.)
+
+## Postprocessing
 
 ## Further processing GWAS results
 

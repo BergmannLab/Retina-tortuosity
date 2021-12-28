@@ -213,10 +213,48 @@ def getAVCrossings(imgname):
 		print(e)
 		return np.nan
 
+def getAriaPhenotypes(imgname):
+	imageID = imgname.split(".")[0]
+	
+	lengthQuints = [23.3, 44.3, 77.7, 135.8]
+	
+	all_medians = []
+	artery_medians = []
+	vein_medians = []
+	try: # because for any image passing QC, ARIA might have failed
+		# df is segment stat file
+		df = pd.read_csv(aria_measurements_dir + imageID + "_all_segmentStats.tsv", delimiter='\t')
+		all_medians = df.median(axis=0).values
+		artery_medians = df[df['AVScore'] > 0].median(axis=0).values
+		vein_medians = df[df['AVScore'] < 0].median(axis=0).values
+
+		# stats based on longest fifth
+		try:
+			quintStats_all = df[df['arcLength'] > lengthQuints[3]].median(axis=0).values
+			quintStats_artery = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] > 0)].median(axis=0).values
+			quintStats_vein = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] < 0)].median(axis=0).values
+
+		except Exception as e:
+			print(e)
+			print("longest 5th failed")
+			quintStats_all = [np.nan for i in range(0,14)]
+			quintStats_artery = quintStats_all
+			quintStats_vein = quintStats_all
+
+		df_im = pd.read_csv(aria_measurements_dir + imageID + "_all_imageStats.tsv", delimiter='\t')
+		
+		return np.concatenate((all_medians, artery_medians, vein_medians, quintStats_all,\
+		   quintStats_artery, quintStats_vein, df_im['nVessels'].values), axis=None).tolist()
+	except Exception as e:
+		print(e)
+		print("ARIA didn't have stats for img", imageID)
+		return [np.nan for i in range(0,84)] # we measured 14 segment-wise stats using ARIA, for AV, and for longest quint -> 14*6+1=85, and nVessels
+
+
 if __name__ == '__main__':
 	
 	# command line arguments
-	qcFile = sys.argv[1] # qcFile used is noQC as we measure for all images
+	qcFile = sys.argv[1] # qcFile used is noQCi, as we measure for all images
 	phenotype_dir = sys.argv[2]
 	aria_measurements_dir = sys.argv[3]
 	lwnet_dir = sys.argv[4]
@@ -226,25 +264,35 @@ if __name__ == '__main__':
 	imgfiles = imgfiles[0].values
 
 	# development param
-	testLen = len(imgfiles) # len(imgs) is default	
+	testLen = len(imgfiles) # len(imgfiles) is default	
 
 	#computing the phenotype as a parallel process
 	os.chdir(lwnet_dir)	
 	pool = Pool()
-	out = pool.map(getBifurcations, imgfiles[0:testLen])
+	out = pool.map(getAriaPhenotypes, imgfiles[0:testLen])
 	
 	# storing the phenotype	
 	
 	# fractal dimension
 	# df = pd.DataFrame(out, columns=["FD_all", "FD_artery", "FD_vein"])
+	
 	# bifurcations
-	df = pd.DataFrame(out, columns=["bifurcations"])
+	#df = pd.DataFrame(out, columns=["bifurcations"])
+	
 	# AV crossings
-	# df = pd.DataFrame(out, columns=["AV_crossings"])
-	df=df.set_index(imgfiles[0:testLen])
+	#df = pd.DataFrame(out, columns=["AV_crossings"])
+	#df=df.set_index(imgfiles[0:testLen])
 
+	# ARIA phenotypes
+	first_statsfile = pd.read_csv(aria_measurements_dir + "1027180_21015_0_0_all_segmentStats.tsv", sep='\t')
+	cols = first_statsfile.columns
+	cols_full = [i + "_all" for i in cols] + [i + "_artery" for i in cols] + [i + "_vein" for i in cols]\
+	  + [i + "_longestFifth_all" for i in cols] + [i + "_longestFifth_artery" for i in cols] + [i + "_longestFifth_vein" for i in cols]\
+	  + ["nVessels"]
+	df = pd.DataFrame(out, columns=cols_full)
+	df.index = imgfiles[0:testLen]
 	print(len(df), "image measurements taken")
 	print("NAs per phenotype")
 	print(df.isna().sum())
 
-	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_bifurcations.csv')
+	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_ARIA_phenotypes.csv')
