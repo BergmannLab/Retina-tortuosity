@@ -114,32 +114,29 @@ def getBifurcations(imgname):
 		df_results['type'] = np.sign(df_results['type'])
 		df_results.sort_values(by=['X'], inplace=True, ascending=False)
 
-		cross_counter = 0
-		df_cross_x = pd.DataFrame([])
-		df_cross_previous = pd.DataFrame([])
-		aux_num_x = 0.0
-		aux_num_y = 0.0
-		aux_num_type = 0.0
-		aux_num_i = 0.0
+		X_1_aux = X_2_aux = 0.0
+		bif_counter = 0
 		aux = []
 		cte = 3.5
 		for s in range(len(df_results)):
-			aux_num_x = df_results['X'].iloc[s]
-			aux_num_y = df_results['Y'].iloc[s]
-			aux_num_i = df_results['i'].iloc[s]
-			aux_num_type = df_results['type'].iloc[s]
 		 
 			for j in range(len(df_results)-s):
-				j = j + s
-				if (df_results['X'].iloc[j] >= aux_num_x - cte) and (df_results['X'].iloc[j] <= aux_num_x + cte):
-					if (df_results['Y'].iloc[j] >= aux_num_y - cte) and (df_results['Y'].iloc[j] <= aux_num_y + cte):
-						if df_results['i'].iloc[j] != aux_num_i:
-							if (df_results['type'].iloc[j] == aux_num_type) and \
-									(df_results['type'].iloc[j] != 0 or aux_num_type != 0):
-								cross_counter = cross_counter + 1
+				j = j + s	
+				# For X and Y: X[s] - cte <= X[j] <= X[s]
+            	# Both arteries or both veins and != type 0
+				if (df_results['X'].iloc[j] >= df_results['X'].iloc[s] - cte) and (df_results['X'].iloc[j] <= df_results['X'].iloc[s] + cte):
+					if (df_results['Y'].iloc[j] >= df_results['Y'].iloc[s] - cte) and (df_results['Y'].iloc[j] <= df_results['Y'].iloc[s] + cte):
+						if df_results['i'].iloc[j] != df_results['i'].iloc[s]:
+							if (df_results['type'].iloc[j] == df_results['type'].iloc[s]) and \
+									(df_results['type'].iloc[j] != 0 or df_results['type'].iloc[s] != 0):
+								if (df_results['X'].iloc[j] != X_1_aux and df_results['X'].iloc[s] != X_1_aux and
+										df_results['X'].iloc[j] != X_2_aux and df_results['X'].iloc[s] != X_2_aux):
+									bif_counter = bif_counter + 1
+									X_1_aux = df_results['X'].iloc[s]
+									X_2_aux = df_results['X'].iloc[j]
 					else:
 						continue
-		return cross_counter
+		return bif_counter
 	
 	except Exception as e:
 		print(e)
@@ -171,7 +168,6 @@ def getAVCrossings(imgname):
 		df_results = pd.DataFrame([])
 		df_aux = pd.DataFrame([])
 		aux = int(df.count(axis=0))
-		#print("La mitad")
 
 		# 'Arteries' if df['AVScore'] > 0
 		# 'Veins' if df['AVScore'] < 0
@@ -187,8 +183,6 @@ def getAVCrossings(imgname):
 		df_results.sort_values(by=['X'], inplace=True, ascending=False)
 
 		cross_counter = 0
-		df_cross_x = pd.DataFrame([])
-		df_cross_previous = pd.DataFrame([])
 		aux_num_x = 0.0
 		aux_num_y = 0.0
 		aux_num_type = 0.0
