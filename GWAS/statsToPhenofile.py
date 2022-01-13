@@ -222,12 +222,12 @@ if __name__ == '__main__':
 	
 	# experiment id
 	DATE = datetime.now().strftime("%Y_%m_%d")
-	EXPERIMENT_NAME = "multitrait_mattiaQC"
+	EXPERIMENT_NAME = "multitrait_ageCorrectedVentile5QC"
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
 
 	#input and output dirs
-	input_dir = "/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/"
-	output_dir = "/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/"
+	input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/"
+	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/"
 	os.chdir(input_dir)
 
 	
