@@ -22,10 +22,10 @@ plotPvals <- function(name,pheno,do_qqplot,do_manhattan){
   pvalues <- `^`(10,-pheno$P) # transform -log10 p values
   pheno$P <- pvalues
   if(do_qqplot){
-    try(GWASTools::qqPlot(pvalues, main=name))
+    try(GWASTools::qqPlot(pvalues, main=name, cex = 1.5, cex.axis = 1.5))
   }
   if(do_manhattan){
-    try(qqman::manhattan(pheno, main=name))
+    try(qqman::manhattan(pheno, main=name, cex = 1.5, cex.axis = 1.5))
   }
 }
 
@@ -49,10 +49,10 @@ Plot_QQ_Manhattan <- function( i, inputs )
   print(pheno)
   print(df_names)
   
-  jpeg(file= paste(pheno, "_QQPLOT", sep=""), width=2000,height=1000)
+  jpeg(file= paste(pheno, "_QQPLOT.jpg", sep=""), width=800,height=500)
   plotPvals(paste(pheno), inputs ,TRUE,FALSE)
   dev.off()
-  jpeg(file= paste(pheno, "_MANHATTAN", sep=""), width=2000,height=1000)
+  jpeg(file= paste(pheno, "_MANHATTAN.jpg", sep=""), width=800,height=500)
   plotPvals(paste(pheno),inputs,FALSE,TRUE)
   dev.off()
 }
