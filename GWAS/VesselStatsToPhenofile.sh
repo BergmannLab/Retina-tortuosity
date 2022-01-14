@@ -35,11 +35,9 @@ echo "Producing phenofile for vessel statistics for run: ${stats_dir: -22}"
 # extract vessel stats phenotypes
 source /dcsrsoft/spack/bin/setup_dcsrsoft
 module purge
-module load gcc/8.3.0
-module load python/3.7.7
-$PYTHONPATH
-module load py-biopython
-python3.7 $PWD/helpers/VesselStatsToPhenofile/run.py $output $sample_file $stats_dir
+module load gcc
+module load python
+python3 $PWD/helpers/VesselStatsToPhenofile/run.py $output $sample_file $stats_dir
 module purge
 
 # qq normalize
@@ -47,8 +45,8 @@ qq_input=$output
 qq_output=$output_dir/phenofile_qqnorm.csv
 source /dcsrsoft/spack/bin/setup_dcsrsoft
 module purge
-module load gcc/8.3.0
-module load r/3.6.3
+module load gcc
+module load r
 Rscript $PWD/helpers/utils/QQnorm/QQnormMatrix.R $qq_input $qq_output
 module purge
 
