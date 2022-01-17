@@ -230,7 +230,14 @@ if __name__ == '__main__':
 	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/"
 	os.chdir(input_dir)
 
-	
+	#phenotypes
+	stats = pd.read_csv("2021-12-28_ARIA_phenotypes.csv", index_col=0)
+	tmp = pd.read_csv("2021-11-29_bifurcations.csv", index_col=0)
+	stats = stats.join(tmp)
+	tmp = pd.read_csv("2021-11-29_AV_crossings.csv", index_col=0)
+	stats = stats.join(tmp)
+	tmp = pd.read_csv("2021-11-30_fractalDimension.csv", index_col=0)
+	stats = stats.join(tmp)	
 
 	#QC
 	qcFile = sys.argv[1]
@@ -244,15 +251,6 @@ if __name__ == '__main__':
 	#imgs_per_participant is a participant list: each element contains list of segment stat files belonging to a participant's QCd images
 	pool1 = Pool()
 	imgs_per_participant = list(pool1.map(getParticipantImages, participants[0:nTest]))	
-
-	#phenotypes
-	stats = pd.read_csv("2021-12-28_ARIA_phenotypes.csv", index_col=0)
-	tmp = pd.read_csv("2021-11-29_bifurcations.csv", index_col=0)
-	stats = stats.join(tmp)
-	tmp = pd.read_csv("2021-11-29_AV_crossings.csv", index_col=0)
-	stats = stats.join(tmp) 
-	tmp = pd.read_csv("2021-11-30_fractalDimension.csv", index_col=0)
-	stats = stats.join(tmp) 
 
 	#computing participant-wise stats
 	pool = Pool()
