@@ -15,7 +15,7 @@ ARIA_data_dir=$data/UKBiob/fundus/REVIEW/ # UKBB
 raw_data_dir=$ARIA_data_dir"CLRIS/"
 raw_data_dir_av_test=$ARIA_data_dir/CLRIS_AV_test/
 
-ARIA_MEASUREMENTS_DIR=$data/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/
+ARIA_MEASUREMENTS_DIR=$scratch/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/
 LWNET_DIR=$data/UKBiob/fundus/AV_maps/
 FUNDUS_PHENOTYPE_DIR=$scratch/UKBiob/fundus/fundus_phenotypes/
 
