@@ -37,7 +37,7 @@ process_pheno = function(pheno_name) { # FOR EACH PHENOTYPE in GWAS
   
   for (chromo_numb in chromo_list){ # FOR EACH CHROMOSOME
     write(paste("chromosome",chromo_numb), stdout())
-    
+ 
     # ukbb
     chromo_name <- paste("output_ukb_imp_chr",chromo_numb,"_v3.txt", sep="")
     # colaus
@@ -87,8 +87,8 @@ process_pheno = function(pheno_name) { # FOR EACH PHENOTYPE in GWAS
   names(pascalInput)[4] <- "pvalue" # rename headers appropriately
   write.csv(pascalInput,paste(pheno_name,"__pascalInput.csv",sep=""),row.names = FALSE,quote=FALSE)
   # output for pascal2
-#  names(pascal2Input)[4] <- "pvalue" # rename headers appropriately
-#  write.csv(pascal2Input,paste(pheno_name,"__pascal2Input.csv",sep=""),row.names = FALSE,quote=FALSE)
+  names(pascal2Input)[4] <- "pvalue" # rename headers appropriately
+  write.csv(pascal2Input,paste(pheno_name,"__pascal2Input.csv",sep=""),row.names = FALSE,quote=FALSE)
   # output for LDSC
   names(ldscInput) <- c("rsid","A1","A2","P","beta")
   write.table(ldscInput, file=paste(pheno_name,"__ldscInput.csv",sep=""),row.names = FALSE, quote=FALSE, sep='\t')
