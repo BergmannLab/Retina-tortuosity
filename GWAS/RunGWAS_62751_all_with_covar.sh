@@ -28,7 +28,7 @@ pheno_file=$scratch/retina/GWAS/output/VesselStatsToPhenofile/"$experiment_id"/p
 #sample_file=$data/retina/UKBiob/genotypes/ukb43805_imp_chr1_v3_s487297.sample
 #CoLaus
 chromosome_name=CoLaus.HRC.chr"$chromosome_number"
-covar_file=$data/retina/colaus/phenotypes/covar.csv
+covar_file=$data/retina/colaus/phenotypes/covar_including_PCs_for_DF.csv
 chromosome_file=$data/retina/colaus/genotypes/colaus_axiom_hrc.r1.1.2016_imputed/"$chromosome_name".bgen # for full rslist, use _subset instead of _subset_mini
 sample_file=$data/retina/colaus/genotypes/colaus_axiom_hrc.r1.1.2016_imputed/CoLaus.sample
 
