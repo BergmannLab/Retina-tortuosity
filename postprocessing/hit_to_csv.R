@@ -69,8 +69,8 @@ process_pheno = function(pheno_name) { # FOR EACH PHENOTYPE in GWAS
     pascalInput_in_chromo[4] <- pvalues
     pascalInput <- rbind(pascalInput, pascalInput_in_chromo)
     # add chromosome to pascal2 input list (just threshold pascalInput results)
-#    top_pascalInput_in_chromo <- pascalInput_in_chromo[pascalInput_in_chromo[pval_header]<0.05, ] # cut off 0.05
-#    pascal2Input <- rbind(pascal2Input, top_pascalInput_in_chromo)
+    top_pascalInput_in_chromo <- pascalInput_in_chromo[pascalInput_in_chromo[pval_header]<0.05, ] # cut off 0.05
+    pascal2Input <- rbind(pascal2Input, top_pascalInput_in_chromo)
     # add chromosome to ldsc input list
    ldscInput_in_chromo <- subset(gwasResults, select = c("rsid","a_0","a_1",pval_header,beta_header))
    pvalues <- `^`(10,-ldscInput_in_chromo[[4]]) # transform -log10 p values
