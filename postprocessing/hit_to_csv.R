@@ -39,9 +39,9 @@ process_pheno = function(pheno_name) { # FOR EACH PHENOTYPE in GWAS
     write(paste("chromosome",chromo_numb), stdout())
  
     # ukbb
-    chromo_name <- paste("output_ukb_imp_chr",chromo_numb,"_v3.txt", sep="")
+    # chromo_name <- paste("output_ukb_imp_chr",chromo_numb,"_v3.txt", sep="")
     # colaus
-    # chromo_name <- paste("output_CoLaus.HRC.chr",chromo_numb,".txt", sep="")
+    chromo_name <- paste("output_CoLaus.HRC.chr",chromo_numb,".MAFsubsetted.txt", sep="")
     gwasResults <- read.table(chromo_name, sep=" ",header=T, stringsAsFactors= F)
     gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1)
     
