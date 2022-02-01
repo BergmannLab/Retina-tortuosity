@@ -245,7 +245,7 @@ if __name__ == '__main__':
 	#computing the phenotype as a parallel process
 	os.chdir(lwnet_dir)	
 	pool = Pool()
-	out = pool.map(getAriaPhenotypes, imgfiles[0:testLen])
+	out = pool.map(getBifurcations, imgfiles[0:testLen])
 	
 	# storing the phenotype	
 	
@@ -271,4 +271,4 @@ if __name__ == '__main__':
 	print("NAs per phenotype")
 	print(df.isna().sum())
 
-	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_ARIA_phenotypes.csv')
+	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_bifurcations.csv')
