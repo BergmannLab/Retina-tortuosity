@@ -147,22 +147,54 @@ def getAriaPhenotypes(imgname):
 	imageID = imgname.split(".")[0]
 	
 	lengthQuints = [23.3, 44.3, 77.7, 135.8]
-	
-	all_medians = []
-	artery_medians = []
-	vein_medians = []
+	# Change the name of characterisct_measurement dependind of what you want to measure
+	characterisct_measurement = 'mean' # 'median', 'mean', 'std', and 'coef_var_pearson'
+	all_measurement = []
+	artery_measurement = []
+	vein_measurement = []
 	try: # because for any image passing QC, ARIA might have failed
 		# df is segment stat file
 		df = pd.read_csv(aria_measurements_dir + imageID + "_all_segmentStats.tsv", delimiter='\t')
-		all_medians = df.median(axis=0).values
-		artery_medians = df[df['AVScore'] > 0].median(axis=0).values
-		vein_medians = df[df['AVScore'] < 0].median(axis=0).values
-
+		if characterisct_measurement == 'median':
+			all_measurement = df.median(axis=0).values
+			artery_measurement = df[df['AVScore'] > 0].median(axis=0).values
+			vein_measurement = df[df['AVScore'] < 0].median(axis=0).values
+		elif characterisct_measurement == 'mean':
+			all_measurement = df.mean(axis=0).values
+			artery_measurement = df[df['AVScore'] > 0].mean(axis=0).values
+			vein_measurement = df[df['AVScore'] < 0].mean(axis=0).values
+		elif characterisct_measurement == 'std':
+			all_measurement = df.std(axis=0).values
+			artery_measurement = df[df['AVScore'] > 0].std(axis=0).values
+			vein_measurement = df[df['AVScore'] < 0].std(axis=0).values
+		elif characterisct_measurement == 'coef_var_pearson':
+			all_measurement = (df.std(axis=0).values)/(df.median(axis=0).values)
+			artery_measurement = (df[df['AVScore'] > 0].std(axis=0).values)/(df[df['AVScore'] > 0].median(axis=0).values)
+			vein_measurement = (df[df['AVScore'] < 0].std(axis=0).values)/(df[df['AVScore'] < 0].median(axis=0).values)
+		else: 
+			print("The characterisct_measurement you wrote is not one of the alternatives. Alternatives: 'median', 'mean', 'std', and 'coef_var_pearson'")
+			sys.exit()
 		# stats based on longest fifth
 		try:
-			quintStats_all = df[df['arcLength'] > lengthQuints[3]].median(axis=0).values
-			quintStats_artery = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] > 0)].median(axis=0).values
-			quintStats_vein = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] < 0)].median(axis=0).values
+			if characterisct_measurement == 'median':
+				quintStats_all = df[df['arcLength'] > lengthQuints[3]].median(axis=0).values
+				quintStats_artery = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] > 0)].median(axis=0).values
+				quintStats_vein = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] < 0)].median(axis=0).values
+			elif characterisct_measurement == 'mean':
+				quintStats_all = df[df['arcLength'] > lengthQuints[3]].mean(axis=0).values
+				quintStats_artery = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] > 0)].mean(axis=0).values
+				quintStats_vein = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] < 0)].mean(axis=0).values
+			elif characterisct_measurement == 'std':
+				quintStats_all = df[df['arcLength'] > lengthQuints[3]].std(axis=0).values
+				quintStats_artery = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] > 0)].std(axis=0).values
+				quintStats_vein = df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] < 0)].std(axis=0).values
+			elif characterisct_measurement == 'coef_var_pearson':
+				quintStats_all = (df[df['arcLength'] > lengthQuints[3]].std(axis=0).values)/(df[df['arcLength'] > lengthQuints[3]].median(axis=0).values)
+				quintStats_artery = (df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] > 0)].std(axis=0).values)/(df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] > 0)].median(axis=0).values)
+				quintStats_vein = (df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] < 0)].std(axis=0).values)/(df[(df['arcLength'] > lengthQuints[3]) & (df['AVScore'] < 0)].median(axis=0).values)
+			else: 
+				print("The characterisct_measurement you wrote is not one of the alternatives. Alternatives: 'median', 'mean', 'std', and 'coef_var_pearson'")
+				sys.exit()
 
 		except Exception as e:
 			print(e)
@@ -173,7 +205,7 @@ def getAriaPhenotypes(imgname):
 
 		df_im = pd.read_csv(aria_measurements_dir + imageID + "_all_imageStats.tsv", delimiter='\t')
 		
-		return np.concatenate((all_medians, artery_medians, vein_medians, quintStats_all,\
+		return np.concatenate((all_measurement, artery_measurement, vein_measurement, quintStats_all,\
 		   quintStats_artery, quintStats_vein, df_im['nVessels'].values), axis=None).tolist()
 	except Exception as e:
 		print(e)
@@ -199,7 +231,7 @@ if __name__ == '__main__':
 	#computing the phenotype as a parallel process
 	os.chdir(lwnet_dir)	
 	pool = Pool()
-	out = pool.map(getBifurcations, imgfiles[0:testLen])
+	out = pool.map(getAriaPhenotypes, imgfiles[0:testLen])
 	
 	# storing the phenotype	
 	
@@ -213,6 +245,9 @@ if __name__ == '__main__':
 	#df = pd.DataFrame(out, columns=["AV_crossings"])
 	#df=df.set_index(imgfiles[0:testLen])
 
+	# bifurcations
+	#df = pd.DataFrame(out, columns=["bifurcations"])
+
 	# ARIA phenotypes
 	first_statsfile = pd.read_csv(aria_measurements_dir + "1027180_21015_0_0_all_segmentStats.tsv", sep='\t')
 	cols = first_statsfile.columns
@@ -225,4 +260,4 @@ if __name__ == '__main__':
 	print("NAs per phenotype")
 	print(df.isna().sum())
 
-	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_bifurcations.csv')
+	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_ARIA_mean.csv')
