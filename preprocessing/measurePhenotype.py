@@ -74,6 +74,7 @@ def getFractalDimension(imgname):
 		print("image", imgname, "does not exist")
 		return np.nan,np.nan,np.nan
 
+
 def getBifurcations(imgname):
 
 	try:
@@ -142,53 +143,51 @@ def getBifurcations(imgname):
 		print(e)
 		return np.nan
 
-<<<<<<< HEAD
-=======
 def getNumGreenPixels(imgname):
 
-	try:
-		X,Y = [],[]
-		
-		imageID = imgname.split(".")[0]	
-		with open(aria_measurements_dir + imageID + "_all_center2Coordinates.tsv") as fd:
-			rd = csv.reader(fd, delimiter='\t')
-			for row in rd:
-				X.append([float(j) for j in row])
+    try:
+        X,Y = [],[]
+        
+        imageID = imgname.split(".")[0] 
+        with open(aria_measurements_dir + imageID + "_all_center2Coordinates.tsv") as fd:
+            rd = csv.reader(fd, delimiter='\t')
+            for row in rd:
+                X.append([float(j) for j in row])
 
-		with open(aria_measurements_dir + imageID + "_all_center1Coordinates.tsv") as fd:
-			rd = csv.reader(fd, delimiter='\t')
-			for row in rd:
-				Y.append([float(j) for j in row])
+        with open(aria_measurements_dir + imageID + "_all_center1Coordinates.tsv") as fd:
+            rd = csv.reader(fd, delimiter='\t')
+            for row in rd:
+                Y.append([float(j) for j in row])
 
-		with open(aria_measurements_dir + imageID + "_all_segmentStats.tsv") as fd:
-			rd = pd.read_csv(fd, sep='\t')
-			segmentStats = rd["AVScore"]
+        with open(aria_measurements_dir + imageID + "_all_segmentStats.tsv") as fd:
+            rd = pd.read_csv(fd, sep='\t')
+            segmentStats = rd["AVScore"]
 
-		df = pd.DataFrame([])
-		df["segmentStats"] = segmentStats
+        df = pd.DataFrame([])
+        df["segmentStats"] = segmentStats
 
-		df_pintar = pd.DataFrame([])
-		df_pin = pd.DataFrame([])
-		aux = int(df.count(axis=0))
+        df_pintar = pd.DataFrame([])
+        df_pin = pd.DataFrame([])
+        aux = int(df.count(axis=0))
 
-		for i in range(aux):
-			df_pin = pd.DataFrame(X[i])
-			df_pin["Y"] = pd.DataFrame(Y[i])
-			df_pin["type"] = segmentStats[i]
-			df_pin["i"] = i
-			df_pintar = df_pintar.append(df_pin, True)
+        for i in range(aux):
+            df_pin = pd.DataFrame(X[i])
+            df_pin["Y"] = pd.DataFrame(Y[i])
+            df_pin["type"] = segmentStats[i]
+            df_pin["i"] = i
+            df_pintar = df_pintar.append(df_pin, True)
 
-		df_pintar.columns = ['X', 'Y', 'type', 'i']
-		df_pintar['type'] = np.sign(df_pintar['type'])
-		df_type_0 = df_pintar[df_pintar["type"] == 0]
-		num_green_pixels = len(df_type_0)
+        df_pintar.columns = ['X', 'Y', 'type', 'i']
+        df_pintar['type'] = np.sign(df_pintar['type'])
+        df_type_0 = df_pintar[df_pintar["type"] == 0]
+        num_green_pixels = len(df_type_0)
 
-		return num_green_pixels
+        return num_green_pixels
 
-	except Exception as e:
-		print(e)
-		return np.nan
->>>>>>> cf31879 (Add num of green pixels as phenotype, first version of neovasculature)
+    except Exception as e:
+        print(e)
+        return np.nan
+
 
 def getAriaPhenotypes(imgname):
 	imageID = imgname.split(".")[0]
