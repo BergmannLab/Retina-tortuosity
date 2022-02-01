@@ -181,6 +181,7 @@ def getNumGreenPixels(imgname):
         df_pintar['type'] = np.sign(df_pintar['type'])
         df_type_0 = df_pintar[df_pintar["type"] == 0]
         num_green_pixels = len(df_type_0)
+        print(num_green_pixels)
 
         return num_green_pixels
 
@@ -245,7 +246,7 @@ if __name__ == '__main__':
 	#computing the phenotype as a parallel process
 	os.chdir(lwnet_dir)	
 	pool = Pool()
-	out = pool.map(getBifurcations, imgfiles[0:testLen])
+	out = pool.map(getNumGreenPixels, imgfiles[0:testLen])
 	
 	# storing the phenotype	
 	
@@ -255,20 +256,20 @@ if __name__ == '__main__':
 	# bifurcations
 	#df = pd.DataFrame(out, columns=["bifurcations"])
 	
-	# AV crossings
-	#df = pd.DataFrame(out, columns=["AV_crossings"])
-	#df=df.set_index(imgfiles[0:testLen])
+	# AV N_green
+	df = pd.DataFrame(out, columns=["N_green"])
+	df=df.set_index(imgfiles[0:testLen])
 
 	# ARIA phenotypes
-	first_statsfile = pd.read_csv(aria_measurements_dir + "1027180_21015_0_0_all_segmentStats.tsv", sep='\t')
-	cols = first_statsfile.columns
-	cols_full = [i + "_all" for i in cols] + [i + "_artery" for i in cols] + [i + "_vein" for i in cols]\
-	  + [i + "_longestFifth_all" for i in cols] + [i + "_longestFifth_artery" for i in cols] + [i + "_longestFifth_vein" for i in cols]\
-	  + ["nVessels"]
-	df = pd.DataFrame(out, columns=cols_full)
-	df.index = imgfiles[0:testLen]
+	#first_statsfile = pd.read_csv(aria_measurements_dir + "1027180_21015_0_0_all_segmentStats.tsv", sep='\t')
+	#cols = first_statsfile.columns
+	#cols_full = [i + "_all" for i in cols] + [i + "_artery" for i in cols] + [i + "_vein" for i in cols]\
+	#  + [i + "_longestFifth_all" for i in cols] + [i + "_longestFifth_artery" for i in cols] + [i + "_longestFifth_vein" for i in cols]\
+	#  + ["nVessels"]
+	#df = pd.DataFrame(out, columns=cols_full)
+	#df.index = imgfiles[0:testLen]
 	print(len(df), "image measurements taken")
 	print("NAs per phenotype")
 	print(df.isna().sum())
 
-	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_bifurcations.csv')
+	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_N_green_pixels.csv')
