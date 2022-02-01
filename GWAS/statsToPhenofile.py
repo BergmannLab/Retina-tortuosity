@@ -13,12 +13,10 @@ import matplotlib.image as mpimg
 from matplotlib import cm
 import csv
 from multiprocessing import Pool
-<<<<<<< HEAD
-characteristic_measure = 'coef_var_pearson'
-=======
+
 # DEFINE the characteristic measure of interest
-characteristic_measure = 'median'
->>>>>>> 15cee55fbfe2704a491191e705d574166f55b8a2
+characteristic_measure = 'median' # options: 'median', 'mean', 'std', and 'coef_var_pearson'
+
 def getParticipantStatfiles(participant):
 	return [img.split(".png")[0]+"_all_segmentStats.tsv" for img in imgs if participant in img]
 
@@ -40,7 +38,8 @@ def getStatfilePhenotypes(statfiles):
 		except:
 			pass
 
-def segmentStatToMedian(df, phenotype, vesselType):
+# I do not think the follow is needed
+""" def segmentStatToMedian(df, phenotype, vesselType):
     if characteristic_measure == 'median':
         if vesselType == 'all':
             return [np.median(df[stat])]
@@ -69,9 +68,7 @@ def segmentStatToMedian(df, phenotype, vesselType):
             return [np.std(df[stat])/np.mean(df[stat].loc[df['AVScore'] > 0])]
         elif vesselType == 'vein':
                 return [np.std(df[stat])/np.mean(df[stat].loc[df['AVScore'] < 0])]
-
-
-    
+ """ 
 
 def nanmeanOrNan(medians, n_phenotypes):
 	if medians != []:
@@ -114,17 +111,10 @@ def allSegmentStats(inputs):
             except:
                 print("ARIA didn't have stats for img", i)
 	# at the moment we are weighting all images equally. we could also weigh them by total vasculature size as a proxy for image quality
-	means = np.concatenate((nanmeanOrNan(all_medians, n_phenotypes), nanmeanOrNan(artery_medians, n_phenotypes), nanmeanOrNan(vein_medians, n_phenotypes)))
-	if np.isnan(means).any():
+	SegmentStats_measure = np.concatenate((nanmeanOrNan(all_medians, n_phenotypes), nanmeanOrNan(artery_medians, n_phenotypes), nanmeanOrNan(vein_medians, n_phenotypes)))
+	if np.isnan(SegmentStats_measure).any():
 		print("WARNING, at least one allSegmentStats phenotype is nan")
-	return(means)
-
-
-
-
-
-
-
+	return(SegmentStats_measure)
 
 
 # pseudofunction containing old stuff that might come in handy
@@ -380,7 +370,7 @@ if __name__ == '__main__':
 	
 	# experiment id
 	DATE = datetime.now().strftime("%Y_%m_%d")
-	EXPERIMENT_NAME = "coefvarpearson"
+	EXPERIMENT_NAME = "median"
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
 
 	#input and output dirs
