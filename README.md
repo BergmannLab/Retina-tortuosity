@@ -1,24 +1,35 @@
-# How-to for the new multi-trait analysis
-For the new analysis, we decoupled image measurements from quality control. Also, running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration.
+# How-to (revamped for multitrait project)
+In the multitrait project, we decoupled image measurement from quality control. Also, running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration, as well as easy plotting (Manhattan, QQ) postprocessing of GWAS summary statistics.
 
-## Phenotype measurements
-The new script `measurePhenotype.py` contains the functions for measuring all the non-basic phenotypes. Measurements can be taken on ARIA and LWNET output, or on the raw images directly.
+## Phenotype measurement
+The new script `preprocessing/measurePhenotype.py` contains the functions for measuring all the non-basic phenotypes. Measurements can be taken on ARIA and LWNET output, or on the raw images directly.
 
 The existing functions so far:
+* ARIA measurements
 * fractal dimension
 * bifurcations
 * AV crossings
 
-To measure a specific phenotype, add a function to `measurePhenotype.py`, modify `__MAIN__` accordingly to use this function, and then run the measurements using `sbatch run_measurePhenotype.sh`.
+To measure a specific phenotype, add a function to `measurePhenotype.py`, modify `__MAIN__` to use this function and to name the output file, and then run the measurements using `sbatch run_measurePhenotype.sh`.
 
-All phenotype measurements are stored in `/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/`.
+Phenotype measurements are stored in the scratch retina folder under `UKBiob/fundus/fundus_phenotypes/`.
 
-## From image measurements to phenofile
-Using a defined QC file to be decided, the script `tbd` combines image measurements into participant-wise single-number statistics, which will be used in the GWAS.
+## Image-based phenotypes to phenofile
+Using a defined QC file, the script `GWAS/statsToPhenofile.py` combines image measurements into participant-wise single-number statistics compatible with BGENIE.
 
-Here, all phenotypes we decide to use will be combined into a single phenofile `multiTrait_phenofile_qqnorm.csv`, which we will use as the basis for all downstream analyses.
+In the multitrait projects, phenotypes of interest are combined into a single phenofile `multiTrait_phenofile_qqnorm.csv`, which we will use as the basis for all downstream analyses.
 
-# How-to for running the new, faster GWAS
+But the script can easily be modified, to use different QC or to only use specific traits:
+* Change the QC: modify the variable `KEPT_IMAGES` in `configs/config.sh`.
+* Create phenofile for specific phenotype: In `GWAS/statsToPhenofile.py` `__main__`, **1)** adapt `EXPERIMENT_NAME`, and **2)** modify list of phenotypes to go into the dataframe a few lines below
+
+To run the script, use `sbatch run_statsToPhenofile.sh`
+
+Phenofiles are stored in the scratch retina folder under `UKBiob/fundus/phenofiles/`
+
+
+
+# General how-to for the faster GWAS
 ## Running GWAS
 0) Generate your phenofile, and put it in the appropriate *EXPERIMENT_ID* folder
 1) Run your GWAS:
@@ -34,9 +45,13 @@ Here, all phenotypes we decide to use will be combined into a single phenofile `
 ## Plotting GWAS results
 If the GWAS has run successfully, this command stores QQ and Manhattan plots in the appropriate folder:
 
-`sbatch plotGWAS.sh *EXPERIMENT_ID*`
+`sbatch run_QQandManhattan.sh *EXPERIMENT_ID*`
 
 (The script is located in retina/postprocessing.)
+
+## Postprocessing
+
+`sbatch run_hit_to_csv.sh *EXPERIMENT_ID*`
 
 ## Further processing GWAS results
 

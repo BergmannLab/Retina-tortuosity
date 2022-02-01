@@ -23,6 +23,7 @@ def getParticipantStatfiles(participant):
 def getParticipantImages(participant):
         return [img for img in imgs if participant in img]
 
+
 def getStatfilePhenotypes(statfiles):
         
         # because of non-ARIA QC, some predicted statfiles might not actually exist (hence they had no ARIA output)
@@ -115,6 +116,9 @@ def allSegmentStats(inputs):
 	if np.isnan(SegmentStats_measure).any():
 		print("WARNING, at least one allSegmentStats phenotype is nan")
 	return(SegmentStats_measure)
+
+def imgToParticipant(imgs_of_participant):
+	return stats.loc[imgs_of_participant].mean()
 
 
 # pseudofunction containing old stuff that might come in handy
@@ -288,6 +292,8 @@ def oldStuff():
                     f.write("%s\t" % np.subtract(np.std(df['coefvarpearsonDiameter'].loc[diam_q4Inds])/np.mean(df['meanDiameter'].loc[diam_q4Inds]),np.std(df_vein['coefvarpearsonDiameter'].loc[diamVein_q4Inds])/np.mean(df_vein['coefvarpearsonDiameter'].loc[diamVein_q4Inds])))
                     f.write("%s\n" % np.subtract(np.std(df['coefvarpearsonDiameter'].loc[diam_q5Inds])/np.mean(df['meanDiameter'].loc[diam_q5Inds]),np.std(df_vein['coefvarpearsonDiameter'].loc[diamVein_q5Inds])/np.mean(df_vein['coefvarpearsonDiameter'].loc[diamVein_q5Inds])))
 
+# rbINT
+
 # for the following code block, the corresponding MIT License
 
 #The MIT License (MIT)
@@ -374,34 +380,41 @@ if __name__ == '__main__':
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
 
 	#input and output dirs
-	input_dir = "/data/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/" #2021_02_22_rawMeasurements/"
-	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/VesselStatsToPhenofile/" + EXPERIMENT_ID + "/"
+	input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/"
+	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/"
 	os.chdir(input_dir)
-	pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
+
+	#phenotypes
+	stats = pd.read_csv("2021-12-28_ARIA_phenotypes.csv", index_col=0)
+	tmp = pd.read_csv("2021-11-29_bifurcations.csv", index_col=0)
+	stats = stats.join(tmp)
+	tmp = pd.read_csv("2021-11-29_AV_crossings.csv", index_col=0)
+	stats = stats.join(tmp)
+	tmp = pd.read_csv("2021-11-30_fractalDimension.csv", index_col=0)
+	stats = stats.join(tmp)
+	tmp = pd.read_csv("2022_02_01_N_green_pixels.csv", index_col=0)
+	stats = stats.join(tmp)	
 
 	#QC
 	qcFile = sys.argv[1]
 	imgs = pd.read_csv(qcFile, header=None) # images that pass QC of choice
 	imgs = imgs[0].values
 	participants = sorted(list(set([i.split("_")[0] for i in imgs]))) # participants with at least one img passing QC
+	
+	#testing
 	nTest = len(participants) # len(participants) for production
 
-	#statfiles is a participant list: each element contains list of segment stat files belonging to a participant's QCd images
+	#imgs_per_participant is a participant list: each element contains list of segment stat files belonging to a participant's QCd images
 	pool1 = Pool()
-	statfiles = list(pool1.map(getParticipantStatfiles, participants[0:nTest]))	
+	imgs_per_participant = list(pool1.map(getParticipantImages, participants[0:nTest]))	
 
-	#computing participant-wise phenotypes for all the phenotypes present in ARIA segmentStats files
-	# doing so for all, artery, vein
-	names = getStatfilePhenotypes(statfiles)
-	n_stats = int(len(names)/3) # /3 because names appends _all _artery _vein
+	#computing participant-wise stats
 	pool = Pool()
-	inputs = [(i,n_stats) for i in statfiles] # tuple inputs for pool
-	out = pool.map(allSegmentStats, inputs)
+	out = pool.map(imgToParticipant, imgs_per_participant)
 	#curating participant-wise output
-	participants_stats = pd.DataFrame(out, columns=names)
-	participants_stats['participant'] = participants[0:nTest]
-	participants_stats = participants_stats.set_index('participant')	
-	print('Nb of images that pass QC:',len(imgs),'\nNb of participants with QCd images:',len(statfiles))
+	participants_stats = pd.DataFrame(out, columns=stats.columns)
+	participants_stats.index = participants[0:nTest]
+	print('Nb of images that pass QC:',len(imgs),'\nNb of participants with QCd images:',len(imgs_per_participant))
 	# quick check of how many nans we picked up along the way
 	print('\nNans per phenotype\n',participants_stats.isna().sum())
 
@@ -429,8 +442,8 @@ delimiter=" ",skiprows=2, header=None,dtype=str)
 	# saving both raw and rank-based INT
 	phenofile_out = phenofile_out.astype(str)
 	phenofile_out = phenofile_out.replace('nan', '-999')
-	phenofile_out.to_csv(output_dir+"phenofile.csv", index=False, sep=" ")
+	phenofile_out.to_csv(output_dir+EXPERIMENT_ID+".csv", index=False, sep=" ")
 
 	phenofile_out_rbINT = phenofile_out_rbINT.astype(str)
 	phenofile_out_rbINT = phenofile_out_rbINT.replace('nan', '-999')
-	phenofile_out_rbINT.to_csv(output_dir+"phenofile_qqnorm.csv", index=False, sep=" ")
+	phenofile_out_rbINT.to_csv(output_dir+EXPERIMENT_ID+"_qqnorm.csv", index=False, sep=" ")
