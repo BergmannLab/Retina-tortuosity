@@ -392,16 +392,17 @@ if __name__ == '__main__':
 	stats = stats.join(tmp)
 	tmp = pd.read_csv("2021-11-30_fractalDimension.csv", index_col=0)
 	stats = stats.join(tmp)
-	tmp = pd.read_csv("2022_02_01_N_green_pixels.csv", index_col=0)
+	tmp = pd.read_csv("2022-02-01_N_green_pixels.csv", index_col=0)
 	stats = stats.join(tmp)	
 
 	#QC
 	qcFile = sys.argv[1]
 	imgs = pd.read_csv(qcFile, header=None) # images that pass QC of choice
 	imgs = imgs[0].values
+
 	participants = sorted(list(set([i.split("_")[0] for i in imgs]))) # participants with at least one img passing QC
 	
-	#testing
+	#print(qcFile) #testing
 	nTest = len(participants) # len(participants) for production
 
 	#imgs_per_participant is a participant list: each element contains list of segment stat files belonging to a participant's QCd images
