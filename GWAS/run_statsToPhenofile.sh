@@ -11,3 +11,4 @@
 source ../configs/config.sh
 
 python3 statsToPhenofile.py $KEPT_IMAGES
+
