@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime
 
 # experiment id
-DATE = datetime.now().strftime("%Y_%m_%d")
+DATE = datetime.now().strftime("%Y-%m-%d")
 
 df_data = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/"
                       "2021-12-28_ARIA_phenotypes.csv", sep=',')
@@ -15,5 +15,5 @@ df_data['ratio_VA_medianDiameter'] = df_data['medianDiameter_vein']/df_data['med
 df_data['ratio_AV_DF'] = df_data['DF_artery']/df_data['DF_vein']
 df_data['ratio_VA_DF'] = df_data['DF_vein']/df_data['DF_artery']
 
-df_data.to_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/" + DATE + "_ratios_ARIA_phenotypes.csv", sep=',')
+df_data.to_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/" + DATE + "_ratios_ARIA_phenotypes.csv", sep=',', index= False)
 

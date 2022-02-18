@@ -231,8 +231,8 @@ if __name__ == '__main__':
 	os.chdir(input_dir)
 
 	#phenotypes
-    stats = pd.read_csv("2022_02_18_ratios_ARIA_phenotypes.csv", index_col=0)
-	#stats = pd.read_csv("2022-02-17_NeovasOD_phenotypes.csv", index_col=0)
+    #stats = pd.read_csv("2022_02_18_ratios_ARIA_phenotypes.csv", index_col=0)
+	stats = pd.read_csv("2022-02-18_ratios_ARIA_phenotypes.csv", index_col=0)
 	#tmp = pd.read_csv("2021-11-29_bifurcations.csv", index_col=0)
 	#stats = stats.join(tmp)
 	#tmp = pd.read_csv("2022-02-13_tVA_phenotypes.csv", index_col=0)
