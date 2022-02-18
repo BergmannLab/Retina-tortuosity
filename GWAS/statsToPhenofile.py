@@ -222,7 +222,7 @@ if __name__ == '__main__':
 	
 	# experiment id
 	DATE = datetime.now().strftime("%Y_%m_%d")
-	EXPERIMENT_NAME = "multitrait_ageCorrectedVentile5QC"
+	EXPERIMENT_NAME = "ratios_ageCorrectedVentile5QC"
 	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
 
 	#input and output dirs
@@ -231,13 +231,14 @@ if __name__ == '__main__':
 	os.chdir(input_dir)
 
 	#phenotypes
-	stats = pd.read_csv("2021-12-28_ARIA_phenotypes.csv", index_col=0)
-	tmp = pd.read_csv("2021-11-29_bifurcations.csv", index_col=0)
-	stats = stats.join(tmp)
-	tmp = pd.read_csv("2021-11-29_AV_crossings.csv", index_col=0)
-	stats = stats.join(tmp)
-	tmp = pd.read_csv("2021-11-30_fractalDimension.csv", index_col=0)
-	stats = stats.join(tmp)	
+    #stats = pd.read_csv("2022_02_18_ratios_ARIA_phenotypes.csv", index_col=0)
+	stats = pd.read_csv("2022-02-18_ratios_ARIA_phenotypes.csv", index_col=0)
+	#tmp = pd.read_csv("2021-11-29_bifurcations.csv", index_col=0)
+	#stats = stats.join(tmp)
+	#tmp = pd.read_csv("2022-02-13_tVA_phenotypes.csv", index_col=0)
+	#stats = stats.join(tmp)
+	#tmp = pd.read_csv("2021-11-30_fractalDimension.csv", index_col=0)
+	#stats = stats.join(tmp)	
 
 	#QC
 	qcFile = sys.argv[1]
