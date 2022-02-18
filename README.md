@@ -12,7 +12,7 @@ The existing functions so far:
 
 To measure a specific phenotype, add a function to `measurePhenotype.py`, modify `__MAIN__` to use this function and to name the output file, and then run the measurements using `sbatch run_measurePhenotype.sh`.
 
-Phenotype measurements are stored in the scratch retina folder under `UKBiob/fundus/fundus_phenotypes/`.
+Phenotype measurements are stored in the scratch retina folder: `*scratch*/retina/UKBiob/fundus/fundus_phenotypes/`.
 
 ## Image-based phenotypes to phenofile
 Using a defined QC file, the script `GWAS/statsToPhenofile.py` combines image measurements into participant-wise single-number statistics compatible with BGENIE.
@@ -25,7 +25,7 @@ But the script can easily be modified, to use different QC or to only use specif
 
 To run the script, use `sbatch run_statsToPhenofile.sh`
 
-Phenofiles are stored in the scratch retina folder under `UKBiob/fundus/phenofiles/`
+Phenofiles are stored in the scratch retina folder: `*scratch*/retina/UKBiob/fundus/phenofiles/`
 
 
 

@@ -79,9 +79,9 @@ for (i in c(1:22)){
   write(paste0("processing chromo",i), stdout())
   
   # ukbb
-  #gwasResults <- read.table(paste("output_ukb_imp_chr", i,"_v3.txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
+  gwasResults <- read.table(paste("output_ukb_imp_chr", i,"_v3.txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
   # colaus
-  gwasResults <- read.table(paste("output_CoLaus.HRC.chr", i,".MAFsubsetted.txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
+  #gwasResults <- read.table(paste("output_CoLaus.HRC.chr", i,".MAFsubsetted.txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
   
     # gwasResults <- subset( gwasResults, select = -c( 36  : 39 )) #sofia deleting tau0, beacuse is always NA
   #gwasResults[is.na(gwasResults)] <- 0 #sofia

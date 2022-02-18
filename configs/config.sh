@@ -6,8 +6,8 @@ data=/data/FAC/FBM/DBC/sbergman/retina/
 scratch=/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/
 
 # GENOTYPE INFO
-GENOTYPE_DIR=$data/UKBiob/genotypes/
-SAMPLE_FILE="$GENOTYPE_DIR"ukb_imp_v3_subset_fundus.sample
+GENOTYPE_DIR=$scratch/UKBiob/genotypes
+SAMPLE_FILE="$GENOTYPE_DIR"/ukb_imp_v3_subset_fundus.sample
 
 # RAW IMAGE DATA
 ARIA_data_dir=$data/UKBiob/fundus/REVIEW/ # UKBB

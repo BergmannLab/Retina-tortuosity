@@ -1,3 +1,5 @@
+#!/bin/R
+
 library(parallel)
 
 args = commandArgs(trailingOnly=TRUE)
@@ -44,6 +46,8 @@ process_pheno = function(pheno_name) { # FOR EACH PHENOTYPE in GWAS
     chromo_name <- paste("output_CoLaus.HRC.chr",chromo_numb,".MAFsubsetted.txt", sep="")
     gwasResults <- read.table(chromo_name, sep=" ",header=T, stringsAsFactors= F)
     gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1)
+    # colaus-specific line:
+    gwasResults <- gwasResults[gwasResults$af>0.05,]
     
     pval_header <- paste(pheno_name,".log10p",sep="")
     beta_header <- paste(pheno_name,"_beta",sep="")

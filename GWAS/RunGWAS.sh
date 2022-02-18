@@ -30,7 +30,7 @@ PARAM=$(sed "${SLURM_ARRAY_TASK_ID}q;d" $j_array_params)
 chromosome_number=$(echo $PARAM | cut -d" " -f1)
 
 chromosome_name=ukb_imp_chr"$chromosome_number"_v3
-chromosome_file=$data/UKBiob/genotypes/"$chromosome_name"_subset_fundus"$rsID_subset".bgen # for full rslist, use _subset (or _subset_fundus) instead of _subset_mini
+chromosome_file=$GENOTYPE_DIR/"$chromosome_name"_subset_fundus"$rsID_subset".bgen # for full rslist, use _subset (or _subset_fundus) instead of _subset_mini
 sample_file=$SAMPLE_FILE
 
 pheno_file=$scratch/UKBiob/fundus/phenofiles/"$experiment_id"_qqnorm.csv
