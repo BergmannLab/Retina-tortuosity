@@ -23,7 +23,7 @@ df_data.to_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus
 
 ### For measure ratios as qqnorm(Pheno1)/qqnorm(Pheno2)
 df_data_qqnorm = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/"
-                      "2021_02_13_multitrait_ageCorrectedVentile5QC_qqnorm.csv", sep=',')
+                      "2022_02_13_multitrait_ageCorrectedVentile5QC_qqnorm.csv", sep=' ')
 
 df_data_qqnorm = df_data_qqnorm[[ 'medianDiameter_all', 'medianDiameter_artery', 'medianDiameter_vein',
                    'DF_all', 'DF_artery', 'DF_vein']]
@@ -33,12 +33,12 @@ df_data_qqnorm['ind_ratio_VA_medianDiameter'] = df_data_qqnorm['medianDiameter_v
 df_data_qqnorm['ind_ratio_AV_DF'] = df_data_qqnorm['DF_artery']/df_data_qqnorm['DF_vein']
 df_data_qqnorm['ind_ratio_VA_DF'] = df_data_qqnorm['DF_vein']/df_data_qqnorm['DF_artery']
 
-df_data_qqnorm.to_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/" + DATE2 + "_ratios_ind_qqnorm_ageCorrectedVentile5QC.csv", sep=',', index= False)
+df_data_qqnorm.to_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/" + DATE2 + "_ratios_ind_ageCorrectedVentile5QC_qqnorm.csv", sep=' ', index= False)
 
 
 
 df_data2 = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/"
-                      "2021_02_13_multitrait_ageCorrectedVentile5QC.csv", sep=' ')
+                      "2022_02_13_multitrait_ageCorrectedVentile5QC.csv", sep=' ')
 
 df_data2 = df_data2[[ 'medianDiameter_all', 'medianDiameter_artery', 'medianDiameter_vein',
                    'DF_all', 'DF_artery', 'DF_vein']]
