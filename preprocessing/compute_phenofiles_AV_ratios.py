@@ -33,6 +33,11 @@ df_data_qqnorm['ind_ratio_VA_medianDiameter'] = df_data_qqnorm['medianDiameter_v
 df_data_qqnorm['ind_ratio_AV_DF'] = df_data_qqnorm['DF_artery']/df_data_qqnorm['DF_vein']
 df_data_qqnorm['ind_ratio_VA_DF'] = df_data_qqnorm['DF_vein']/df_data_qqnorm['DF_artery']
 
+df_data_qqnorm['ind_ratio_AV_medianDiameter'] = df_data_qqnorm['ind_ratio_AV_medianDiameter'].replace({1.0: -999})
+df_data_qqnorm['ind_ratio_VA_medianDiameter'] = df_data_qqnorm['ind_ratio_VA_medianDiameter'].replace({1.0: -999})
+df_data_qqnorm['ind_ratio_AV_DF'] = df_data_qqnorm['ind_ratio_AV_DF'].replace({1.0: -999})
+df_data_qqnorm['ind_ratio_VA_DF'] = df_data_qqnorm['ind_ratio_VA_DF'].replace({1.0: -999})
+
 df_data_qqnorm.to_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/" + DATE2 + "_ratios_ind_ageCorrectedVentile5QC_qqnorm.csv", sep=' ', index= False)
 
 
