@@ -706,7 +706,7 @@ if __name__ == '__main__':
 	#computing the phenotype as a parallel process
 	os.chdir(lwnet_dir)	
 	pool = Pool()
-	out = pool.map(getNeovascularizationOD, imgfiles[0:testLen])
+	out = pool.map(getNumGreenPixels, imgfiles[0:testLen])
 	
 	# storing the phenotype	
 	
@@ -723,11 +723,11 @@ if __name__ == '__main__':
 	#df = pd.DataFrame(out, columns=["tAA"])
 	
 	#  Neovascularization OD
-	df = pd.DataFrame(out, columns=["green_pixels_over_total_OD"])
+	#df = pd.DataFrame(out, columns=["green_pixels_over_total_OD"])
 
 	#  Number of green pixels	
 	#df = pd.DataFrame(out, columns=["N_total_green_pixels"]) 
-	#df = pd.DataFrame(out, columns=["N_total_green_segments"]) 
+	df = pd.DataFrame(out, columns=["N_total_green_segments"]) 
 
 	df=df.set_index(imgfiles[0:testLen])
 
@@ -743,4 +743,4 @@ if __name__ == '__main__':
 	print("NAs per phenotype")
 	print(df.isna().sum())
 
-	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_green_pixels_over_total_OD_phenotypes.csv')
+	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_N_green_segments_phenotypes.csv')
