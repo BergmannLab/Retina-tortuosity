@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from datetime import datetime
 
 # experiment id
@@ -13,10 +14,20 @@ df_data = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus
 df_data = df_data[['Unnamed: 0', 'medianDiameter_all', 'medianDiameter_artery', 'medianDiameter_vein',
                    'DF_all', 'DF_artery', 'DF_vein']]
 
+df_data['medianDiameter_vein'] = df_data['medianDiameter_vein'].replace({-999: np.nan})
+df_data['medianDiameter_artery'] = df_data['medianDiameter_artery'].replace({-999: np.nan})
+df_data['DF_vein'] = df_data['DF_vein'].replace({-999: np.nan})
+df_data['DF_artery'] = df_data['DF_artery'].replace({-999: np.nan})
+
 df_data['ratio_AV_medianDiameter'] = df_data['medianDiameter_artery']/df_data['medianDiameter_vein']
 df_data['ratio_VA_medianDiameter'] = df_data['medianDiameter_vein']/df_data['medianDiameter_artery']
 df_data['ratio_AV_DF'] = df_data['DF_artery']/df_data['DF_vein']
 df_data['ratio_VA_DF'] = df_data['DF_vein']/df_data['DF_artery']
+
+df_data['ratio_AV_medianDiameter'] = df_data['ratio_AV_medianDiameter'].replace({np.nan: -999})
+df_data['ratio_VA_medianDiameter'] = df_data['ratio_VA_medianDiameter'].replace({np.nan: -999})
+df_data['ratio_AV_DF'] = df_data['DF_vein'].replace({np.nan: -999})
+df_data['ratio_VA_DF'] = df_data['DF_artery'].replace({np.nan: -999})
 
 df_data.to_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/" + DATE + "_ratios_ARIA_phenotypes.csv", sep=',', index= False)
 
@@ -28,15 +39,25 @@ df_data_qqnorm = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob
 df_data_qqnorm = df_data_qqnorm[[ 'medianDiameter_all', 'medianDiameter_artery', 'medianDiameter_vein',
                    'DF_all', 'DF_artery', 'DF_vein']]
 
+df_data_qqnorm['medianDiameter_vein'] = df_data_qqnorm['medianDiameter_vein'].replace({-999: np.nan})
+df_data_qqnorm['medianDiameter_artery'] = df_data_qqnorm['medianDiameter_artery'].replace({-999: np.nan})
+df_data_qqnorm['DF_vein'] = df_data_qqnorm['DF_vein'].replace({-999: np.nan})
+df_data_qqnorm['DF_artery'] = df_data_qqnorm['DF_artery'].replace({-999: np.nan})
+
 df_data_qqnorm['ind_ratio_AV_medianDiameter'] = df_data_qqnorm['medianDiameter_artery']/df_data_qqnorm['medianDiameter_vein']
 df_data_qqnorm['ind_ratio_VA_medianDiameter'] = df_data_qqnorm['medianDiameter_vein']/df_data_qqnorm['medianDiameter_artery']
 df_data_qqnorm['ind_ratio_AV_DF'] = df_data_qqnorm['DF_artery']/df_data_qqnorm['DF_vein']
 df_data_qqnorm['ind_ratio_VA_DF'] = df_data_qqnorm['DF_vein']/df_data_qqnorm['DF_artery']
 
-df_data_qqnorm['ind_ratio_AV_medianDiameter'] = df_data_qqnorm['ind_ratio_AV_medianDiameter'].replace({1.0: -999})
-df_data_qqnorm['ind_ratio_VA_medianDiameter'] = df_data_qqnorm['ind_ratio_VA_medianDiameter'].replace({1.0: -999})
-df_data_qqnorm['ind_ratio_AV_DF'] = df_data_qqnorm['ind_ratio_AV_DF'].replace({1.0: -999})
-df_data_qqnorm['ind_ratio_VA_DF'] = df_data_qqnorm['ind_ratio_VA_DF'].replace({1.0: -999})
+#df_data_qqnorm['ind_ratio_AV_medianDiameter'] = df_data_qqnorm['ind_ratio_AV_medianDiameter'].replace({1.0: -999})
+#df_data_qqnorm['ind_ratio_VA_medianDiameter'] = df_data_qqnorm['ind_ratio_VA_medianDiameter'].replace({1.0: -999})
+#df_data_qqnorm['ind_ratio_AV_DF'] = df_data_qqnorm['ind_ratio_AV_DF'].replace({1.0: -999})
+#df_data_qqnorm['ind_ratio_VA_DF'] = df_data_qqnorm['ind_ratio_VA_DF'].replace({1.0: -999})
+
+df_data_qqnorm['ratio_AV_medianDiameter'] = df_data_qqnorm['ratio_AV_medianDiameter'].replace({np.nan: -999})
+df_data_qqnorm['ratio_VA_medianDiameter'] = df_data_qqnorm['ratio_VA_medianDiameter'].replace({np.nan: -999})
+df_data_qqnorm['ratio_AV_DF'] = df_data_qqnorm['DF_vein'].replace({np.nan: -999})
+df_data_qqnorm['ratio_VA_DF'] = df_data_qqnorm['DF_artery'].replace({np.nan: -999})
 
 df_data_qqnorm.to_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/" + DATE2 + "_ratios_ind_ageCorrectedVentile5QC_qqnorm.csv", sep=' ', index= False)
 
