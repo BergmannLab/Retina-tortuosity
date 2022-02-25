@@ -588,9 +588,12 @@ def getNeovascularizationOD(imgname):
 			pixels_fraction = round(pixels_fraction, 2)
 			pixels_close_OD = len(df_vessel_pixels_OD)
 			pixels_close_OD = round(pixels_close_OD, 2)
+			green_pixels_OD = df_vessel_pixels_OD[df_vessel_pixels_OD['type']==0]
+			OD_green_pixels_fraction = len(green_pixels_OD)/len(df_vessel_pixels_OD)
 		print('pixels od', pixels_close_OD)
 		print('fraction ',pixels_fraction)
-		return pixels_fraction
+		print('OD_green_pixels_fraction', OD_green_pixels_fraction)
+		return OD_green_pixels_fraction
 
 	except Exception as e:
 		print(e)
@@ -600,49 +603,50 @@ def getNeovascularizationOD(imgname):
 
 def getNumGreenPixels(imgname):
 
-    try:
-        X,Y = [],[]
-        
-        imageID = imgname.split(".")[0] 
-        with open(aria_measurements_dir + imageID + "_all_center2Coordinates.tsv") as fd:
-            rd = csv.reader(fd, delimiter='\t')
-            for row in rd:
-                X.append([float(j) for j in row])
+	try:
+		X,Y = [],[]
 
-        with open(aria_measurements_dir + imageID + "_all_center1Coordinates.tsv") as fd:
-            rd = csv.reader(fd, delimiter='\t')
-            for row in rd:
-                Y.append([float(j) for j in row])
+		imageID = imgname.split(".")[0] 
+		with open(aria_measurements_dir + imageID + "_all_center2Coordinates.tsv") as fd:
+			rd = csv.reader(fd, delimiter='\t')
+			for row in rd:
+				X.append([float(j) for j in row])
 
-        with open(aria_measurements_dir + imageID + "_all_segmentStats.tsv") as fd:
-            rd = pd.read_csv(fd, sep='\t')
-            segmentStats = rd["AVScore"]
+		with open(aria_measurements_dir + imageID + "_all_center1Coordinates.tsv") as fd:
+			rd = csv.reader(fd, delimiter='\t')
+			for row in rd:
+				Y.append([float(j) for j in row])
 
-        df = pd.DataFrame([])
-        df["segmentStats"] = segmentStats
+		with open(aria_measurements_dir + imageID + "_all_segmentStats.tsv") as fd:
+			rd = pd.read_csv(fd, sep='\t')
+			segmentStats = rd["AVScore"]
 
-        df_pintar = pd.DataFrame([])
-        df_pin = pd.DataFrame([])
-        aux = int(df.count(axis=0))
+		df = pd.DataFrame([])
+		df["segmentStats"] = segmentStats
 
-        for i in range(aux):
-            df_pin = pd.DataFrame(X[i])
-            df_pin["Y"] = pd.DataFrame(Y[i])
-            df_pin["type"] = segmentStats[i]
-            df_pin["i"] = i
-            df_pintar = df_pintar.append(df_pin, True)
+		df_pintar = pd.DataFrame([])
+		df_pin = pd.DataFrame([])
+		aux = int(df.count(axis=0))
 
-        df_pintar.columns = ['X', 'Y', 'type', 'i']
-        df_pintar['type'] = np.sign(df_pintar['type'])
-        df_type_0 = df_pintar[df_pintar["type"] == 0]
-        num_green_pixels = len(df_type_0)
-        print(num_green_pixels)
+		for i in range(aux):
+			df_pin = pd.DataFrame(X[i])
+			df_pin["Y"] = pd.DataFrame(Y[i])
+			df_pin["type"] = segmentStats[i]
+			df_pin["i"] = i
+			df_pintar = df_pintar.append(df_pin, True)
 
-        return num_green_pixels
+		df_pintar.columns = ['X', 'Y', 'type', 'i']
+		df_pintar['type'] = np.sign(df_pintar['type'])
+		df_type_0 = df_pintar[df_pintar["type"] == 0]
+		num_green_pixels = len(df_type_0)
+		num_green_segments = df_type_0['i'].nunique()
+		print(num_green_pixels, num_green_segments)
 
-    except Exception as e:
-        print(e)
-        return np.nan
+		return num_green_segments
+	
+	except Exception as e:
+		print(e)
+		return np.nan
 
 
 def getAriaPhenotypes(imgname):
@@ -702,7 +706,7 @@ if __name__ == '__main__':
 	#computing the phenotype as a parallel process
 	os.chdir(lwnet_dir)	
 	pool = Pool()
-	out = pool.map(getNeovascularizationOD, imgfiles[0:testLen])
+	out = pool.map(getNumGreenPixels, imgfiles[0:testLen])
 	
 	# storing the phenotype	
 	
@@ -719,10 +723,11 @@ if __name__ == '__main__':
 	#df = pd.DataFrame(out, columns=["tAA"])
 	
 	#  Neovascularization OD
-	df = pd.DataFrame(out, columns=["pixels_close_OD_over_total"])
+	#df = pd.DataFrame(out, columns=["green_pixels_over_total_OD"])
 
 	#  Number of green pixels	
-	#df = pd.DataFrame(out, columns=["N_total_green_pixels"])
+	#df = pd.DataFrame(out, columns=["N_total_green_pixels"]) 
+	df = pd.DataFrame(out, columns=["N_total_green_segments"]) 
 
 	df=df.set_index(imgfiles[0:testLen])
 
@@ -738,4 +743,4 @@ if __name__ == '__main__':
 	print("NAs per phenotype")
 	print(df.isna().sum())
 
-	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_NeovasOD_phenotypes.csv')
+	df.to_csv(phenotype_dir + datetime.today().strftime('%Y-%m-%d') + '_N_green_segments_phenotypes.csv')
