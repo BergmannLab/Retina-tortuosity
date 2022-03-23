@@ -14,7 +14,7 @@ source $HOME/retina/configs/config.sh
 
 # define inputs and outputs
 output_dir=$scratch/retina/GWAS/output/CreatePhenofile/23-03-2022_BMIxy/
-output=$output_dir/phenofile_BMI_2_half_3.csv
+output=$output_dir/phenofile_BMI_changes.csv
 
 # qq normalize
 qq_input=$output
