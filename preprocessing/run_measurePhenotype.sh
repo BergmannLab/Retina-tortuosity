@@ -12,3 +12,5 @@ source ../configs/config.sh
 
 # putting measurements in scratch really makes a difference! (1.5 instead of 20 minutes -> 10x speedup!!)
 python3 measurePhenotype.py $ALL_IMAGES $FUNDUS_PHENOTYPE_DIR $ARIA_MEASUREMENTS_DIR $LWNET_DIR
+
+# to add $Function
