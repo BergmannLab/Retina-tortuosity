@@ -15,13 +15,13 @@ import math
 
 
 # plot_phenotype = False
-aria_measurements_dir = '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/ARIA_MEASUREMENTS_DIR'  # sys.argv[3]
-qcFile = '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/noQC.txt'  # sys.argv[1] # qcFile used is noQCi, as we measure for all images
-phenotype_dir = '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OUTPUT'  # sys.argv[2]
-lwnet_dir = '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR'  # sys.argv[4]
-fuction_to_execute = 'green_segments'  # sys.argv[5]
-df_OD = pd.read_csv("/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OD_position_11_02_2022.csv",
-                    sep=',')
+aria_measurements_dir = sys.argv[3] #'/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/ARIA_MEASUREMENTS_DIR' 
+qcFile = sys.argv[1] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/noQC.txt'  # qcFile used is noQCi, as we measure for all images
+phenotype_dir = sys.argv[2] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OUTPUT' 
+lwnet_dir = sys.argv[4] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR'  
+# fuction_to_execute = 'green_segments'  # sys.argv[5]
+df_OD = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/OD_position_11_02_2022.csv", sep=',')
+        # pd.read_csv("/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OD_position_11_02_2022.csv", sep=',')
 
 
 def main_bifurcations(imgname: str) -> dict:
@@ -579,9 +579,9 @@ def create_output_(out, imgfiles, function_to_execute, imgfiles_length):
 
 if __name__ == '__main__':
     # command line arguments
-    qcFile = '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/noQC.txt'  # sys.argv[1] # qcFile used is noQCi, as we measure for all images
-    phenotype_dir = '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OUTPUT/'  # sys.argv[2]
-    lwnet_dir = '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR'  # sys.argv[4]
+    qcFile = sys.argv[1] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/noQC.txt'  # qcFile used is noQCi, as we measure for all images
+    phenotype_dir = sys.argv[2] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OUTPUT/' 
+    lwnet_dir = sys.argv[4] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR' 
     # fuction_to_execute posibilities: 'tva', 'taa', 'bifurcations', 'green_segments', 'neo_vascularization', 'aria_phenotypes', 'fractal_dimension', 'ratios'
     fuction_to_execute = 'tva'  # sys.argv[5]
     filter_tva_taa = 1 if fuction_to_execute == 'taa' else (-1 if fuction_to_execute == 'tva' else None)
