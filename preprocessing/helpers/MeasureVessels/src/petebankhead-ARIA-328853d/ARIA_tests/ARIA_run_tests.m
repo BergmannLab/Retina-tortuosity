@@ -124,7 +124,7 @@ if any(strcmp({'review', 'all'}, test_name))
     end
 
     % Run the processing for all image sets
-    sets = {'CLRIS'};
+    sets = {'DRIVE'}; %sets = {'CLRIS'};
     
     for ii = numel(sets):-1:1
 		processor = zeros(0); % mattia: setting preprocessor to null (the function will take care of initializing it)
