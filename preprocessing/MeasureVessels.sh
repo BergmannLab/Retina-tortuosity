@@ -1,27 +1,26 @@
 #!/bin/bash
 #SBATCH --account=sbergman_retina
 #SBATCH --job-name=MeasureVessels
-#SBATCH --output=helpers/MeasureVessels/slurm_runs_vein/slurm-%x_%j.out
-#SBATCH --error=helpers/MeasureVessels/slurm_runs_vein/slurm-%x_%j.err
+#SBATCH --output=helpers/MeasureVessels/slurm_runs/slurm-%x_%j.out
+#SBATCH --error=helpers/MeasureVessels/slurm_runs/slurm-%x_%j.err
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 1
-#SBATCH --mem 6GB
+#SBATCH --mem 6G
 #SBATCH --partition normal
 
 ####### --time 00-01:00:00
 #SBATCH --time 00-03:30:00
 
-####### --array=1-582 for full ingestion
-####### --array=1-36 for 7k sample
-#SBATCH --array=1-582
+####### --array=1-582 #UKBB
+#SBATCH --array=1-26 #CoLaus is_color=False
 
 mcr_cache_root=/tmp/$USER/MCR_CACHE_ROOT${SLURM_ARRAY_JOB_ID}_${SLURM_ARRAY_TASK_ID}
 mkdir -pv $mcr_cache_root
 export MCR_CACHE_ROOT=$mcr_cache_root
 
 ############################################################################### 
-ARIA_target="vein" # [artery|vein|all]
+ARIA_target=$TYPE_OF_VESSEL_OF_INTEREST
 ###############################################################################
 
 source $HOME/retina/configs/config.sh

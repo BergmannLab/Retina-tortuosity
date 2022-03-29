@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=sbergman_retina
-#SBATCH --job-name=StoreMeasurements_all
+#SBATCH --job-name=StoreMeasurements
 #SBATCH --output=helpers/StoreMeasurements/slurm_runs/slurm-%x_%j.out
 #SBATCH --error=helpers/StoreMeasurements/slurm_runs/slurm-%x_%j.err
 #SBATCH --nodes 1
@@ -20,9 +20,10 @@ fi
 
 source $HOME/retina/configs/config.sh
 begin=$(date +%s)
+ARIA_target=$TYPE_OF_VESSEL_OF_INTEREST
 
-run_id=$(date +%Y_%m_%d__%H_%M_%S)_all
-input_dir=$scratch/retina/preprocessing/output/MeasureVessels_all/
+run_id=$(date +%Y_%m_%d__%H_%M_%S)_"$ARIA_target"
+input_dir=$scratch/retina/preprocessing/output/MeasureVessels_"$ARIA_target"/
 archive_dir=$archive/retina/preprocessing/output/StoreMeasurements/
 backup_dir=$scratch/retina/preprocessing/output/backup/$run_id
 mkdir $backup_dir

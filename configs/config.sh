@@ -22,11 +22,6 @@ FUNDUS_PHENOTYPE_DIR=$scratch/UKBiob/fundus/fundus_phenotypes/
 # QC
 ALL_IMAGES=$data/UKBiob/fundus/index_files/noQC.txt
 KEPT_IMAGES=$data/UKBiob/fundus/index_files_ageCorrectedQC/ageCorrected_ventiles5.txt
-# quality thresholds for ARIA
-#min_QCthreshold_1=11000
-#max_QCthreshold_1=20000
-#min_QCthreshold_2=100
-#max_QCthreshold_2=250
 
 # PHENOFILES
 PHENOFILES_DIR=$scratch/UKBiob/fundus/phenofiles/
@@ -34,6 +29,9 @@ PHENOFILES_DIR=$scratch/UKBiob/fundus/phenofiles/
 # AV CLASSIFICATION IMAGE DATA
 ###AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/uncertainty/ # AVUncertain UKBB
 AV_data_dir=$data/michael/ClassifyAVLwnet/ # Lwnet UKBB
+
+# TYPE OF VESSEL OF INTEREST
+TYPE_OF_VESSEL_OF_INTEREST = "all" # [artery|vein|all]
 
 # quality thresholds of artery/vein classification
 ###AV_threshold=0.75 # A/V classification AUC around 0.95 (discard 30% of vessels with lowest classification score)
