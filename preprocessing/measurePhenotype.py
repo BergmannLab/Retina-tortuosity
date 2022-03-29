@@ -118,7 +118,7 @@ def main_num_green_segment_and_pixels(imgname: str) -> dict:
         return {'segments': np.nan, 'pixels': np.nan}
 
 
-def main_aria_phenotypes(imgname):
+def main_aria_phenotypes(imgname): # still need to modify it
     """
     :param imgname:
     :return:
@@ -161,7 +161,7 @@ def main_aria_phenotypes(imgname):
                                       84)]  # we measured 14 segment-wise stats using ARIA, for AV, and for longest quint -> 14*6+1=85, and nVessels
 
 
-def main_fractal_dimension(imgname):
+def main_fractal_dimension(imgname: str) -> dict:
     """
     :param imgname:
     :return:
@@ -172,9 +172,6 @@ def main_fractal_dimension(imgname):
         img = Image.open(imageID + "_bin_seg.png")
         img_artery = replaceRGB(img, (255, 0, 0), (0, 0, 0))
         img_vein = replaceRGB(img, (0, 0, 255), (0, 0, 0))
-        # img.save('/home/mbeyele5/im1.png')
-        # img_artery.save('/home/mbeyele5/im2.png')
-        # img_vein.save('/home/mbeyele5/im3.png')
         w, h = img.size
 
         box_sidelengths = [2, 4, 8, 16, 32, 64, 128, 256, 512]
@@ -186,18 +183,10 @@ def main_fractal_dimension(imgname):
             img_i = img.resize((w_i, h_i), resample=PIL.Image.BILINEAR)
             img_i_artery = img_artery.resize((w_i, h_i), resample=PIL.Image.BILINEAR)
             img_i_vein = img_vein.resize((w_i, h_i), resample=PIL.Image.BILINEAR)
-            # plt.figure()
-            # plt.imshow(np.asarray(img_i))
-            # plt.savefig("/users/mbeyele5/"+imageID+str(i)+".png")
 
             N_boxes.append(np_nonBlack(np.asarray(img_i)))
             N_boxes_artery.append(np_nonBlack(np.asarray(img_i_artery)))
             N_boxes_vein.append(np_nonBlack(np.asarray(img_i_vein)))
-
-        # print(box_sidelengths,N_boxes)
-        # plt.figure()
-        # plt.scatter( np.log( [1/i for i in box_sidelengths] ), np.log(N_boxes) )
-        # plt.savefig("/users/mbeyele5/"+imageID+"_scatter.png")
 
         slope, intercept, r_value, p_value, std_err = stats.linregress(np.log([1 / i for i in box_sidelengths]),
                                                                        np.log(N_boxes))
@@ -205,14 +194,16 @@ def main_fractal_dimension(imgname):
                                                                               np.log(N_boxes_artery))
         slope_vein, intercept, r_value, p_value, std_err = stats.linregress(np.log([1 / i for i in box_sidelengths]),
                                                                             np.log(N_boxes_vein))
-
-        # print(slope, intercept,r_value,p_value,std_err)
-        return slope, slope_artery, slope_vein
+        return {
+            'slope': float(slope),
+            'slope_artery': float(slope_artery),
+            'slope_vein': float(slope_vein)
+        }
 
     except Exception as e:
         print(e)
-        print("image", imgname, "does not exist")
-        return np.nan, np.nan, np.nan
+        return {'slope': np.nan, 'slope_artery': np.nan, 'slope_vein': np.nan }
+
 
 
 def get_data_unpivot(path):
