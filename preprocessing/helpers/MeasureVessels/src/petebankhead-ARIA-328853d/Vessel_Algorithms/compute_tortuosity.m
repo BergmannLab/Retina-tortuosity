@@ -1,4 +1,4 @@
-function [tau, r, centers] = compute_tortuosity(points, method, plot_curve)
+function [tau, r, centers] = compute_tortuosity(points, method)
     
     %disp('Computing tortuosity ...');
     
@@ -58,41 +58,6 @@ function [tau, r, centers] = compute_tortuosity(points, method, plot_curve)
     r = r .* curvature_sign;
     r(isnan(r))=0; 
     
-    if(plot_curve)
-        figure(1)
-        
-        subplot(2,1,1) % curve visualisation
-        
-        x_min = min(points(1,:));
-        x_max = max(points(1,:));
-        
-        y_min = min(points(2,:));
-        y_max = max(points(2,:));
-        
-        hold off
-        plot(points(1,:), points(2,:), '.-k') % plot curve
-        hold on
-        
-        % indicate absolute curvature using color
-        scatter(points(1,2:end-1), points(2,2:end-1), 15, abs(1 ./ r))
-        scatter(centers(1,:), centers(2,:), 15, abs(1 ./ r))
-        
-        % connect points of curve to centers of tangent circles
-        plot([points(1,2:end-1);centers(1,:)], [points(2,2:end-1); centers(2,:)], 'k')
-        
-        margin = 0.1;
-        margin_x = (x_max-x_min) * margin;
-        margin_y = (y_max-y_min) * margin;
-        
-        xlim([x_min-margin_x x_max+margin_x])
-        ylim([y_min-margin_y y_max+margin_y])
-        
-        subplot(2,1,2) % curvature analysis
-        
-        hold off
-        plot(t(1,2:end-1), 1 ./ r); % plot signed curvature
-        xlim([t(1) t(end)])
-    end
     
     switch(method)         
         case 1

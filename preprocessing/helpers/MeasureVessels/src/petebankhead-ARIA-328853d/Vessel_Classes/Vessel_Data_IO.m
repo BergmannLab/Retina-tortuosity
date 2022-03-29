@@ -86,19 +86,19 @@ classdef Vessel_Data_IO
                 	short_tortuosities(segmement_index,1) = DistanceFactor;
                 end
 
-                [tau1, ~, ~] = compute_tortuosity(segment.centre, 1, false);
+                [tau1, ~, ~] = compute_tortuosity(segment.centre, 1);
                 tau1s(segmement_index,1) = tau1;
-                [tau2, ~, ~] = compute_tortuosity(segment.centre, 2, false);
+                [tau2, ~, ~] = compute_tortuosity(segment.centre, 2);
                 tau2s(segmement_index,1) = tau2;
-                [tau3, ~, ~] = compute_tortuosity(segment.centre, 3, false);
+                [tau3, ~, ~] = compute_tortuosity(segment.centre, 3);
                 tau3s(segmement_index,1) = tau3;
-                [tau4, ~, ~] = compute_tortuosity(segment.centre, 4, false);
+                [tau4, ~, ~] = compute_tortuosity(segment.centre, 4);
                 tau4s(segmement_index,1) = tau4;
-                [tau5, ~, ~] = compute_tortuosity(segment.centre, 5, false);
+                [tau5, ~, ~] = compute_tortuosity(segment.centre, 5);
                 tau5s(segmement_index,1) = tau5;
-                [tau6, ~, ~] = compute_tortuosity(segment.centre, 6, false);
+                [tau6, ~, ~] = compute_tortuosity(segment.centre, 6);
                 tau6s(segmement_index,1) = tau6;
-                [tau7, ~, ~] = compute_tortuosity(segment.centre, 7, false);
+                [tau7, ~, ~] = compute_tortuosity(segment.centre, 7);
                 tau7s(segmement_index,1) = tau7;
 
             end
@@ -136,7 +136,7 @@ classdef Vessel_Data_IO
             fid = fopen(stats_file,'wt');
             fprintf(fid, stats_names);
             fclose(fid);
-            dlmwrite(stats_file,stats_array,'delimiter','\t','precision', 14,'-append');
+            dlmwrite(stats_file,stats_array,'delimiter','\t','precision', 10,'-append');
             
 
        end
