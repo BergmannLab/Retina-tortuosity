@@ -38,7 +38,8 @@ dir_images='/Users/sortinve/develop/retina/input/'$data_set'_images/'$data_set'/
 lwnet_dir=/Users/sortinve/develop/Codigos_github/lwnet/
 classification_output_dir='/Users/sortinve/develop/retina/input/'$data_set'_AV_maps/'
 dir_ARIA_output='/Users/sortinve/develop/retina/output/ARIA_output_'$data_set'/'
-ARIA_dir='/Users/sortinve/develop/retina/preprocessing/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests'
+ARIA_dir='/Users/sortinve/develop/retina/preprocessing/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/'
+MeasureVessels_dir='/Users/sortinve/develop/retina/output/VesselMeasurements/'$data_set'/'
 
 #### QUALITY THRESHOLDS OF ARTERY/VEIN CLASSIFICATION: 
 AV_threshold=0.0 # Consider all classified vessels
