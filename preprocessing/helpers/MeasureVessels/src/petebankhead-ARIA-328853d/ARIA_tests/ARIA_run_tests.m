@@ -124,12 +124,21 @@ if any(strcmp({'review', 'all'}, test_name))
     end
 
     % Run the processing for all image sets
-    sets = {'DRIVE'}; %sets = {'CLRIS'};
+    sets = {'DRIVE'}; %sets = {'CLRIS'}; CHASEDB1
     
     for ii = numel(sets):-1:1
 		processor = zeros(0); % mattia: setting preprocessor to null (the function will take care of initializing it)
         chunk_start = str2double(chunk_start); % mattia: converting input params to correct type
 		chunk_size = str2double(chunk_size); % mattia: converting params
+        disp(sets{ii})
+        disp(processor)
+        disp(chunk_start) 
+        disp(chunk_size) 
+        disp(AV_option) 
+        disp(AV_thr) 
+        disp(path_to_raw)
+        disp(path_to_AV_classified)
+        disp(path_to_output)
 		REVIEW(ii) = REVIEW_evaluate_diameter_measurements(sets{ii}, processor, chunk_start, chunk_size, AV_option, AV_thr, path_to_raw, path_to_AV_classified, path_to_output);
     end
 end

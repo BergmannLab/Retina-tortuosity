@@ -69,6 +69,8 @@ switch image_set_name
         image_ext = '.png';% mattia: changing file extension to match UKBiobank format
     case {'DRIVE'}
         image_ext = '.tif';
+    case {'CHASEDB1'}
+        image_ext = '.tif';
     case {'KPIS'}
         % There are two files for KPIS observer markings - we want the second
         observer_set_ext = ' 2.txt';

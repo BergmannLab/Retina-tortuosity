@@ -18,16 +18,13 @@ function [tau, r, centers] = compute_tortuosity(points, method)
     %   (6) tau6 = 
     %   (7) tau7 = 
     %
-    %   'plot_curve' is a Boolean: If true or absent the curve is plotted with the tangent
-    %   circles and a color scheme denoting the tortuosity
-    %
     % Outputs:
     %
     %   'tau' is a float containing the tortuosity computed for the curve defined by the input points with the specified methods
     %   'r' is a [(n-2) x 1] array for the curvature radius for all points except the first and the last
     %   'centers' is a [(n-2) x 2] array for the centers of the tangent circles for all points except the first and the last
     %
-    % Author: Sven Bergmann and Sofia Ortin Vela
+    % Author: Sven Bergmann
     % Version: v1.0 (2020)
     
     points = transpose(points);

@@ -5,7 +5,7 @@
 
 #### SELECT THE DATA SET YOU WANT TO USE:
 
-data_set=CHASEDB1 #options: DRIVE
+data_set=DRIVE #options: DRIVE
 
 
 #### SELECT NUMBER OF RAW IMAGES DEPENDING ON THE DATA SET SELECTED:
@@ -35,6 +35,7 @@ TYPE_OF_VESSEL_OF_INTEREST="all" # [artery|vein|all]
 # TO DO!: change the directories in a more automated fashion!
 
 dir_images='/Users/sortinve/develop/retina/input/'$data_set'_images/'$data_set'/'
+dir_images2='/Users/sortinve/develop/retina/input/'$data_set'_images/'
 lwnet_dir=/Users/sortinve/develop/Codigos_github/lwnet/
 classification_output_dir='/Users/sortinve/develop/retina/input/'$data_set'_AV_maps/'
 dir_ARIA_output='/Users/sortinve/develop/retina/output/ARIA_output_'$data_set'/'
