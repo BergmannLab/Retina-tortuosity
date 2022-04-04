@@ -1,4 +1,11 @@
-# CONFIG FILE for Retina pipeline
+# Config file for multitrait retina project
+
+
+
+# FREQUENTLY MODIFIED
+PHENOFILE_ID=2022_04_04_multitrait_ageCorrectedVentile5QC # date phenofile created, project, QC
+
+
 
 # BASE DIRS
 archive=/stornext/CHUV1/archive/FAC/FBM/DBC/sbergman/retina/
@@ -11,13 +18,17 @@ SAMPLE_FILE="$GENOTYPE_DIR"/ukb_imp_v3_subset_fundus.sample
 
 # RAW IMAGE DATA
 ARIA_data_dir=$data/UKBiob/fundus/REVIEW/ # UKBB
-###ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/SkiPOGH/fundus/REVIEW/ # SkiPOGH
+#ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/SkiPOGH/fundus/REVIEW/ # SkiPOGH
 raw_data_dir=$ARIA_data_dir"CLRIS/"
+raw_archive_dir=$archive/UKBiob/fundus/REVIEW/CLRIS/
 raw_data_dir_av_test=$ARIA_data_dir/CLRIS_AV_test/
 
 ARIA_MEASUREMENTS_DIR=$scratch/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/
 LWNET_DIR=$data/UKBiob/fundus/AV_maps/
+
+# IMAGE_MEASUREMENTS
 FUNDUS_PHENOTYPE_DIR=$scratch/UKBiob/fundus/fundus_phenotypes/
+
 
 # QC
 ALL_IMAGES=$data/UKBiob/fundus/index_files/noQC.txt
@@ -64,5 +75,5 @@ conda_dir=/data/FAC/FBM/DBC/sbergman/retina/software/miniconda3/
 av_uncertain_dir=/data/FAC/FBM/DBC/sbergman/retina/software/a_v_uncertain-master/
 lwnet_dir=/data/FAC/FBM/DBC/sbergman/retina/software/lwnet/
 
-# OUTPUT DIRECTORIES
+# GWAS
 GWAS_DIR=$scratch/GWAS/output/RunGWAS/

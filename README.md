@@ -1,8 +1,15 @@
-# How-to (revamped for multitrait project)
-In the multitrait project, we decoupled image measurement from quality control. Also, running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration, as well as easy plotting (Manhattan, QQ) postprocessing of GWAS summary statistics.
+# Summary (revamped for multitrait project)
+In the multitrait project, we decoupled image measurement from quality control. Also, running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration, as well as easy plotting (Manhattan, QQ) and postprocessing of GWAS summary statistics.
 
-## Phenotype measurement
-The new script `preprocessing/measurePhenotype.py` contains the functions for measuring all the non-basic phenotypes. Measurements can be taken on ARIA and LWNET output, or on the raw images directly.
+## Previous steps
+We previously processed raw fundus images in two different ways. First, using ARIA (Bankhead, 2012), we extracted centerlines of the retinal vasculature. Second, using L-WNET (Galdran 2020), we created a pixel-wise artery-vein map of the retinal vasculature. Third, using an inhouse CNN (U-Net), we predicted the optic disc position for each fundus image.
+
+Using a combination of these, here we extracted a representative set of medically relevant vascular traits of the human retina.
+
+# How-to
+
+## Taking image measurements
+The new script `preprocessing/measurePhenotype.py` contains the functions for measuring all the non-basic phenotypes. Each image in the dataset is measured, irrespective of its quality.
 
 The existing functions so far:
 * ARIA measurements
@@ -10,22 +17,25 @@ The existing functions so far:
 * bifurcations
 * AV crossings
 
-To measure a specific phenotype, add a function to `measurePhenotype.py`, modify `__MAIN__` to use this function and to name the output file, and then run the measurements using `sbatch run_measurePhenotype.sh`.
+To measure a specific phenotype
+1) add a function to `measurePhenotype.py`
+2) modify `__MAIN__` to use this function and to give a unique ID to the measurement
+3) run using `sbatch run_measurePhenotype.sh`.
 
-Phenotype measurements are stored in the scratch retina folder: `*scratch*/retina/UKBiob/fundus/fundus_phenotypes/`.
+Output location: `*scratch*/retina/UKBiob/fundus/fundus_phenotypes/`.
 
-## Image-based phenotypes to phenofile
-Using a defined QC file, the script `GWAS/statsToPhenofile.py` combines image measurements into participant-wise single-number statistics compatible with BGENIE.
+## Create BGENIE phenofile based on image measurements
+Using a defined QC file, `GWAS/statsToPhenofile.py` combines image measurements into participant-wise single-number summaries compatible with BGENIE.
 
-In the multitrait projects, phenotypes of interest are combined into a single phenofile `multiTrait_phenofile_qqnorm.csv`, which we will use as the basis for all downstream analyses.
-
-But the script can easily be modified, to use different QC or to only use specific traits:
-* Change the QC: modify the variable `KEPT_IMAGES` in `configs/config.sh`.
-* Create phenofile for specific phenotype: In `GWAS/statsToPhenofile.py` `__main__`, **1)** adapt `EXPERIMENT_NAME`, and **2)** modify list of phenotypes to go into the dataframe a few lines below
+Modifiable parts:
+* Give the phenofile a unique identifier by modifying `PHENOFILE_ID` in `configs/config.sh`
+* Change the QC: modify `KEPT_IMAGES` in `configs/config.sh` to point to file containing list of images to keep.
+* Choose image measurements to consider: In `GWAS/statsToPhenofile.py` `__main__, modify the list called `phenotypes`.
 
 To run the script, use `sbatch run_statsToPhenofile.sh`
 
-Phenofiles are stored in the scratch retina folder: `*scratch*/retina/UKBiob/fundus/phenofiles/`
+Output location: `*scratch*/retina/UKBiob/fundus/phenofiles/`
+Files created: `PHENOFILE_ID.csv` (raw traits) **`PHENOFILE_ID_qqnorm.csv`** (rank-normalized traits), `*PHENOFILE_ID*_timepoints.csv` (designating instance of each participant's)
 
 
 

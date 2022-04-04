@@ -1,6 +1,6 @@
-# a) raw ARIA measurements -> phenofile
-# or b) segment stats and image stats -> phenofile
-# ignores all images that don't pass QC!
+# converts image measurements into a phenofile usable by bgenie
+# discards all images that don't pass a given image QC
+# for any given participant, keeps only images taken at first instance if fundus images were taken at both instances
 
 import os, pathlib
 import sys
@@ -15,10 +15,30 @@ import csv
 from multiprocessing import Pool
 
 def getParticipantStatfiles(participant):
-	return [img.split(".png")[0]+"_all_segmentStats.tsv" for img in imgs if participant in img]
+        return [img.split(".png")[0]+"_all_segmentStats.tsv" for img in imgs if participant in img]
+
+def removeMultipleTimes(participant_imgs): # to adequately correct for age, we can only have images from one time point
+# also returns which time point of fundus images for given participant, to more accurately correct for age
+	times = [ i.split("_")[2] for i in participant_imgs ]
+
+	if ("0" in times) & ("1" in times): # if images from two visits present, discard later time point
+		idxs=[]
+		for idx,i in enumerate(times):
+			if i=='0':
+				idxs.append(idx)
+		return np.asarray(participant_imgs)[idxs].tolist(), 0
+
+	elif "1" in times: 	# else if only from second visit present
+		return participant_imgs, 1
+
+	else:			# else if only from first visit present
+		return participant_imgs, 0		
 
 def getParticipantImages(participant):
-        return [img for img in imgs if participant in img]
+
+	participant_imgs = [img for img in imgs if participant in img] # imgs is global variable
+	
+	return removeMultipleTimes(participant_imgs) # returning only images of first time point in case multiple time points present
 
 def imgToParticipant(imgs_of_participant):
 	return stats.loc[imgs_of_participant].mean()
@@ -220,28 +240,30 @@ def rank_to_normal(rank, c, n):
 
 if __name__ == '__main__':
 	
-	# experiment id
-	DATE = datetime.now().strftime("%Y_%m_%d")
-	EXPERIMENT_NAME = "ratios_ARIA_ageCorrectedVentile5QC"
-	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
+	# command line arguments
+	EXPERIMENT_ID = sys.argv[1]
+	qcFile = sys.argv[2]
+	input_dir = sys.argv[3]
+	output_dir = sys.argv[4]
 
-	#input and output dirs
-	input_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/"
-	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/phenofiles/"
 	os.chdir(input_dir)
 
 	#phenotypes
-    #stats = pd.read_csv("2022_02_18_ratios_ARIA_phenotypes.csv", index_col=0)
-	stats = pd.read_csv("2022-02-24_ratios_ARIA_phenotypes.csv", index_col=0)
-	#tmp = pd.read_csv("2021-11-29_bifurcations.csv", index_col=0)
-	#stats = stats.join(tmp)
-	#tmp = pd.read_csv("2022-02-13_tVA_phenotypes.csv", index_col=0)
-	#stats = stats.join(tmp)
-	#tmp = pd.read_csv("2021-11-30_fractalDimension.csv", index_col=0)
-	#stats = stats.join(tmp)	
+	measurements = ["2021-12-28_ARIA_phenotypes.csv",\
+                        "2021-11-30_fractalDimension.csv",\
+                        "2021-11-29_AV_crossings.csv",\
+                        "2022-02-04_bifurcations.csv",\
+                        "2022-02-01_N_green_pixels.csv",\
+                        "2022-02-13_tVA_phenotypes.csv"]
+	
+	for i,measurement in enumerate(measurements):
+		if i==0:
+			stats = pd.read_csv(measurement, index_col=0)
+		else:
+			tmp = pd.read_csv(measurement, index_col=0)
+			stats = stats.join(tmp)
 
 	#QC
-	qcFile = sys.argv[1]
 	imgs = pd.read_csv(qcFile, header=None) # images that pass QC of choice
 	imgs = imgs[0].values
 	participants = sorted(list(set([i.split("_")[0] for i in imgs]))) # participants with at least one img passing QC
@@ -250,10 +272,15 @@ if __name__ == '__main__':
 	nTest = len(participants) # len(participants) for production
 
 	#imgs_per_participant is a participant list: each element contains list of segment stat files belonging to a participant's QCd images
-	pool1 = Pool()
-	imgs_per_participant = list(pool1.map(getParticipantImages, participants[0:nTest]))	
+	print('Start of getParticipantImages pool')
+	pool1 = Pool(processes=1)
+	out = list(pool1.map(getParticipantImages, participants[0:nTest]))
+	imgs_per_participant = [i[0] for i in out]
+	instance_per_participant = [ i[1] for i in out ]
+	instance_df = pd.DataFrame(columns=['instance'], index=participants[0:nTest], data=instance_per_participant)
 
 	#computing participant-wise stats
+	print('start of imgToParticipant pool')
 	pool = Pool()
 	out = pool.map(imgToParticipant, imgs_per_participant)
 	#curating participant-wise output
@@ -263,28 +290,23 @@ if __name__ == '__main__':
 	# quick check of how many nans we picked up along the way
 	print('\nNans per phenotype\n',participants_stats.isna().sum())
 
-
-	# your other cool phenotypes go here
-	# you can then concatenate with existing phenofile
-	# needs function -> image\tmeasurement1\tmeasurement2... -> participant stats
-
-
 	# now that all is measured, we reorder to match sample file, then storing into phenofile
 	# also saving rank-based INT version of phenotype and storing it
-
 	fundus_samples = pd.read_csv("/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/ukb_imp_v3_subset_fundus.sample",\
 delimiter=" ",skiprows=2, header=None,dtype=str)
 	phenofile_out = pd.DataFrame(index = fundus_samples[0], columns = participants_stats.columns, data=np.nan)
-	
+	instances_out = pd.DataFrame(index = fundus_samples[0], columns = ['instance'])	
+
 	#creating phenofile, accounting for missing genotypes
 	idx = [i for i in participants_stats.index if i in phenofile_out.index]
 	print(len(idx))	
 	phenofile_out.loc[idx] = participants_stats.loc[idx]
+	instances_out.loc[idx] = instance_df.loc[idx]
 	
 	#creating rank-based INT phenofile
 	phenofile_out_rbINT = phenofile_out.apply(rank_INT)
 	
-	# saving both raw and rank-based INT
+	# saving both raw and rank-based INT, and instance list
 	phenofile_out = phenofile_out.astype(str)
 	phenofile_out = phenofile_out.replace('nan', '-999')
 	phenofile_out.to_csv(output_dir+EXPERIMENT_ID+".csv", index=False, sep=" ")
@@ -292,3 +314,5 @@ delimiter=" ",skiprows=2, header=None,dtype=str)
 	phenofile_out_rbINT = phenofile_out_rbINT.astype(str)
 	phenofile_out_rbINT = phenofile_out_rbINT.replace('nan', '-999')
 	phenofile_out_rbINT.to_csv(output_dir+EXPERIMENT_ID+"_qqnorm.csv", index=False, sep=" ")
+
+	instances_out.to_csv(output_dir+EXPERIMENT_ID+"_instances.csv")
