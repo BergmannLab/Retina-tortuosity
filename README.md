@@ -1,5 +1,7 @@
 # Summary (revamped for multitrait project)
-In the multitrait project, we decoupled image measurement from quality control. Also, running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration, as well as easy plotting (Manhattan, QQ) and postprocessing of GWAS summary statistics.
+In this project, we aim to parametrize retinal vascular morphology using a collection of medically relevant traits. We do this by implementing their automatic measurement of a collection in the UK Biobank fundus dataset.
+
+Operationally, (1)  we decoupled image measurement from quality control, and (2) running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration, as well as easy plotting (Manhattan, QQ) and postprocessing of GWAS summary statistics.
 
 ## Previous steps
 We previously processed raw fundus images in two different ways. First, using ARIA (Bankhead, 2012), we extracted centerlines of the retinal vasculature. Second, using L-WNET (Galdran 2020), we created a pixel-wise artery-vein map of the retinal vasculature. Third, using an inhouse CNN (U-Net), we predicted the optic disc position for each fundus image.
