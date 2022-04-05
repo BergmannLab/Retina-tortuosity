@@ -1,3 +1,4 @@
+import itertools
 import os, sys
 from datetime import datetime
 import pandas as pd
@@ -20,6 +21,7 @@ qcFile = sys.argv[1] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/
 phenotype_dir = sys.argv[2] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OUTPUT' 
 lwnet_dir = sys.argv[4] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR'  
 # fuction_to_execute = 'green_segments'  # sys.argv[5]
+# To modify!
 df_OD = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/OD_position_11_02_2022.csv", sep=',')
         # pd.read_csv("/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OD_position_11_02_2022.csv", sep=',')
 
@@ -66,12 +68,14 @@ def main_tva_or_taa(imgname_and_filter: str and int) -> dict:
         OD_position = df_OD[df_OD['image'] == imgname]
         OD_position.dropna(subset=['center_x_y'], inplace=True)
         return {
-            'mean_angle': compute_mean_angle(df_pintar, OD_position, filter_type) if not OD_position.empty else None
+            'mean_angle': None
+            if OD_position.empty
+            else compute_mean_angle(df_pintar, OD_position, filter_type)
         }
+
     except Exception as e:
         print(e)
-        return {
-            'mean_angle': np.nan}
+        return {'mean_angle': np.nan}
 
 
 def main_neo_vascularization_od(imgname: str) -> dict:
@@ -84,13 +88,15 @@ def main_neo_vascularization_od(imgname: str) -> dict:
         df_pintar = read_data(imageID)
         df_pintar['type'] = np.sign(df_pintar['type'])
         OD_position = df_OD[df_OD['image'] == imgname]
-        return compute_neo_vascularization_od(df_pintar, OD_position) if not OD_position.empty else None
+        return (
+            None
+            if OD_position.empty
+            else compute_neo_vascularization_od(df_pintar, OD_position)
+        )
+
     except Exception as e:
         print(e)
-        return {
-            'pixels_fraction': np.nan,
-            'od_green_pixel_fraction': np.nan
-        }
+        return {'pixels_fraction': np.nan, 'od_green_pixel_fraction': np.nan}
 
 
 def main_num_green_segment_and_pixels(imgname: str) -> dict:
@@ -118,7 +124,7 @@ def main_num_green_segment_and_pixels(imgname: str) -> dict:
         return {'segments': np.nan, 'pixels': np.nan}
 
 
-def main_aria_phenotypes(imgname): # still need to modify it
+def main_aria_phenotypes(imgname):    # still need to modify it
     """
     :param imgname:
     :return:
@@ -146,10 +152,9 @@ def main_aria_phenotypes(imgname): # still need to modify it
         except Exception as e:
             print(e)
             print("longest 5th failed")
-            quintStats_all = [np.nan for i in range(0, 14)]
+            quintStats_all = [np.nan for _ in range(14)]
             quintStats_artery = quintStats_all
             quintStats_vein = quintStats_all
-
         df_im = pd.read_csv(aria_measurements_dir + imageID + "_all_imageStats.tsv", delimiter='\t')
 
         return np.concatenate((all_medians, artery_medians, vein_medians, quintStats_all, \
@@ -157,8 +162,7 @@ def main_aria_phenotypes(imgname): # still need to modify it
     except Exception as e:
         print(e)
         print("ARIA didn't have stats for img", imageID)
-        return [np.nan for i in range(0,
-                                      84)]  # we measured 14 segment-wise stats using ARIA, for AV, and for longest quint -> 14*6+1=85, and nVessels
+        return [np.nan for _ in range(84)]
 
 
 def main_fractal_dimension(imgname: str) -> dict:
@@ -216,7 +220,7 @@ def get_data_unpivot(path):
     # Split by tab and expand columns
     with open(path) as fd:
         rd_2 = csv.reader(fd, delimiter='\t')
-        df = pd.DataFrame([row for row in rd_2])
+        df = pd.DataFrame(list(rd_2))
     # get index in order to get the each segment id
     df.reset_index(inplace=True)
     # unpivot dataframe to get all the segments coordinates in one column
@@ -333,18 +337,24 @@ def bifurcation_counter(df_results):
             j = j + s
             # For X and Y: X[s] - cte <= X[j] <= X[s]
             # Both arteries or both veins and != type 0
-            if (x[j] >= x[s] - cte) and (x[j] <= x[s] + cte):
-                if (y[j] >= y[s] - cte) and (y[j] <= y[s] + cte):
-                    if index_v[j] != index_v[s]:
-                        if (dis_type[j] == dis_type[s]) and \
-                                (dis_type[j] != 0 or dis_type[s] != 0):
-                            if (x[j] != X_1_aux and x[s] != X_1_aux and
-                                    x[j] != X_2_aux and x[s] != X_2_aux):
-                                bif_counter = bif_counter + 1
-                                X_1_aux = x[s]
-                                X_2_aux = x[j]
-                else:
-                    continue
+            if (
+                (x[j] >= x[s] - cte)
+                and (x[j] <= x[s] + cte)
+                and (y[j] >= y[s] - cte)
+                and (y[j] <= y[s] + cte)
+                and index_v[j] != index_v[s]
+                and (dis_type[j] == dis_type[s])
+                and (dis_type[j] != 0 or dis_type[s] != 0)
+                and (
+                    x[j] != X_1_aux
+                    and x[s] != X_1_aux
+                    and x[j] != X_2_aux
+                    and x[s] != X_2_aux
+                )
+            ):
+                bif_counter = bif_counter + 1
+                X_1_aux = x[s]
+                X_2_aux = x[j]
     return bif_counter
 
 
@@ -388,28 +398,27 @@ def compute_potential_vein_arteries(df_veins_arter, od_position):
     veins_art_index = df_veins_arter['index'].values
     veins_art_diameter = df_veins_arter['Diameter'].values
     veins_art_type = df_veins_arter['type'].values
-    for i in range(df_veins_arter.shape[0] - 1):
-        for j in range(df_veins_arter.shape[0] - 2):
-            lineA = ((od_position['x'].iloc[0], od_position['y'].iloc[0]), (veins_art_x[i], veins_art_y[i]))
-            lineB = ((od_position['x'].iloc[0], od_position['y'].iloc[0]), (veins_art_x[j], veins_art_y[j]))
-            if i == j:
-                continue
-            angulo = ang(lineA, lineB)
-            angulo = round(angulo, 0)
-            data = {
-                'X_1': veins_art_x[i],
-                'Y_1': veins_art_y[i],
-                'Diameter_1': veins_art_diameter[i],
-                'type_1': veins_art_type[i],
-                'i_1': veins_art_index[i],
-                'X_2': veins_art_x[j],
-                'Y_2': veins_art_y[j],
-                'Diameter_2': veins_art_diameter[j],
-                'type_2': veins_art_type[j],
-                'i_2': veins_art_index[j],
-                'angle': angulo
-            }
-            aux.append(data)
+    for i, j in itertools.product(range(df_veins_arter.shape[0] - 1), range(df_veins_arter.shape[0] - 2)):
+        lineA = ((od_position['x'].iloc[0], od_position['y'].iloc[0]), (veins_art_x[i], veins_art_y[i]))
+        lineB = ((od_position['x'].iloc[0], od_position['y'].iloc[0]), (veins_art_x[j], veins_art_y[j]))
+        if i == j:
+            continue
+        angulo = ang(lineA, lineB)
+        angulo = round(angulo, 0)
+        data = {
+            'X_1': veins_art_x[i],
+            'Y_1': veins_art_y[i],
+            'Diameter_1': veins_art_diameter[i],
+            'type_1': veins_art_type[i],
+            'i_1': veins_art_index[i],
+            'X_2': veins_art_x[j],
+            'Y_2': veins_art_y[j],
+            'Diameter_2': veins_art_diameter[j],
+            'type_2': veins_art_type[j],
+            'i_2': veins_art_index[j],
+            'angle': angulo
+        }
+        aux.append(data)
     return pd.DataFrame(aux)
 
 
@@ -489,7 +498,11 @@ def compute_mean_angle_with_mode(df_final_vote):
     :return:
     """
     df_final = get_angle_mode(df_final_vote)
-    return df_final['angle'].mean() if df_final.shape[0] >= 3 and not df_final['angle'].mean() == 0.0 else None
+    return (
+        df_final['angle'].mean()
+        if df_final.shape[0] >= 3 and df_final['angle'].mean() != 0.0
+        else None
+    )
 
 
 def compute_mean_angle(df_pintar, OD_position, filter_type=-1):

@@ -11,6 +11,6 @@
 source ../configs/config_sofia.sh
 
 # putting measurements in scratch really makes a difference! (1.5 instead of 20 minutes -> 10x speedup!!)
-python3 measurePhenotype_sofia.py $ALL_IMAGES $phenotypes_dir $dir_ARIA_output $classification_output_dir
+python3 measurePhenotype.py $ALL_IMAGES $phenotypes_dir $dir_ARIA_output $classification_output_dir
 
 # to add $Function
