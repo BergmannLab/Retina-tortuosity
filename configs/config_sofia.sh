@@ -4,8 +4,8 @@
 
 
 #### SELECT THE DATA SET YOU WANT TO USE:
-data_set=DRIVE #options: DRIVE
-
+data_set=DRIVE #options: DRIVE, IOSTAR, CHASEDB1
+image_type=*.tif #opttions: *.jpg, *.tif
 #### TYPE_OF_VESSEL_OF_INTEREST:
 TYPE_OF_VESSEL_OF_INTEREST="all" # [artery|vein|all] 
 
@@ -21,6 +21,8 @@ if [ "$data_set" = "CHASEDB1" ]; then
     num_images=28 #28
 elif [ "$data_set" = "DRIVE" ]; then
     num_images=20 #20
+elif [ "$data_set" = "IOSTAR" ]; then
+    num_images=30 #30
 else
     num_images=0 # TO DO: Add error!
 fi

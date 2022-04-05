@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash  ##TO DO, can we delete???
 #SBATCH --account=sbergman_retina
 #SBATCH --job-name=⚡lwnet⚡
 #SBATCH --output=helpers/ClassifyAVUncertain/slurm_runs/slurm-%x_%j.out
@@ -11,10 +11,21 @@
 #SBATCH --time 01:30:00
 #SBATCH --array=1-582
 
+#### Read the vairables requiered from config.sh:
 source ../configs/config_sofia.sh
 begin=$(date +%s)
-#echo pwd $PWD
 
+#### Create the folder where the after preprocessing images are going to be located (for the dataset selected):
+mkdir $dir_images
+
+#### Preprocessing: .png format, avoid spaces in names, and create file with images names:
+python basic_preprocessing.py $dir_images2 $dir_images $image_type
+
+#### Create the folder where the AV maps are going to be located (for the dataset selected):
+mkdir $classification_output_dir
+
+#### Artery Vein segementation using WNET:
+## TO DO: analyze more than one image at the time
 cd $lwnet_dir
 raw_imgs=( "$dir_images"* )
 for i in $(eval echo "{1..$num_images}"); do
