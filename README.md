@@ -38,13 +38,21 @@ Using a defined QC file, `GWAS/statsToPhenofile.py` combines image measurements 
 Modifiable parts:
 * Give the phenofile a unique identifier by modifying `PHENOFILE_ID` in `configs/config.sh`
 * Change the QC: modify `KEPT_IMAGES` in `configs/config.sh` to point to file containing list of images to keep.
-* Choose image measurements to consider: In `GWAS/statsToPhenofile.py` `__main__, modify the list called `phenotypes`.
+* Choose which image measurements are going into the phenofile: In `GWAS/statsToPhenofile.py` `__main__, modify the list called `phenotypes`.
 
 To run the script, use `sbatch run_statsToPhenofile.sh`
 
 Output location: `*scratch*/retina/UKBiob/fundus/phenofiles/`
 Files created: `PHENOFILE_ID.csv` (raw traits) **`PHENOFILE_ID_qqnorm.csv`** (rank-normalized traits), `*PHENOFILE_ID*_timepoints.csv` (designating instance of each participant's)
 
+## Create corresponding covariates file
+`./run_extractCovariates.sh`
+
+In `configs/config.sh`, specify `NB_PCS`, how many PCs are included as covariates.
+In `GWAS/extractCovariates.py`, further choose which UKBB datafields to choose as covariates. Currently used:
+1) sex
+2-3) age and age-squared when visiting assessment center
+4-23) 20 PCs
 
 
 # General how-to for the faster GWAS
