@@ -13,13 +13,12 @@
 #SBATCH --array=1-22
 
 # HOW-TO
-# sbatch RunGWAS.sh *experiment_id* [affymetrix/mini/*empty for full GWAS*]
+# sbatch RunGWAS.sh [affymetrix/mini/*empty for full GWAS*]
 
-experiment_id=$1
-if [ $# -eq 2 ]; then # second argument is affymetrix/mini
-	rsID_subset=_"$2"
+if [ $# -eq 1 ]; then # second argument is affymetrix/mini
+	rsID_subset=_"$1"
 else
-	rsID_subset=$2
+	rsID_subset=$1
 fi
 
 source ../configs/config.sh
@@ -33,13 +32,13 @@ chromosome_name=ukb_imp_chr"$chromosome_number"_v3
 chromosome_file=$GENOTYPE_DIR/"$chromosome_name"_subset_fundus"$rsID_subset".bgen # for full rslist, use _subset (or _subset_fundus) instead of _subset_mini
 sample_file=$SAMPLE_FILE
 
-pheno_file=$scratch/UKBiob/fundus/phenofiles/"$experiment_id"_qqnorm.csv
+pheno_file=$scratch/UKBiob/fundus/phenofiles/"$PHENOFILE_ID"_qqnorm.csv
 head $pheno_file
 
-covar_file=$scratch/GWAS/output/ExtractCovariatePhenotypes/2020_10_03_final_covar/final_covar_fundus.csv # now using bgen containing only  participants with at least one fundus image taken
+covar_file=$PHENOFILES_DIR/"$PHENOFILE_ID"_covar.csv
 output_file_name=output_"$chromosome_name".txt
 # prepare output dir
-output_dir="$scratch"/GWAS/output/RunGWAS/"$experiment_id""$rsID_subset"
+output_dir="$scratch"/GWAS/output/RunGWAS/"$PHENOFILE_ID""$rsID_subset"
 mkdir -p $output_dir
 # storing phenotype list and sample sizes, doing it only once
 if [ ${SLURM_ARRAY_TASK_ID} = 1 ]; then

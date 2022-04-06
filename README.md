@@ -1,12 +1,18 @@
 # Summary (revamped for multitrait project)
-In this project, we aim to parametrize retinal vascular morphology using a collection of medically relevant traits. We do this by implementing their automatic measurement of a collection in the UK Biobank fundus dataset.
+In this project, we aim at parametrizing retinal vascular morphology. To do this, we first define a collection of medically relevant vascular traits traits. We then implement their automatic measurement from the UK Biobank fundus dataset.
 
 Operationally, (1)  we decoupled image measurement from quality control, and (2) running GWAS is faster and includes the option of running a minimalistic Affymetrix GWAS for exploration, as well as easy plotting (Manhattan, QQ) and postprocessing of GWAS summary statistics.
 
 ## Previous steps
-We previously processed raw fundus images in two different ways. First, using ARIA (Bankhead, 2012), we extracted centerlines of the retinal vasculature. Second, using L-WNET (Galdran 2020), we created a pixel-wise artery-vein map of the retinal vasculature. Third, using an inhouse CNN (U-Net), we predicted the optic disc position for each fundus image.
+We previously processed raw fundus images in three different ways. First, we used ARIA (Bankhead, 2012) to extract centerlines, diameters and to measure tortuosity of the vasculature. Second, we used L-WNET (Galdran 2020) to create a pixel-wise artery-vein map of the fundus images. Third, we predicted the optic disc position and size using an incous convolutional neural network CNN (U-Net).
 
-Using a combination of these, here we extracted a representative set of medically relevant vascular traits of the human retina.
+Using a combination of these as input, the code in this repository allows for automatic measurement of a set of additional retinal traits. They include:
+* artery-vein crossings
+* bifurcations
+* fractal dimension (FD)
+* vascular density
+* vascular length
+* ...
 
 # How-to
 
