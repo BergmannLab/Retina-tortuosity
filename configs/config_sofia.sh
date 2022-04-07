@@ -16,7 +16,7 @@ PHENOTYPE_OF_INTEREST='green_segments' #posibilities: 'tva', 'taa', 'bifurcation
 ###############################################################################
 
 #### SELECT NUMBER OF RAW IMAGES DEPENDING ON THE DATA SET SELECTED:
-# TO DO: INSTEAD OF DEFINE IT COUNT THE NUMBER OF IMAGES IN THE FOLDER!
+# TO DO: INSTEAD OF DEFINE IT COUNT THE NUMBER OF IMAGES IN THE FOLDER!  using: ls | wc -l
 if [ "$data_set" = "CHASEDB1" ]; then
     num_images=28 #28
 elif [ "$data_set" = "DRIVE" ]; then

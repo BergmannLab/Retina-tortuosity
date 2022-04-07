@@ -33,6 +33,8 @@ for i in $(eval echo "{1..$num_images}"); do
     python predict_one_image_av.py --model_path experiments/big_wnet_drive_av/ --im_path $image --result_path $classification_output_dir
 done
 
+python /Users/sortinve/develop/retina/preprocessing/Change_the_name_LWNEToutput.py $classification_output_dir
+
 echo FINISHED: Images have been classified, and written to $classification_output_dir
 end=$(date +%s) # calculate execution time
 tottime=$(expr $end - $begin)

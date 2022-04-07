@@ -67,13 +67,11 @@ switch image_set_name
         image_set_name = 'HRIS';
     case {'CLRIS'}
         image_ext = '.png';% mattia: changing file extension to match UKBiobank format
-    case {'DRIVE'}
-        image_ext = '.tif';
-    case {'CHASEDB1'}
-        image_ext = '.tif';
     case {'KPIS'}
         % There are two files for KPIS observer markings - we want the second
         observer_set_ext = ' 2.txt';
+    otherwise
+        image_ext = '.png';
 end
 
 % Get the directory containing the images of interest
@@ -123,6 +121,7 @@ for ii = chunk_end:-1:chunk_start  %mattia: updating for loop accordingly
 
     % Apply the automated detection & measurement processing
     file_name = [dir_images, fn_im(ii).name]; % raw get image
+    disp(file_name)
     AV_file_name = [path_to_AV_classified, fn_im(ii).name]; % raw AV uncertain map image
 	try
         disp(strcat("processing: ", fn_im(ii).name))

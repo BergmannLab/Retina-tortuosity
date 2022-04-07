@@ -1,7 +1,7 @@
 % SOFIA -> ARIA_run_tests 0 REVIEW ../../input/fundus/REVIEW/ ../../input/AV_maps/ all 0.79 ./ 1 5 ../../output
 % ARIA_run_tests 0 REVIEW ../../fundus_UKBB/REVIEW/ ../../AV_maps/ [artery|vein|all] 0.79 ./ 1 3 11000 20000 100 250 ../../output
 % ARIA_run_tests 0 REVIEW /data/soin/retina/OphtalmoLaus/fundus/REVIEW/ /data/soin/retina/OphtalmoLaus/AV_maps/ all 0.0 /home/ch_mattiatomasoni/retina/preprocessing/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/ 1 10 11000 20000 100 250 /data/soin/_scratch/retina/preprocessing/output/MeasureVessels_all/
-function ARIA_run_tests(f_name, test_name, path_to_raw, path_to_AV_classified, AV_option, AV_thr, script_dir, chunk_start, chunk_size, path_to_output)
+function ARIA_run_tests(f_name, test_name, path_to_raw, path_to_AV_classified, AV_option, AV_thr, script_dir, chunk_start, chunk_size, path_to_output, set_name)
 % Run all the tests using ARIA to create the results reported in the paper
 % 'Fast retinal vessel detection and measurement using wavelets and edge
 % location refinement'.
@@ -119,13 +119,14 @@ end
 if any(strcmp({'review', 'all'}, test_name))
     % Run the REVIEW tests for each image database
     if fid ~= 1
-        %disp('Running REVIEW vessel measurement test...'); % mattia
-        disp('Running vessel measurements...');
+        disp('Running vessel measurements...'); % mattia
     end
 
     % Run the processing for all image sets
-    sets = {'DRIVE'}; %sets = {'CLRIS'}; CHASEDB1
-    
+    disp(set_name)
+    sets = {set_name};
+    %sets = {'CLRIS'}; CHASEDB1 DRIVE....TO DO AUTOMATE!
+    disp(sets)
     for ii = numel(sets):-1:1
 		processor = zeros(0); % mattia: setting preprocessor to null (the function will take care of initializing it)
         chunk_start = str2double(chunk_start); % mattia: converting input params to correct type
