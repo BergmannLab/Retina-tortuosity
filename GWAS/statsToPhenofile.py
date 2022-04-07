@@ -303,6 +303,9 @@ delimiter=" ",skiprows=2, header=None,dtype=str)
 	phenofile_out.loc[idx] = participants_stats.loc[idx]
 	instances_out.loc[idx] = instance_df.loc[idx]
 	
+	#removing all participants with at least one phenotype being NaN (PascalX requirement)
+	phenofile_out[phenofile_out.isna().any(axis=1)] = np.nan
+		
 	#creating rank-based INT phenofile
 	phenofile_out_rbINT = phenofile_out.apply(rank_INT)
 	
