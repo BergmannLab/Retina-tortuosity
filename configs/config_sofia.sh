@@ -56,5 +56,5 @@ AV_threshold=0.0 # Consider all classified vessels
 
 
 #### OTRAS para modificiar?
-ALL_IMAGES=$data/UKBiob/fundus/index_files/noQC.txt
+ALL_IMAGES=$dir_images2/noQC.txt
 
