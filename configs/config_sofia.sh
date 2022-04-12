@@ -32,9 +32,9 @@ echo Number of images equal to $num_images
 
 
 # quality thresholds for ARIA
-min_QCthreshold_1=11000
+min_QCthreshold_1=1100
 max_QCthreshold_1=20000
-min_QCthreshold_2=100
+min_QCthreshold_2=50
 max_QCthreshold_2=250
 
 

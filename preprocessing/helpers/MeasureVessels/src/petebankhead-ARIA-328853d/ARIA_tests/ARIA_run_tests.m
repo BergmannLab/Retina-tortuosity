@@ -222,7 +222,15 @@ if any(strcmp({'review', 'all'}, test_name))
 		processor = zeros(0); % mattia: setting preprocessor to null (the function will take care of initializing it)
         chunk_start = str2double(chunk_start); % mattia: converting input params to correct type
 		chunk_size = str2double(chunk_size); % mattia: converting params
-        disp(path_to_output)
+        disp(sets{ii})
+        disp(processor)
+        disp(chunk_start) 
+        disp(chunk_size) 
+        disp(AV_option) 
+        disp(AV_thr) 
+        disp(path_to_raw)
+        disp(path_to_AV_classified)
+
 		REVIEW(ii) = REVIEW_evaluate_diameter_measurements(sets{ii}, processor, chunk_start, chunk_size, AV_option, AV_thr, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, path_to_raw, path_to_AV_classified, path_to_output);
     end
 
