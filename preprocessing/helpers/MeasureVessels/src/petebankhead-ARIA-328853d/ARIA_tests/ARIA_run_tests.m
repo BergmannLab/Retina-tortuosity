@@ -1,4 +1,7 @@
 % ARIA_run_tests 0 REVIEW ../../fundus_UKBB/REVIEW/ ../../AV_maps/ [artery|vein|all] 0.79 ./ 1 3 11000 20000 100 250 ../../output
+% 0 REVIEW /Users/sortinve/develop/retina/input/DRIVE_images/
+% /Users/sortinve/develop/retina/input/DRIVE_AV_maps/ all 0.0
+% /Users/sortinve/develop/retina/preprocessing/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/ 1 20 1100 20000 50 250 /Users/sortinve/develop/retina/output/ARIA_output_DRIVE/ D
 % ARIA_run_tests 0 REVIEW /data/soin/retina/OphtalmoLaus/fundus/REVIEW/ /data/soin/retina/OphtalmoLaus/AV_maps/ all 0.0 /home/ch_mattiatomasoni/retina/preprocessing/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/ 1 10 11000 20000 100 250 /data/soin/_scratch/retina/preprocessing/output/MeasureVessels_all/
 function ARIA_run_tests(f_name, test_name, path_to_raw, path_to_AV_classified, AV_option, AV_thr, script_dir, chunk_start, chunk_size, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, path_to_output, set_name)
 % Run all the tests using ARIA to create the results reported in the paper

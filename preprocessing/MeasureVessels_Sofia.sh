@@ -26,8 +26,9 @@ script_dir=$PWD/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/
 chunk_start=1 # TO DO!: CHANGE TO MAKE MORE EFFICIENT
 
 script_parmeters="0 REVIEW $dir_images2 $classification_output_dir $TYPE_OF_VESSEL_OF_INTEREST $AV_threshold $script_dir $chunk_start $num_images  $min_QCthreshold_1 $max_QCthreshold_1 $min_QCthreshold_2 $max_QCthreshold_2 $dir_ARIA_output $data_set"
-
+# ARIA_run_tests 0 REVIEW /Users/sortinve/develop/retina/input/DRIVE_images/ /Users/sortinve/develop/retina/input/DRIVE_AV_maps/ all 0.0 /Users/sortinve/develop/retina/preprocessing/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/ 1 20 1100 20000 50 250 /Users/sortinve/develop/retina/output/ARIA_output_DRIVE/ DRIVE
 #OPTION 1
+# TO DO: there are many 'warning' errors when running Matlab
 cd $script_dir && /Applications/MATLAB_R2020b.app/bin/matlab -nodisplay -nosplash -nodesktop -r "addpath(genpath('/Users/sortinve/develop/retina/'));ARIA_run_tests $script_parmeters ;quit;"
 
 #OPTION 2: if only INTERPRETER IS AVAILABLE
