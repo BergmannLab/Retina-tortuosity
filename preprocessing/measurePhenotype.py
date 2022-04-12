@@ -6,25 +6,26 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib import cm
-import seaborn
+#import seaborn
 import csv
 from multiprocessing import Pool
 from PIL import Image
 import PIL
 from scipy import stats
 import math
-
+import cv2
 
 # plot_phenotype = False
 aria_measurements_dir = sys.argv[3] #'/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/ARIA_MEASUREMENTS_DIR' 
 qcFile = sys.argv[1] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/noQC.txt'  # qcFile used is noQCi, as we measure for all images
 phenotype_dir = sys.argv[2] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OUTPUT' 
 lwnet_dir = sys.argv[4] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR'  
-# fuction_to_execute = 'green_segments'  # sys.argv[5]
+function_to_execute = sys.argv[5]
 # To modify!
 df_OD = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/OD_position_11_02_2022.csv", sep=',')
         # pd.read_csv("/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OD_position_11_02_2022.csv", sep=',')
 
+mask_radius=660 # works for UKBB, may be adapted in other datasets, though only used for PBV (percent annotated as blood vessels) phenotype
 
 def main_bifurcations(imgname: str) -> dict:
     """
@@ -163,6 +164,42 @@ def main_aria_phenotypes(imgname):    # still need to modify it
         print(e)
         print("ARIA didn't have stats for img", imageID)
         return [np.nan for _ in range(84)]
+
+
+def main_vascular_density(imgname: str) -> dict:
+    """
+    
+    :param imgname:
+    :return:
+    """
+
+    small_size = 200 # with of circle of downsampled image
+
+    imageID = imgname.split(".")[0]
+    print(imageID)
+    try:
+        img = cv2.imread(imageID + "_bin_seg.png")
+        img_mskd = mask_image(img)
+        img_200px = cv2.resize(img_mskd, [round(i * small_size/2 / mask_radius) for i in img_mskd.shape])
+
+        area = mask_radius**2 * np.pi
+        area_small = (small_size/2)**2 * np.pi
+
+        vd_orig_all = np.sum(cv2.cvtColor(img_mskd, cv2.COLOR_BGR2GRAY)!=0) / area
+        vd_orig_artery = np.sum(img_mskd[:,:,2] != 0) / area
+        vd_orig_vein = np.sum(img_mskd[:,:,0] != 0)
+
+
+        vd_200px_artery = np.sum(img_200px[:,:,2] != 0) / area_small
+        vd_200px_vein = np.sum(img_200px[:,:,0] != 0) / area_small
+
+        return { 'VD_orig_all': vd_orig_all, 'VD_orig_artery': vd_orig_artery, 'VD_orig_vein': vd_orig_vein,
+                 'VD_200px_all': vd_200px_all, 'VD_200px_artery': vd_200px_artery, 'VD_200px_vein': vd_200px_vein }
+
+    except Exception as e:
+        print(e)
+        return { 'VD_orig_all': np.nan, 'VD_orig_artery': np.nan, 'VD_orig_vein': np.nan,
+                 'VD_200px_all': np.nan, 'VD_200px_artery': np.nan, 'VD_200px_vein': np.nan }
 
 
 def main_fractal_dimension(imgname: str) -> dict:
@@ -370,6 +407,29 @@ def circular_df_filter(radio, angle, od_position, df_pintar):
     new_df = pd.merge(df_circle, df_pintar, how='inner', left_on=['X', 'Y'], right_on=['X', 'Y'])
     return new_df.drop_duplicates(subset=['index'], keep='last')
 
+
+def mask_image(img, to_gray=False):
+    hh,ww = img.shape[:2]
+    #print(hh//2,ww//2)
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    mask = np.zeros_like(gray)
+    mask = cv2.circle(mask, (ww//2,hh//2), mask_radius, (255,255,255), -1)
+    #mask = np.invert(mask.astype(bool))
+
+    #result = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA)
+    #result[:, :] = mask[:,:]
+    #  result[:, :, 3] = mask[:,:,0]
+    #plt.imshow(result)
+
+    mask_1d = mask.astype(bool)    
+    mask_3d = np.stack((mask_1d,mask_1d,mask_1d), axis=2) # axis=2 to make color channels 3rd dimension
+    
+    if to_gray == True:
+        return np.ma.array(gray, mask=np.invert(mask_1d))
+    else:
+        return np.ma.array(img, mask=np.invert(mask_3d))
 
 def compute_circular_df(radio, angle, od_position):
     """
@@ -587,14 +647,14 @@ if __name__ == '__main__':
     phenotype_dir = sys.argv[2] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OUTPUT/' 
     lwnet_dir = sys.argv[4] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR' 
     # fuction_to_execute posibilities: 'tva', 'taa', 'bifurcations', 'green_segments', 'neo_vascularization', 'aria_phenotypes', 'fractal_dimension', 'ratios'
-    fuction_to_execute = 'tva'  # sys.argv[5]
+    fuction_to_execute = sys.argv[5]
     filter_tva_taa = 1 if fuction_to_execute == 'taa' else (-1 if fuction_to_execute == 'tva' else None)
     # all the images
     imgfiles = pd.read_csv(qcFile, header=None)
     imgfiles = imgfiles[0].values
 
     # development param
-    imgfiles_length = len(imgfiles)  # len(imgfiles) is default
+    imgfiles_length = 20#len(imgfiles)  # len(imgfiles) is default
 
     # computing the phenotype as a parallel process
     os.chdir(lwnet_dir)
@@ -616,6 +676,8 @@ if __name__ == '__main__':
         out = pool.map(main_aria_phenotypes, imgfiles[:imgfiles_length])
     elif fuction_to_execute == 'fractal_dimension':
         out = pool.map(main_fractal_dimension, imgfiles[:imgfiles_length])
+    elif function_to_execute == 'vascular_density':
+        out = pool.map(main_vascular_density, imgfiles[:imgfiles_length])
     else:
         out = None
     pool.close()
