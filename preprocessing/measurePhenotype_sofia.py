@@ -18,12 +18,10 @@ import math
 # plot_phenotype = False
 aria_measurements_dir = sys.argv[3] #'/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/ARIA_MEASUREMENTS_DIR' 
 qcFile = sys.argv[1] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/noQC.txt'  # qcFile used is noQCi, as we measure for all images
-phenotype_dir = sys.argv[2] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OUTPUT' 
 lwnet_dir = sys.argv[4] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR'  
-# fuction_to_execute = 'green_segments'  # sys.argv[5]
-# To modify!
-df_OD = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/OD_position_11_02_2022.csv", sep=',')
-        # pd.read_csv("/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OD_position_11_02_2022.csv", sep=',')
+OD_output_dir = sys.argv[5]
+df_OD = pd.read_csv(OD_output_dir+"OD_position.csv", sep=',')
+print(df_OD)
 
 
 def main_bifurcations(imgname: str) -> dict:
@@ -587,7 +585,7 @@ if __name__ == '__main__':
     phenotype_dir = sys.argv[2] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/OUTPUT/' 
     lwnet_dir = sys.argv[4] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR' 
     # fuction_to_execute posibilities: 'tva', 'taa', 'bifurcations', 'green_segments', 'neo_vascularization', 'aria_phenotypes', 'fractal_dimension', 'ratios'
-    fuction_to_execute = 'tva'  # sys.argv[5]
+    fuction_to_execute = sys.argv[6]  # 'tva' 
     filter_tva_taa = 1 if fuction_to_execute == 'taa' else (-1 if fuction_to_execute == 'tva' else None)
     # all the images
     imgfiles = pd.read_csv(qcFile, header=None)
@@ -627,14 +625,11 @@ if __name__ == '__main__':
         # To modify!
         DATE = datetime.now().strftime("%Y-%m-%d")
 
-        df_data = pd.read_csv("/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/"
-                              "2021-12-28_ARIA_phenotypes.csv", sep=',')
+        df_data = pd.read_csv(phenotype_dir+"2021-12-28_ARIA_phenotypes.csv", sep=',')
         df_data = df_data[['Unnamed: 0', 'medianDiameter_artery', 'medianDiameter_vein', 'DF_artery', 'DF_vein']]
         df_data['ratio_AV_medianDiameter'] = df_data['medianDiameter_artery'] / df_data['medianDiameter_vein']
         df_data['ratio_VA_medianDiameter'] = df_data['medianDiameter_vein'] / df_data['medianDiameter_artery']
         df_data['ratio_AV_DF'] = df_data['DF_artery'] / df_data['DF_vein']
         df_data['ratio_VA_DF'] = df_data['DF_vein'] / df_data['DF_artery']
 
-        df_data.to_csv(
-            "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/" + DATE + "_ratios_ARIA_phenotypes.csv",
-            sep=',', index=False)
+        df_data.to_csv(phenotype_dir + DATE + "_ratios_ARIA_phenotypes.csv", sep=',', index=False)

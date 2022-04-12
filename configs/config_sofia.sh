@@ -49,7 +49,7 @@ dir_ARIA_output='/Users/sortinve/develop/retina/output/ARIA_output_'$data_set'/'
 ARIA_dir='/Users/sortinve/develop/retina/preprocessing/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/'
 MeasureVessels_dir='/Users/sortinve/develop/retina/output/VesselMeasurements/'$data_set'/'
 phenotypes_dir='/Users/sortinve/develop/retina/output/phenotypes_'$data_set'_'$TYPE_OF_VESSEL_OF_INTEREST'/'
-
+OD_output_dir='/Users/sortinve/develop/retina/output/'$data_set'_OD/'
 
 #### QUALITY THRESHOLDS OF ARTERY/VEIN CLASSIFICATION: 
 AV_threshold=0.0 # Consider all classified vessels
