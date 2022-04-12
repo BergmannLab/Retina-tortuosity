@@ -31,6 +31,13 @@ echo Number of images equal to $num_images
 
 
 
+# quality thresholds for ARIA
+min_QCthreshold_1=11000
+max_QCthreshold_1=20000
+min_QCthreshold_2=100
+max_QCthreshold_2=250
+
+
 #### BASE DIRS:
 #   ----------------------------------------------------------------
 #    If you do not change the pipeline you do not need to worry about this. 

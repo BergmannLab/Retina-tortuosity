@@ -13,10 +13,13 @@ function [tau, r, centers] = compute_tortuosity(points, method)
     %   (1) tau1 = DistanceFactor = (total arc-length over total chord-length) - 1
     %   (2) tau2 = the integral over the curvature along the entire curve
     %   (3) tau3 = the integral over the curvature squared along the entire curve
-    %   (4) tau4 = COMPLETE
-    %   (5) tau5 = 
-    %   (6) tau6 = 
-    %   (7) tau7 = 
+    %   (4)
+    %   (5)
+    %   (6)
+    %   (7)
+    %
+    %   'plot_curve' is a Boolean: If true or absent the curve is plotted with the tangent
+    %   circles and a color scheme denoting the tortuosity
     %
     % Outputs:
     %
@@ -24,11 +27,11 @@ function [tau, r, centers] = compute_tortuosity(points, method)
     %   'r' is a [(n-2) x 1] array for the curvature radius for all points except the first and the last
     %   'centers' is a [(n-2) x 2] array for the centers of the tangent circles for all points except the first and the last
     %
-    % Author: Sven Bergmann
-    % Version: v1.0 (2020)
-    
-    points = transpose(points);
-    
+    % Author: Sven Bergmann.
+    % Version: v1.4 (11 September 2020)
+
+    points = transpose(points); 
+
     if(nargin < 1)
         disp('ERROR: Fatal error in compute_tortuosity. No input'); 
     end
@@ -53,10 +56,9 @@ function [tau, r, centers] = compute_tortuosity(points, method)
     
     [r,centers] = find_circle_through_3_points(ABC);
     r = r .* curvature_sign;
-    r(isnan(r))=0; 
-    
-    
-    switch(method)         
+    r(isnan(r))=0; %SOFIA, solve NaN problem
+
+    switch(method)
         case 1
             L_arc = sum(sqrt(Deltas(1,:) .^2 + Deltas(2,:) .^2));
             L_chord = norm(points(:,end) - points(:,1));
@@ -86,9 +88,9 @@ function [tau, r, centers] = compute_tortuosity(points, method)
             
         otherwise
             tau = NaN;
+            
 
     end % switch(method)
-    
     
     
     function [R,xcyc] = find_circle_through_3_points(ABC)
@@ -118,46 +120,35 @@ function [tau, r, centers] = compute_tortuosity(points, method)
         %   mt = (y3-y2)/(x3-x2)
         %   mr = (y2-y1)/(x2-x1)
         % /// Begin by generalizing xi and yi to arrays of individual xi and yi for each {A,B,C} set of points provided in ABC array
-        
         x1 = ABC(1,1:2:end);
         x2 = ABC(2,1:2:end);
         x3 = ABC(3,1:2:end);
         y1 = ABC(1,2:2:end);
         y2 = ABC(2,2:2:end);
         y3 = ABC(3,2:2:end);
-        
         % /// Now carry out operations as usual, using array operations
-        
         mr = (y2-y1)./(x2-x1);
         mt = (y3-y2)./(x3-x2);
-        
         % A couple of failure modes exist:
         %   (1) First chord is vertical       ==> mr==Inf
         %   (2) Second chord is vertical      ==> mt==Inf
         %   (3) Points are collinear          ==> mt==mr (NB: NaN==NaN here)
         %   (4) Two or more points coincident ==> mr==NaN || mt==NaN
         % Resolve these failure modes case-by-case.
-        
         idf1 = isinf(mr); % Where failure mode (1) occurs
         idf2 = isinf(mt); % Where failure mode (2) occurs
         idf34 = isequaln(mr,mt) | isnan(mr) | isnan(mt); % Where failure modes (3) and (4) occur
-        
         % ============= Compute xc, the circle center x-coordinate
-        
         xcyc = (mr.*mt.*(y3-y1)+mr.*(x2+x3)-mt.*(x1+x2))./(2*(mr-mt));
         xcyc(idf1) = (mt(idf1).*(y3(idf1)-y1(idf1))+(x2(idf1)+x3(idf1)))/2; % Failure mode (1) ==> use limit case of mr==Inf
         xcyc(idf2) = ((x1(idf2)+x2(idf2))-mr(idf2).*(y3(idf2)-y1(idf2)))/2; % Failure mode (2) ==> use limit case of mt==Inf
         xcyc(idf34) = NaN; % Failure mode (3) or (4) ==> cannot determine center point, return NaN
-        
         % ============= Compute yc, the circle center y-coordinate
-        
         xcyc(2,:) = -1./mr.*(xcyc-(x1+x2)/2)+(y1+y2)/2;
         idmr0 = mr==0;
         xcyc(2,idmr0) = -1./mt(idmr0).*(xcyc(idmr0)-(x2(idmr0)+x3(idmr0))/2)+(y2(idmr0)+y3(idmr0))/2;
         xcyc(2,idf34) = NaN; % Failure mode (3) or (4) ==> cannot determine center point, return NaN
-        
         % ============= Compute the circle radius
-        
         R = sqrt((xcyc(1,:)-x1).^2+(xcyc(2,:)-y1).^2);
         R(idf34) = Inf; % Failure mode (3) or (4) ==> assume circle radius infinite for this case
         

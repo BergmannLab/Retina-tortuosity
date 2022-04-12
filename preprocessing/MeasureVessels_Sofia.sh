@@ -18,13 +18,14 @@
 source ../configs/config_sofia.sh
 begin=$(date +%s)
 
+mkdir $dir_ARIA_output
 ### Run vessels measurements with ARIA (Matlab):
 
 script_dir=$PWD/helpers/MeasureVessels/src/petebankhead-ARIA-328853d/ARIA_tests/
 
 chunk_start=1 # TO DO!: CHANGE TO MAKE MORE EFFICIENT
 
-script_parmeters="0 REVIEW $dir_images2 $classification_output_dir $TYPE_OF_VESSEL_OF_INTEREST $AV_threshold $script_dir $chunk_start $num_images  $dir_ARIA_output $data_set"
+script_parmeters="0 REVIEW $dir_images2 $classification_output_dir $TYPE_OF_VESSEL_OF_INTEREST $AV_threshold $script_dir $chunk_start $num_images  $min_QCthreshold_1 $max_QCthreshold_1 $min_QCthreshold_2 $max_QCthreshold_2 $dir_ARIA_output $data_set"
 
 #OPTION 1
 cd $script_dir && /Applications/MATLAB_R2020b.app/bin/matlab -nodisplay -nosplash -nodesktop -r "addpath(genpath('/Users/sortinve/develop/retina/'));ARIA_run_tests $script_parmeters ;quit;"

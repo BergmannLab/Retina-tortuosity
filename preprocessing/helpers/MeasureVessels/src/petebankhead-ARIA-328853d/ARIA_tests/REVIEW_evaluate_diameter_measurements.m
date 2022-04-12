@@ -1,4 +1,4 @@
-function [results, images] = REVIEW_evaluate_diameter_measurements(image_set, processor, chunk_start, chunk_size, AV_option, AV_thr, path_to_raw, path_to_AV_classified, path_to_output) % mattia: added parameters
+function [results, images] = REVIEW_evaluate_diameter_measurements(image_set, processor, chunk_start, chunk_size, AV_option, AV_thr, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, path_to_raw, path_to_AV_classified, path_to_output) % mattia: added parameters
 % Apply an ARIA vessel processor to a set of images in the REVIEW database
 % (see http://reviewdb.lincoln.ac.uk/), and compare the diameter
 % measurements with those of manual observers.
@@ -49,7 +49,8 @@ end
 %% DETERMINE DIRECTORIES
 
 % Get the directory for the drive database
-%dir_REVIEW = get_vessel_database_directory('REVIEW'); %modified
+%dir_REVIEW = get_vessel_database_directory('REVIEW'); % mattia: gives
+%errors in a few cases when run on cluster. Not needed
 dir_REVIEW = path_to_raw;
 
 % Some parameters need tailored according to the image set
@@ -65,13 +66,12 @@ switch image_set_name
         scale_value = 4;
     case {'HRIS_DOWNSAMPLE'}
         image_set_name = 'HRIS';
-    case {'CLRIS'}
-        image_ext = '.png';% mattia: changing file extension to match UKBiobank format
     case {'KPIS'}
         % There are two files for KPIS observer markings - we want the second
         observer_set_ext = ' 2.txt';
     otherwise
         image_ext = '.png';
+
 end
 
 % Get the directory containing the images of interest
@@ -121,17 +121,66 @@ for ii = chunk_end:-1:chunk_start  %mattia: updating for loop accordingly
 
     % Apply the automated detection & measurement processing
     file_name = [dir_images, fn_im(ii).name]; % raw get image
-    disp(file_name)
     AV_file_name = [path_to_AV_classified, fn_im(ii).name]; % raw AV uncertain map image
 	try
         disp(strcat("processing: ", fn_im(ii).name))
-    	[vd_algorithm, processing_time(ii)] = Vessel_Data_IO.load_from_file(file_name, AV_file_name, processor, settings, AV_option, AV_thr, path_to_output);
+        disp(file_name)
+    	[vd_algorithm, processing_time(ii)] = Vessel_Data_IO.load_from_file(file_name, AV_file_name, processor, settings, AV_option, AV_thr, minQCthr1, maxQCthr1, minQCthr2, maxQCthr2, path_to_output);
 	catch ME
         % mattia: skipping on exception
 		disp(strcat("  SKIPPING IMAGE: No vessels found (exception: ", ME.identifier, ")"))
 		continue % skip this image pass control to next iteration
     end
     
+    %mattia: commenting out REVIEW observer logic: not needed
+    %{
+    % Extract the image number - which is just before the file extension
+    ind = find(file_name == '.', 1, 'last') - 1;
+    image_num = str2double(file_name(ind));
+    
+    % Read in the observer markings - scale them by 4 if using full-sized
+    % HRIS images
+    vl_o1 = REVIEW_create_observer_vessel_list(observer_file_name, image_num, 1, scale_value);
+    vl_o2 = REVIEW_create_observer_vessel_list(observer_file_name, image_num, 2, scale_value);
+    vl_o3 = REVIEW_create_observer_vessel_list(observer_file_name, image_num, 3, scale_value);
+    
+    % Compute mean diameters and centre lines for observers (i.e. ground
+    % truth values), and put each in a cell array
+    n_vessels = numel(vl_o1);
+    ground_truth_diameters = cell(n_vessels, 1);
+    ground_truth_centres = cell(n_vessels, 1);
+    for vv = 1:n_vessels
+        ground_truth_diameters{vv} = (vl_o1(vv).diameters + vl_o2(vv).diameters + vl_o3(vv).diameters) / 3;
+        ground_truth_centres{vv} = (vl_o1(vv).centre + vl_o2(vv).centre + vl_o3(vv).centre) / 3;
+    end
+    
+    % Match the algorithm and ground truth diameters
+    vl_alg = match_detected_diameters(vd_algorithm.vessel_list, ground_truth_centres, ground_truth_diameters);
+    
+
+    % Store the diameters and image vessel numbers all together
+    diameters_true = cat(1, ground_truth_diameters{:}, diameters_true);
+    diameters_alg = cat(1, vl_alg.diameters, diameters_alg);
+    diameters_observer1 = cat(1, vl_o1.diameters, diameters_observer1);
+    diameters_observer2 = cat(1, vl_o2.diameters, diameters_observer2);
+    diameters_observer3 = cat(1, vl_o3.diameters, diameters_observer3);
+    image_number = cat(1, zeros(numel(cat(1, ground_truth_diameters{:})), 1) + ii, image_number);
+    
+    % Store the centres too - they might be interesting
+    centres_true = cat(1, ground_truth_centres{:}, centres_true);
+    centres_alg = cat(1, vl_alg.centre, centres_alg);
+    
+    % If required, create Vessel_Data objects to output
+    if true %nargout > 1
+        images(ii).observer1 = create_new_vessel_data(vd_algorithm, vl_o1);
+        images(ii).observer2 = create_new_vessel_data(vd_algorithm, vl_o2);
+        images(ii).observer3 = create_new_vessel_data(vd_algorithm, vl_o3);
+        images(ii).algorithm_matched = create_new_vessel_data(vd_algorithm, vl_alg);
+        images(ii).algorithm_orig = vd_algorithm;
+    end
+    
+    % mattia: commenting out REVIEW observer logic: not needed
+    %} 
 end
 
 % Store the results - remember that SCALE_VALUE normally won't do anything,

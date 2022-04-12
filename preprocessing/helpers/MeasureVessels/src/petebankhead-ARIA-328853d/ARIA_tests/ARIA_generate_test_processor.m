@@ -66,7 +66,5 @@ switch lower(name)
     case 'kpis'
         args.iuwt_w_levels = 2;
     otherwise
-        args.iuwt_w_levels = 2:3;
-        args.mask_dark_threshold = 10; %sofia
-        %error('Unknown processor name');
+        error('Unknown processor name');
 end
