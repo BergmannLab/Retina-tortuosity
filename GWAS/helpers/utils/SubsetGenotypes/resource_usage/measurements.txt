@@ -1,4 +1,0 @@
-all chromo, front node
-
-45020 sec (12.5 hrs)
-negligible RAM
