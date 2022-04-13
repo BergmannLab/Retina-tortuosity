@@ -15,9 +15,10 @@ from scipy import stats
 import math
 
 
-# plot_phenotype = False
+plot_phenotype = True
 aria_measurements_dir = sys.argv[3] #'/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/ARIA_MEASUREMENTS_DIR' 
 qcFile = sys.argv[1] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/noQC.txt'  # qcFile used is noQCi, as we measure for all images
+phenotype_dir = sys.argv[2]
 lwnet_dir = sys.argv[4] # '/Users/sortinve/PycharmProjects/pythonProject/sofia_dev/data/LWNET_DIR'  
 OD_output_dir = sys.argv[5]
 df_OD = pd.read_csv(OD_output_dir+"OD_position.csv", sep=',')
@@ -33,13 +34,13 @@ def main_bifurcations(imgname: str) -> dict:
         imageID = imgname.split(".")[0]
 
         df_pintar = read_data(imageID)
-        # if plot_phenotype:
-        #     img = mpimg.imread(imageID + ".png")
-        #     plt.imshow(img)
-        #     plt.scatter(x=df_pintar['X'], y=df_pintar['Y'], c=df_pintar['type'], cmap="jet", marker="d",
-        #                 alpha=0.5, s=0.2)
-        #     plt.savefig(phenotype_dir + '/'+imageID + '_bif.jpg')
-        #     plt.close()
+        if plot_phenotype:
+             img = mpimg.imread(imageID + ".png")
+             plt.imshow(img)
+             plt.scatter(x=df_pintar['X'], y=df_pintar['Y'], c=df_pintar['type'], cmap="jet", marker="d",
+                         alpha=0.5, s=0.2)
+             plt.savefig(phenotype_dir + '/'+imageID + '_bif.jpg')
+             plt.close()
         aux = df_pintar.groupby('index')
         df_results = pd.concat([aux.head(1), aux.tail(1)]).drop_duplicates().sort_values('index').reset_index(drop=True)
         df_results['type'] = np.sign(df_results['type'])
