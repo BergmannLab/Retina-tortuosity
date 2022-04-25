@@ -77,9 +77,22 @@
 
 ###############################################################################
 
+library(stringr)
+library(dplyr)
+
+### Initialization:
+ukbb_files_dir <- '...'
+phenofiles_dir <- '...'
+output_dir <- '...'
+
+list_diseases<- c('SBP', 'DBP', 'age_diabetes', 'age_angina', 'age_heartattack', 'age_DVT',
+                  'age_stroke', 'myopia')
+
 # setwd("/.../")
-data_1 <- read.csv("/.../1_data_extraction/ukb34181.csv",
-              header = TRUE, sep=",",check.names=FALSE)
+
+### Read Ukbb files:
+data_1 <- read.csv(file= paste(ukbb_files_dir, "/ukb34181.csv", sep=""),
+                   header = TRUE, sep=",",check.names=FALSE)
 
 gwas_covar <- data_1
 
@@ -97,7 +110,8 @@ names(data_1) <- c('age_diabetes', 'age_angina', 'age_heartattack', 'age_DVT', '
 # data_3 <- read.csv("/../3_data_extraction_tinnitus/ukb42625.csv",
 #                    header = TRUE, sep=",",check.names=FALSE)
 
-data_6 <- read.csv("/.../6_data_extraction/ukb49907.csv",
+
+data_6 <- read.csv(file= paste(ukbb_files_dir, "/ukb49907.csv", sep=""),
                    header = TRUE, sep=",",check.names=FALSE)
 
 data_6 <- data_6[, c('30750-0.0', '40006-0.0', '40013-0.0', '40007-0.0', 
@@ -114,7 +128,7 @@ names(data_6) <- c('HbA1c', 'type_cancer', 'type_cancer_2', 'age_death',
 # data_7 <- read.csv("/.../7_data_extraction/ukb50488.csv",
 #                    header = TRUE, sep=",",check.names=FALSE)
 
-data_8 <- read.csv("/.../8_data_extraction/ukb51076.csv",
+data_8 <- read.csv(file= paste(ukbb_files_dir, "/ukb51076.csv", sep=""),
                    header = TRUE, sep=",",check.names=FALSE)
 
 data_8 <- data_8[, c('20262-0.0', 'eid')]
@@ -122,69 +136,137 @@ data_8 <- data_8[, c('20262-0.0', 'eid')]
 names(data_8)  <- c('myopia', 'eid')
 
 
-# Read phenofiles:
-pheno_ARIA <- read.csv("/.../2021-12-28_ARIA_phenotypes.csv",
-                   header = TRUE, sep=",",check.names=FALSE)
-names(pheno_ARIA) <- c('image')
-colnames(pheno_ARIA)
+### Read phenofiles : 
+pheno_ARIA <- read.csv(file= paste(phenofiles_dir, "/2021-12-28_ARIA_phenotypes.csv", sep=""),
+                       header = TRUE, sep=",",check.names=FALSE)
+pheno_N_green <- read.csv(file= paste(phenofiles_dir, "/2022-02-01_N_green_pixels.csv", sep=""),
+                       header = TRUE, sep=",",check.names=FALSE)
+pheno_N_bif <- read.csv(file= paste(phenofiles_dir, "/2022-02-04_bifurcations.csv", sep=""),
+                          header = TRUE, sep=",",check.names=FALSE)
+pheno_tVA <- read.csv(file= paste(phenofiles_dir, "/2022-02-13_tVA_phenotypes.csv", sep=""),
+                        header = TRUE, sep=",",check.names=FALSE)
+pheno_tAA <- read.csv(file= paste(phenofiles_dir, "/2022-02-14_tAA_phenotypes.csv", sep=""),
+                      header = TRUE, sep=",",check.names=FALSE)
+pheno_NeoOD <- read.csv(file= paste(phenofiles_dir, "/2022-02-17_NeovasOD_phenotypes.csv", sep=""),
+                      header = TRUE, sep=",",check.names=FALSE)
+pheno_greenOD <- read.csv(file= paste(phenofiles_dir, "/2022-02-21_green_pixels_over_total_OD_phenotypes.csv", sep=""),
+                      header = TRUE, sep=",",check.names=FALSE)
+pheno_N_green_seg <- read.csv(file= paste(phenofiles_dir, "/2022-02-21_N_green_segments_phenotypes.csv", sep=""),
+                          header = TRUE, sep=",",check.names=FALSE)
 
-# TO DO: convert "image" into "eid" 
-# strsplit(as.character(pheno_ARIA$image),'_2101')
-# pheno_ARIA <- pheno_ARIA %>% separate(image, c('eid', 'other'))
+# From images names to eids
+#colnames(pheno_ARIA)
+names(pheno_ARIA)[1] <- 'eid'
+names(pheno_N_green)[1] <- 'eid'
+names(pheno_N_bif)[1] <- 'eid'
+names(pheno_tVA)[1] <- 'eid'
+names(pheno_tAA)[1] <- 'eid'
+names(pheno_NeoOD)[1] <- 'eid'
+names(pheno_greenOD)[1] <- 'eid'
+names(pheno_N_green_seg)[1] <- 'eid'
 
+pheno_ARIA[c('eid', 'image', 'year', 'instance')] <- str_split_fixed(pheno_ARIA$eid, '_', 4)
+pheno_N_green[c('eid', 'image', 'year', 'instance')] <- str_split_fixed(pheno_N_green$eid, '_', 4)
+pheno_N_bif[c('eid', 'image', 'year', 'instance')] <- str_split_fixed(pheno_N_bif$eid, '_', 4)
+pheno_tVA[c('eid', 'image', 'year', 'instance')] <- str_split_fixed(pheno_tVA$eid, '_', 4)
+pheno_tAA[c('eid', 'image', 'year', 'instance')] <- str_split_fixed(pheno_tAA$eid, '_', 4)
+pheno_NeoOD[c('eid', 'image', 'year', 'instance')] <- str_split_fixed(pheno_NeoOD$eid, '_', 4)
+pheno_greenOD[c('eid', 'image', 'year', 'instance')] <- str_split_fixed(pheno_greenOD$eid, '_', 4)
+pheno_N_green_seg[c('eid', 'image', 'year', 'instance')] <- str_split_fixed(pheno_N_green_seg$eid, '_', 4)
+
+# Only select 21015
+pheno_ARIA <- pheno_ARIA %>% group_by(image) %>% filter(image == 21015)
+pheno_N_green <- pheno_N_green %>% group_by(image) %>% filter(image == 21015)
+pheno_N_bif <- pheno_N_bif %>% group_by(image) %>% filter(image == 21015)
+pheno_tVA <- pheno_tVA %>% group_by(image) %>% filter(image == 21015)
+pheno_tAA <- pheno_tAA %>% group_by(image) %>% filter(image == 21015)
+pheno_NeoOD <- pheno_NeoOD %>% group_by(image) %>% filter(image == 21015)
+pheno_greenOD <- pheno_greenOD %>% group_by(image) %>% filter(image == 21015)
+pheno_N_green_seg <- pheno_N_green_seg %>% group_by(image) %>% filter(image == 21015)
+
+### Merge all:
 data_all = merge(gwas_covar, data_1, by = "eid") 
 data_all = merge(data_all, data_6, by = "eid") 
 data_all = merge(data_all, data_8, by = "eid") 
-# TO DO: data_all = merge(data_all, pheno_ARIA, by = "eid") 
 
-# colnames(data_all)
+data_all = merge(data_all, pheno_ARIA, by = "eid") 
+data_all = merge(data_all, pheno_N_green, by = "eid") 
+data_all = merge(data_all, pheno_N_bif, by = "eid") 
+data_all = merge(data_all, pheno_tVA, by = "eid") 
+data_all = merge(data_all, pheno_tAA, by = "eid") 
+data_all = merge(data_all, pheno_NeoOD, by = "eid") 
+data_all = merge(data_all, pheno_greenOD, by = "eid") 
+data_all = merge(data_all, pheno_N_green_seg, by = "eid") 
 
-# Multiple Linear Regression Example - SBP: 4080-0.0 and diameter artery
-MLR_SBP <- lm(SBP ~ age+sex+cov1+cov2+cov3+cov4+cov5+cov6+cov7+cov8+cov9, data=data_all)
-summary(MLR_SBP)
+colnames(data_all)
 
-# MLR_SBP_diameter_artery <- lm(SBP ~ medianDiameter_artery + age+sex+cov1+cov2+cov3+cov4+cov5+cov6+cov7+cov8+cov9, data=data_all)
-# summary(MLR_SBP_diameter_artery)
+### MLR: 
+for (i in list_diseases){
+  
+  outcome <- as.name(i)
+  variables <- c("DF_all", "DF_artery", "DF_vein", "medianDiameter_all", "medianDiameter_artery", "medianDiameter_vein",
+  "N_green", "N_bif", "tVA", "tAA", "pixels_close_OD_over_total", "green_pixels_over_total_OD", "N_total_green_segments",
+  "age", "sex", "cov1", "cov2", "cov3", "cov4","cov5", "cov6","cov7", "cov8","cov9")
+  
+  f <- as.formula(paste(outcome, paste(variables, collapse = " + "), sep = " ~ "))
+  
+  model <- eval(bquote(   lm(.(f), data = data_all)   ))
+  
+  # MLR <- lm(SBP ~ DF_all+ DF_artery + DF_vein+ medianDiameter_artery + 
+  #                 medianDiameter_vein + medianDiameter_all + 
+  #                 age+sex+cov1+cov2+cov3+cov4+cov5+cov6+cov7+cov8+cov9, data=data_all)
+  
 
-# Other useful functions
-coefficients(fit) # model coefficients
-confint(fit, level=0.95) # CIs for model parameters
-fitted(fit) # predicted values
-residuals(fit) # residuals
-anova(fit) # anova table
-vcov(fit) # covariance matrix for model parameters
-influence(fit) # regression diagnostics
+  sink(file= paste(output_dir, "/MLR_",i,".txt", sep=""))
+  print(summary(model))
+  sink()
+  
+  # Other useful functions
+  coefficients(model) # model coefficients
+  confint(model, level=0.95) # CIs for model parameters
+  fitted(model) # predicted values
+  residuals(model) # residuals
+  anova(model) # anova table
+  vcov(model) # covariance matrix for model parameters
+  influence(model) # regression diagnostics
+  
+  # pdf(file= paste(output_dir, "/MLR_",i,".pdf", sep=""),         # File name
+  #     width = 8, height = 7, # Width and height in inches
+  #     bg = "white",          # Background color
+  #     colormodel = "cmyk",    # Color model (cmyk is required for most publications)
+  #     paper = "A4")          # Paper size
+  # diagnostic plots
+  layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page
+  plot(model)
+  # dev.off() 
+  
+}
 
 
-# diagnostic plots
-layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page
-plot(fit)
-
-
-############## TO DO: MODIFY!
-# compare models
-fit1 <- lm(y ~ x1 + x2 + x3 + x4, data=mydata)
-fit2 <- lm(y ~ x1 + x2)
-anova(fit1, fit2)
-
-
-
-# Stepwise Regression
-library(MASS)
-fit <- lm(y~x1+x2+x3,data=mydata)
-step <- stepAIC(fit, direction="both")
-step$anova # display results
-
-
-# All Subsets Regression
-library(leaps)
-attach(mydata)
-leaps<-regsubsets(y~x1+x2+x3+x4,data=mydata,nbest=10)
-# view results
-summary(leaps)
-# plot a table of models showing variables in each model.
-# models are ordered by the selection statistic.
-plot(leaps,scale="r2")
-# plot statistic by subset size
-library(car)
-subsets(leaps, statistic="rsq")
+############## Complementary
+# # compare models
+# fit1 <- lm(y ~ x1 + x2 + x3 + x4, data=mydata)
+# fit2 <- lm(y ~ x1 + x2)
+# anova(fit1, fit2)
+# 
+# 
+# 
+# # Stepwise Regression
+# library(MASS)
+# fit <- lm(y~x1+x2+x3,data=mydata)
+# step <- stepAIC(fit, direction="both")
+# step$anova # display results
+# 
+# 
+# # All Subsets Regression
+# library(leaps)
+# attach(mydata)
+# leaps<-regsubsets(y~x1+x2+x3+x4,data=mydata,nbest=10)
+# # view results
+# summary(leaps)
+# # plot a table of models showing variables in each model.
+# # models are ordered by the selection statistic.
+# plot(leaps,scale="r2")
+# # plot statistic by subset size
+# library(car)
+# subsets(leaps, statistic="rsq")
