@@ -8,9 +8,9 @@
 #SBATCH --partition normal
 #SBATCH --time 00-20:00:00
 
-source ../configs/config_sofia.sh
+source ../configs/config_local.sh
 
 mkdir $phenotypes_dir
 
 # putting measurements in scratch really makes a difference! (1.5 instead of 20 minutes -> 10x speedup!!)
-python3 measurePhenotype_sofia.py $ALL_IMAGES $phenotypes_dir $dir_ARIA_output $classification_output_dir $OD_output_dir $PHENOTYPE_OF_INTEREST
+python3 measurePhenotype.py $ALL_IMAGES $phenotypes_dir $dir_ARIA_output $classification_output_dir $OD_output_dir $PHENOTYPE_OF_INTEREST

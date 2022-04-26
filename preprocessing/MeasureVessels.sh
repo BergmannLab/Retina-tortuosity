@@ -15,7 +15,7 @@
 ####### --array=1-582 #UKBB
 #SBATCH --array=1-26 #CoLaus is_color=False
 
-source ../configs/config_sofia.sh
+source ../configs/config_local.sh
 begin=$(date +%s)
 
 mkdir $dir_ARIA_output
