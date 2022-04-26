@@ -77,6 +77,37 @@ def main_tva_or_taa(imgname_and_filter: str and int) -> dict:
         return {'mean_angle': np.nan}
 
 
+def diameter_variability(imgname_and_filter: str and int) -> dict:
+    """
+    :param imgname_and_filter:
+    :return:
+    """
+    try:
+        imgname = imgname_and_filter[0]
+        filter_type = imgname_and_filter[1]
+        imageID = imgname.split(".")[0]
+        df_pintar = read_data(imageID, diameter=True)
+        df_pintar['type'] = np.sign(df_pintar['type'])
+        std_values=df_pintar.groupby(['i'])['Diameter'].std()
+
+        median_values_vessels = df_pintar.groupby(['type'])['Diameter'].median()
+        mean_values_vessels = df_pintar.groupby(['type'])['Diameter'].mean()
+        std_values_vessels = df_pintar.groupby(['type'])['Diameter'].std()
+
+        return {'D_median_std': std_values.median(), 'D_mean_std': std_values.mean(), 'D_std_std': std_values.std(),
+        'D_A_median_std': median_values_vessels[1], 'D_A_mean_std': mean_values_vessels[1], 'D_A_std_std': std_values_vessels[1],
+        'D_V_median_std': median_values_vessels[-1], 'D_V_mean_std': mean_values_vessels[-1], 'D_V_std_std': std_values_vessels[-1],
+        'D_G_median_std': median_values_vessels[0], 'D_G_mean_std': mean_values_vessels[0], 'D_G_std_std': std_values_vessels[0]}
+
+    except Exception as e:
+        print(e)
+        return {'D_median_std': np.nan, 'D_mean_std': np.nan, 'D_std_std': np.nan, 
+        'D_A_median_std': np.nan, 'D_A_mean_std': np.nan, 'D_A_std_std': np.nan,
+        'D_V_median_std': np.nan, 'D_V_mean_std': np.nan, 'D_V_std_std': np.nan,
+        'D_G_median_std': np.nan, 'D_G_mean_std': np.nan, 'D_G_std_std': np.nan}
+
+
+
 def main_neo_vascularization_od(imgname: str) -> dict:
     """
     :param imgname:
@@ -609,6 +640,8 @@ if __name__ == '__main__':
         out = pool.map(main_num_green_segment_and_pixels, imgfiles[:imgfiles_length])
     elif fuction_to_execute == 'neo_vascularization':
         out = pool.map(main_neo_vascularization_od, imgfiles[:imgfiles_length])
+    elif fuction_to_execute == 'diameter_variability':
+        out = pool.map(diameter_variability, imgfiles[:imgfiles_length]) 
     elif fuction_to_execute == 'aria_phenotypes':
         out = pool.map(main_aria_phenotypes, imgfiles[:imgfiles_length])
     elif fuction_to_execute == 'ratios':
@@ -620,7 +653,7 @@ if __name__ == '__main__':
     pool.close()
     create_output_(out, imgfiles, fuction_to_execute, imgfiles_length) if out else print(
         "You didn't chose any possible function. Options: tva, taa, bifurcations, green_segments,"
-        " neo_vascularization, aria_phenotypes, fractal_dimension, or ratios.")
+        " neo_vascularization, diameter_variability, aria_phenotypes, fractal_dimension, or ratios.")
 
     if fuction_to_execute == 'ratios':  # For measure ratios as qqnorm(ratio)
         # To modify!
