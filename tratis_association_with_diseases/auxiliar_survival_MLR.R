@@ -1,5 +1,7 @@
 # Auxiliary functions:
 library(tidyverse)
+library(Hmisc)
+#install.packages("Hmisc")
 
 read_survival_data <- function(survival_data_dir) 
 { 
@@ -22,6 +24,12 @@ read_survival_data <- function(survival_data_dir)
       'cov9'='22009-0.18'
     )
   
+  # plot histograms
+  survival_data_dir <- '/Users/sortinve/Desktop'
+  dev.new()
+  pdf(file= paste(survival_output_dir, "/histogramas.pdf", sep=""))
+  hist.data.frame(data_survival_cov)
+  dev.off()
   # names(data_survival_cov) <- c( 'eid', '40000-0.0', '40000-1.0', 'age', 'sex', 
   #                                'cov1', 'cov2', 'cov3', 'cov4', 'cov5', 'cov6', 
   #                                'cov7', 'cov8', 'cov9', 'year_death', 'death') 

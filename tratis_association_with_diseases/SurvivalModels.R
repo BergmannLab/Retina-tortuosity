@@ -1,5 +1,7 @@
 library(survival) # this is the cornerstone command for survival analysis in R
-library(ggplot2) # newer package that does nice plots
+library(ggplot2) # newer package that does nice plots # or `library(tidyverse)`
+library(tidyr)
+library(dplyr)
 library("survminer")
 require("survival")
 # install.packages(c("survival", "survminer", "ggplot"))
@@ -26,16 +28,29 @@ death <- g[,"death"] # binary variable (numeric)
 age <- g[,"age"] # continuous variable (numeric) 
 age_65plus <- ifelse(g[,'age']>=65, 1, 0) # separate age in two classes
 
-# Other covariants:
-cov1 <- g[,"cov1"]
-cov2 <- g[,"cov2"]
-cov3 <- g[,"cov3"]
-cov4 <- g[,"cov4"]
-cov5 <- g[,"cov5"]
-cov6 <- g[,"cov6"]
-cov7 <- g[,"cov7"]
-cov8 <- g[,"cov8"]
-cov9 <- g[,"cov9"]
+
+#g$cov1 <- as.numeric(as.factor(g$cov1))
+### Assumption: We can not analyze Covs as Real (Z neither) => Separate in quartile
+g$quart_cov1 <- ntile(g$cov1, 2) 
+g$quart_cov2 <- ntile(g$cov2, 2) 
+g$quart_cov3 <- ntile(g$cov3, 2) 
+g$quart_cov4 <- ntile(g$cov4, 2) 
+g$quart_cov5 <- ntile(g$cov5, 2) 
+g$quart_cov6 <- ntile(g$cov6, 2) 
+g$quart_cov7 <- ntile(g$cov7, 4) 
+g$quart_cov8 <- ntile(g$cov8, 4) 
+g$quart_cov9 <- ntile(g$cov9, 4) 
+
+# Other covariants: Should be group or quartile???
+quart_cov1 <- g[,"quart_cov1"]
+quart_cov2 <- g[,"quart_cov2"]
+quart_cov3 <- g[,"quart_cov3"]
+quart_cov4 <- g[,"quart_cov4"]
+quart_cov5 <- g[,"quart_cov5"]
+quart_cov6 <- g[,"quart_cov6"]
+quart_cov7 <- g[,"quart_cov7"]
+quart_cov8 <- g[,"quart_cov8"]
+quart_cov9 <- g[,"quart_cov9"]
 
 # Phenotypes:
 DF_all <- g[,"DF_all"]
@@ -61,20 +76,22 @@ VD_200px_all <- g[,"VD_200px_all"]
 VD_200px_artery <- g[,"VD_200px_artery"]
 VD_200px_vein <- g[,"VD_200px_vein"]
 
-FD_all_binary <-  ifelse(g[,'FD_all']>=1.4, 1, 0) # separate in two classes 1.4 more or less arbitrary 
+VD_orig_all_binary <-  ifelse(g[,'VD_orig_all']>=0.07, 1, 0) # separate in two classes 
+FD_all_binary <- ifelse(g[,'FD_all']>=1.4, 1, 0) # separate age in two classes 1.4 more or less arbitrary 
 
 ############################# GENERAL CASE: MULTIPLE VARIABLES ################
 # fit2 <- survfit( Surv(year_death, death) ~ age + sex + cov1 + cov2 + cov3 +
 #                    cov4 + cov5 + cov6 + cov7 + cov8 + cov9 , data =  g) # con todo esto revienta al ser Reales
-fit2 <- survfit( Surv(year_death, death) ~ FD_all_binary + age_65plus + sex , data =  g)
+fit2 <- survfit( Surv(year_death, death) ~ FD_all_binary + age_65plus + sex 
+                 + quart_cov1, data =  g)
 summary(fit2)
-
+## To do: save summary
 # Plot survival curves by sex and facet by rx and adhere
 ggsurv <- ggsurvplot(fit2, fun = "event", conf.int = TRUE, ggtheme = theme_bw(),
                      title="Surv FD, age, sex", legend = "left", font.legend = c(8, "plain"))
 ggsurv$plot 
 
-pdf(file= paste(survival_output_dir, "/ggsurv_FD_age65_sex.pdf", sep=""))
+pdf(file= paste(survival_output_dir, "/ggsurv_FD_age65_sex_cov1.pdf", sep=""))
 print(ggsurv, newpage = FALSE)
 dev.off()
 
