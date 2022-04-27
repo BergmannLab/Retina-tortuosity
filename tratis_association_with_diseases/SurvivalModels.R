@@ -9,6 +9,7 @@ require("survival")
 
 survival_data_dir <- '/Users/sortinve/Desktop'
 phenofiles_dir <- '/Users/sortinve/Desktop/Vascular_shared_genetics_in_the_retina/Auxiliar'
+survival_output_dir <- '/Users/sortinve/Desktop'
 
 ### Read survival data:
 source("/Users/sortinve/develop/retina/tratis_association_with_diseases/auxiliar_survival_MLR.R") # Modify dir
@@ -60,15 +61,26 @@ VD_200px_all <- g[,"VD_200px_all"]
 VD_200px_artery <- g[,"VD_200px_artery"]
 VD_200px_vein <- g[,"VD_200px_vein"]
 
+FD_all_binary <-  ifelse(g[,'FD_all']>=1.4, 1, 0) # separate in two classes 1.4 more or less arbitrary 
 
 ############################# GENERAL CASE: MULTIPLE VARIABLES ################
-fit2 <- survfit( Surv(year_death, death) ~ age_65plus + sex, data =  g)
+# fit2 <- survfit( Surv(year_death, death) ~ age + sex + cov1 + cov2 + cov3 +
+#                    cov4 + cov5 + cov6 + cov7 + cov8 + cov9 , data =  g) # con todo esto revienta al ser Reales
+fit2 <- survfit( Surv(year_death, death) ~ FD_all_binary + age_65plus + sex , data =  g)
 summary(fit2)
 
 # Plot survival curves by sex and facet by rx and adhere
-ggsurv <- ggsurvplot(fit2, fun = "event", conf.int = TRUE, ggtheme = theme_bw())
+ggsurv <- ggsurvplot(fit2, fun = "event", conf.int = TRUE, ggtheme = theme_bw(),
+                     title="Surv FD, age, sex", legend = "left", font.legend = c(8, "plain"))
 ggsurv$plot 
 
+pdf(file= paste(survival_output_dir, "/ggsurv_FD_age65_sex.pdf", sep=""))
+print(ggsurv, newpage = FALSE)
+dev.off()
+
+
+
+############### Other plots:
 # or to ggsurvplot:  ggsurvplot(survfit(res.cox), data = g, palette = "#2E9FDF")
 # 1. Define model 
 res.cox <- coxph(Surv(year_death, death) ~ age_65plus + sex) 
@@ -84,6 +96,7 @@ res.cox <- coxph(Surv(year_death, death) ~ age_65plus + sex)
 temp <- cox.zph(res.cox)    
 # ---- Plot the curves 
 plot(temp) 
+
 
 # Generate diagnostic plots 
 
