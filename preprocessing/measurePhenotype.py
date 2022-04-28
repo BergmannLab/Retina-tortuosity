@@ -11,6 +11,7 @@ import csv
 from multiprocessing import Pool
 from PIL import Image
 import PIL
+import imageio as iio
 from scipy import stats
 import math
 
@@ -106,6 +107,25 @@ def diameter_variability(imgname_and_filter: str and int) -> dict:
         'D_A_median_std': np.nan, 'D_A_mean_std': np.nan, 'D_A_std_std': np.nan,
         'D_V_median_std': np.nan, 'D_V_mean_std': np.nan, 'D_V_std_std': np.nan,
         'D_G_median_std': np.nan, 'D_G_mean_std': np.nan, 'D_G_std_std': np.nan}
+
+
+def baseline_traits(imgname_and_filter: str and int) -> dict:
+    """
+    :param imgname_and_filter:
+    :return:
+    """
+    try:
+        imgname = imgname_and_filter[0]
+        #filter_type = imgname_and_filter[1]
+        imageID = imgname.split(".")[0]
+        # Next step: Include only the pixels inside the mask? Save the masks from LWnet?
+        img = iio.imread(imageID + '.png')
+        # print(img.shape)
+        return {'std_intensity': np.std(img), 'mean_intensity': np.mean(img), 'median_intensity': np.median(img)}
+
+    except Exception as e:
+        print(e)
+        return {'std_intensity': np.nan, 'mean_intensity': np.nan, 'median_intensity': np.nan}
 
 
 def main_neo_vascularization_od(imgname: str) -> dict:
@@ -648,12 +668,14 @@ if __name__ == '__main__':
         out = pool.map(main_aria_phenotypes, imgfiles[:imgfiles_length])
     elif fuction_to_execute == 'fractal_dimension':
         out = pool.map(main_fractal_dimension, imgfiles[:imgfiles_length])
+    elif fuction_to_execute == 'baseline':
+        out = pool.map(baseline_traits, imgfiles[:imgfiles_length])
     else:
         out = None
     pool.close()
     create_output_(out, imgfiles, fuction_to_execute, imgfiles_length) if out else print(
         "You didn't chose any possible function. Options: tva, taa, bifurcations, green_segments,"
-        " neo_vascularization, diameter_variability, aria_phenotypes, fractal_dimension, or ratios.")
+        " neo_vascularization, diameter_variability, aria_phenotypes, fractal_dimension, ratios, or baseline.")
 
     if fuction_to_execute == 'ratios':  # For measure ratios as qqnorm(ratio)
         # To modify!
