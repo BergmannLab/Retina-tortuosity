@@ -1,56 +1,57 @@
 library(survival) # this is the cornerstone command for survival analysis in R
-library(ggplot2) # newer package that does nice plots # or `library(tidyverse)`
-library(tidyr)
-library(dplyr)
-library("survminer")
-require("survival")
+#library(ggplot) # newer package that does nice plots # or `library(tidyverse)`
+#library(tidyr)
+#library(dplyr)
+#library("survminer")
+#require("survival")
 # install.packages(c("survival", "survminer", "ggplot"))
 
 
 ### Set up directories:
 
-survival_data_dir <- '/Users/sortinve/Desktop'
-phenofiles_dir <- '/Users/sortinve/Desktop/Vascular_shared_genetics_in_the_retina/Auxiliar'
-survival_output_dir <- '/Users/sortinve/Desktop'
+survival_data_dir <- '/SSD/home/sofia/retina/tratis_association_with_diseases/' # Modify dir
+phenofiles_dir <- '/NVME/decrypted/ukbb/fundus/phenotypes'
+
+survival_output_dir <- '/SSD/home/sofia/retina/tratis_association_with_diseases/' # Modify dir
 
 ### Read survival data:
-source("/Users/sortinve/develop/retina/tratis_association_with_diseases/auxiliar_survival_MLR.R") # Modify dir
+source("/SSD/home/sofia/retina/tratis_association_with_diseases/auxiliar_survival_MLR.R") # Modify dir
 data_aux = read_survival_data(survival_data_dir)
 
 ### Read phenofile data and create data set:
 g = create_dataset(data_aux, phenofiles_dir)
-
-
 ### Define variables:
 sex <- as.factor(g[,"sex"]) # R calls categorical variables factors
 year_death <- g[,"year_death"] # continuous variable (numeric) 
 death <- g[,"death"] # binary variable (numeric) 
 age <- g[,"age"] # continuous variable (numeric) 
+g["age2"]= g["age"]^2
+age2 <- g[,"age2"] # continuous variable (numeric) 
 age_65plus <- ifelse(g[,'age']>=65, 1, 0) # separate age in two classes
-
+etnia <- factor(g[,"etnia"]) 
 
 #g$cov1 <- as.numeric(as.factor(g$cov1))
 ### Assumption: We can not analyze Covs as Real (Z neither) => Separate in quartile
-g$quart_cov1 <- ntile(g$cov1, 2) 
-g$quart_cov2 <- ntile(g$cov2, 2) 
-g$quart_cov3 <- ntile(g$cov3, 2) 
-g$quart_cov4 <- ntile(g$cov4, 2) 
-g$quart_cov5 <- ntile(g$cov5, 2) 
-g$quart_cov6 <- ntile(g$cov6, 2) 
-g$quart_cov7 <- ntile(g$cov7, 4) 
-g$quart_cov8 <- ntile(g$cov8, 4) 
-g$quart_cov9 <- ntile(g$cov9, 4) 
+#g$quart_cov1 <- ntile(g$cov1, 2) 
+#g$quart_cov2 <- ntile(g$cov2, 2) 
+#g$quart_cov3 <- ntile(g$cov3, 2) 
+#g$quart_cov4 <- ntile(g$cov4, 2) 
+#g$quart_cov5 <- ntile(g$cov5, 2) 
+#g$quart_cov6 <- ntile(g$cov6, 2) 
+#g$quart_cov7 <- ntile(g$cov7, 4) 
+#g$quart_cov8 <- ntile(g$cov8, 4) 
+#g$quart_cov9 <- ntile(g$cov9, 4) 
 
 # Other covariants: Should be group or quartile???
-quart_cov1 <- g[,"quart_cov1"]
-quart_cov2 <- g[,"quart_cov2"]
-quart_cov3 <- g[,"quart_cov3"]
-quart_cov4 <- g[,"quart_cov4"]
-quart_cov5 <- g[,"quart_cov5"]
-quart_cov6 <- g[,"quart_cov6"]
-quart_cov7 <- g[,"quart_cov7"]
-quart_cov8 <- g[,"quart_cov8"]
-quart_cov9 <- g[,"quart_cov9"]
+#quart_cov1 <- g[,"quart_cov1"]
+#quart_cov2 <- g[,"quart_cov2"]
+#quart_cov3 <- g[,"quart_cov3"]
+#quart_cov4 <- g[,"quart_cov4"]
+#quart_cov5 <- g[,"quart_cov5"]
+#quart_cov6 <- g[,"quart_cov6"]
+#quart_cov7 <- g[,"quart_cov7"]
+#quart_cov8 <- g[,"quart_cov8"]
+#quart_cov9 <- g[,"quart_cov9"]
 
 # Phenotypes:
 DF_all <- g[,"DF_all"]
@@ -80,10 +81,7 @@ VD_orig_all_binary <-  ifelse(g[,'VD_orig_all']>=0.07, 1, 0) # separate in two c
 FD_all_binary <- ifelse(g[,'FD_all']>=1.4, 1, 0) # separate age in two classes 1.4 more or less arbitrary 
 
 ############################# GENERAL CASE: MULTIPLE VARIABLES ################
-# fit2 <- survfit( Surv(year_death, death) ~ age + sex + cov1 + cov2 + cov3 +
-#                    cov4 + cov5 + cov6 + cov7 + cov8 + cov9 , data =  g) # con todo esto revienta al ser Reales
-fit2 <- survfit( Surv(year_death, death) ~ FD_all_binary + age_65plus + sex 
-                 + quart_cov1, data =  g)
+fit2 <- survfit( Surv(year_death, death) ~ FD_all_binary + age + age2 + sex + etnia, data =  g)
 summary(fit2)
 ## To do: save summary
 # Plot survival curves by sex and facet by rx and adhere

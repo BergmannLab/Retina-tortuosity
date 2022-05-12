@@ -1,9 +1,12 @@
-# Auxiliary functions:
+# Auxiliary functions
+
+#install.packages("tidyverse")
+#install.packages("Hmisc")
 library(tidyverse)
 library(Hmisc)
 #install.packages("Hmisc")
 
-read_survival_data <- function(survival_data_dir) 
+read_survival_data_GWAS <- function(survival_data_dir) 
 { 
   ################# Read survival data ############################
   data_survival_cov <- read.csv(file= paste(survival_data_dir, "/pruebas_survival.csv", sep=""), 
@@ -25,7 +28,6 @@ read_survival_data <- function(survival_data_dir)
     )
   
   # plot histograms
-  survival_data_dir <- '/Users/sortinve/Desktop'
   dev.new()
   pdf(file= paste(survival_output_dir, "/histogramas.pdf", sep=""))
   hist.data.frame(data_survival_cov)
@@ -103,6 +105,31 @@ read_disease_data <- function(ukbb_files_dir)
   
   return(data_all)
 }
+
+
+
+read_survival_data <- function(survival_data_dir) 
+{ 
+  ################# Read survival data ############################
+  data_survival_cov <- read.csv(file= paste(survival_data_dir, "/pruebas_survival.csv", sep=""), 
+                                header = TRUE, sep=",",check.names=FALSE)
+  colnames(data_survival_cov)
+  data_survival_cov <- data_survival_cov %>% 
+    rename(
+      'age'='21022-0.0',
+      'sex'='31-0.0',
+      'etnia'='21000-0.0' 
+    )
+  
+  # plot histograms
+  dev.new()
+  pdf(file= paste(survival_output_dir, "/histogramas.pdf", sep=""))
+  hist.data.frame(data_survival_cov)
+  dev.off()
+
+  return(data_survival_cov)
+}
+
 
 create_dataset <- function(data_cov, phenofiles_dir) 
   { 
