@@ -3,7 +3,7 @@
 
 
 # FREQUENTLY MODIFIED
-PHENOFILE_ID=2022_04_04_multitrait_ageCorrectedVentile5QC # date phenofile created, project, QC
+PHENOFILE_ID=2022_05_12_aria_phenotypes # date phenofile created, project, QC
 NB_PCS=20 # nb PCs used as covariates
 
 

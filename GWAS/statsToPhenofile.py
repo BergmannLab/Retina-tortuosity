@@ -249,12 +249,14 @@ if __name__ == '__main__':
 	os.chdir(input_dir)
 
 	#phenotypes
-	measurements = ["2021-12-28_ARIA_phenotypes.csv",\
-                        "2021-11-30_fractalDimension.csv",\
-                        "2021-11-29_AV_crossings.csv",\
-                        "2022-02-04_bifurcations.csv",\
-                        "2022-02-01_N_green_pixels.csv",\
-                        "2022-02-13_tVA_phenotypes.csv"]
+	#measurements = #["2022_05_11_FD_tau1_reldiff_emmy_fixed.csv"]
+                       #["2022-05-03_vascular_density_zekavat.csv", "2022-05-04_vascular_density.csv"]
+	measurements = ["2022_05_15_fd_tau4_relative_left_right_difference.csv"]
+                       # "2021-11-30_fractalDimension.csv",\
+                       # "2021-11-29_AV_crossings.csv",\
+                       # "2022-02-04_bifurcations.csv",\
+                       # "2022-02-01_N_green_pixels.csv",\
+                       # "2022-02-13_tVA_phenotypes.csv"]
 	
 	for i,measurement in enumerate(measurements):
 		if i==0:
@@ -270,7 +272,7 @@ if __name__ == '__main__':
 	
 	#testing
 	nTest = len(participants) # len(participants) for production
-
+	print(nTest)
 	#imgs_per_participant is a participant list: each element contains list of segment stat files belonging to a participant's QCd images
 	print('Start of getParticipantImages pool')
 	pool1 = Pool(processes=1)
@@ -304,7 +306,7 @@ delimiter=" ",skiprows=2, header=None,dtype=str)
 	instances_out.loc[idx] = instance_df.loc[idx]
 	
 	#removing all participants with at least one phenotype being NaN (PascalX requirement)
-	phenofile_out[phenofile_out.isna().any(axis=1)] = np.nan
+	#phenofile_out[phenofile_out.isna().any(axis=1)] = np.nan
 		
 	#creating rank-based INT phenofile
 	phenofile_out_rbINT = phenofile_out.apply(rank_INT)

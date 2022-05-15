@@ -5,6 +5,7 @@ library(parallel)
 args = commandArgs(trailingOnly=TRUE)
 setwd(args[1])
 
+
 phenos=read.table("phenotypes.txt")
 phenos=as.character(as.vector(phenos[1,]))
 print(phenos)
@@ -41,9 +42,9 @@ process_pheno = function(pheno_name) { # FOR EACH PHENOTYPE in GWAS
     write(paste("chromosome",chromo_numb), stdout())
  
     # ukbb
-    # chromo_name <- paste("output_ukb_imp_chr",chromo_numb,"_v3.txt", sep="")
+    chromo_name <- paste("output_ukb_imp_chr",chromo_numb,"_v3.txt", sep="")
     # colaus
-    chromo_name <- paste("output_CoLaus.HRC.chr",chromo_numb,".MAFsubsetted.txt", sep="")
+    # chromo_name <- paste("output_CoLaus.HRC.chr",chromo_numb,".MAFsubsetted.txt", sep="")
     gwasResults <- read.table(chromo_name, sep=" ",header=T, stringsAsFactors= F)
     gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1)
     # colaus-specific line:
