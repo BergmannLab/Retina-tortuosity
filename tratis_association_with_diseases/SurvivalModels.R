@@ -1,35 +1,38 @@
 library(survival) # this is the cornerstone command for survival analysis in R
-#library(ggplot) # newer package that does nice plots # or `library(tidyverse)`
-#library(tidyr)
-#library(dplyr)
-#library("survminer")
+library(ggplot2) # newer package that does nice plots # or `library(tidyverse)`
+library(tidyr)
+library(dplyr)
+library(survminer)
 #require("survival")
 # install.packages(c("survival", "survminer", "ggplot"))
 
-
 ### Set up directories:
-
 survival_data_dir <- '/SSD/home/sofia/retina/tratis_association_with_diseases/' # Modify dir
 phenofiles_dir <- '/NVME/decrypted/ukbb/fundus/phenotypes'
-
 survival_output_dir <- '/SSD/home/sofia/retina/tratis_association_with_diseases/' # Modify dir
 
+###################### OLD VERSION #################################
 ### Read survival data:
-source("/SSD/home/sofia/retina/tratis_association_with_diseases/auxiliar_survival_MLR.R") # Modify dir
-data_aux = read_survival_data(survival_data_dir)
+#source("/SSD/home/sofia/retina/tratis_association_with_diseases/auxiliar_survival_MLR.R") # Modify dir
+#data_aux = read_survival_data(survival_data_dir)
 
 ### Read phenofile data and create data set:
-g = create_dataset(data_aux, phenofiles_dir)
+#g = create_dataset(data_aux, phenofiles_dir)
+####################################################################
+
+g <- read.csv(file= paste(survival_data_dir, "/pruebas_survival.csv", sep=""), header = TRUE, sep=",",check.names=FALSE)
+
 ### Define variables:
 sex <- as.factor(g[,"sex"]) # R calls categorical variables factors
 year_death <- g[,"year_death"] # continuous variable (numeric) 
 death <- g[,"death"] # binary variable (numeric) 
-age <- g[,"age"] # continuous variable (numeric) 
-g["age2"]= g["age"]^2
-age2 <- g[,"age2"] # continuous variable (numeric) 
-age_65plus <- ifelse(g[,'age']>=65, 1, 0) # separate age in two classes
+age <- g[,"age_at_recruitment"] # continuous variable (numeric) 
+g["age_at_recruitment2"]= g["age_at_recruitment"]^2
+age_at_recruitment2 <- g[,"age_at_recruitment2"] # continuous variable (numeric) 
+age_65plus <- ifelse(g[,'age_at_recruitment']>=65, 1, 0) # separate age in two classes
 etnia <- factor(g[,"etnia"]) 
 
+###################### OLD VERSION #################################
 #g$cov1 <- as.numeric(as.factor(g$cov1))
 ### Assumption: We can not analyze Covs as Real (Z neither) => Separate in quartile
 #g$quart_cov1 <- ntile(g$cov1, 2) 
@@ -41,7 +44,6 @@ etnia <- factor(g[,"etnia"])
 #g$quart_cov7 <- ntile(g$cov7, 4) 
 #g$quart_cov8 <- ntile(g$cov8, 4) 
 #g$quart_cov9 <- ntile(g$cov9, 4) 
-
 # Other covariants: Should be group or quartile???
 #quart_cov1 <- g[,"quart_cov1"]
 #quart_cov2 <- g[,"quart_cov2"]
@@ -52,6 +54,7 @@ etnia <- factor(g[,"etnia"])
 #quart_cov7 <- g[,"quart_cov7"]
 #quart_cov8 <- g[,"quart_cov8"]
 #quart_cov9 <- g[,"quart_cov9"]
+########################################################### 
 
 # Phenotypes:
 DF_all <- g[,"DF_all"]
@@ -92,8 +95,6 @@ ggsurv$plot
 pdf(file= paste(survival_output_dir, "/ggsurv_FD_age65_sex_cov1.pdf", sep=""))
 print(ggsurv, newpage = FALSE)
 dev.off()
-
-
 
 ############### Other plots:
 # or to ggsurvplot:  ggsurvplot(survfit(res.cox), data = g, palette = "#2E9FDF")
