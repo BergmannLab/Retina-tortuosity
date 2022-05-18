@@ -18,7 +18,9 @@ def create_dataset(df_data, phenofiles_dir):
     ## Read phenofiles data 
     pheno_ARIA = pd.read_csv(phenofiles_dir + '/2021-12-28_ARIA_phenotypes.csv')
     pheno_N_green = pd.read_csv(phenofiles_dir + '/2022-02-01_N_green_pixels.csv')
+    print(pheno_N_green.head(5))
     pheno_N_bif = pd.read_csv(phenofiles_dir+ '/2022-02-04_bifurcations.csv')
+    print(pheno_N_bif.head(5))
     pheno_tVA = pd.read_csv(phenofiles_dir+ '/2022-02-13_tVA_phenotypes.csv')
     pheno_tAA = pd.read_csv(phenofiles_dir + '/2022-02-14_tAA_phenotypes.csv')
     pheno_NeoOD = pd.read_csv(phenofiles_dir + '/2022-02-17_NeovasOD_phenotypes.csv')
@@ -27,9 +29,9 @@ def create_dataset(df_data, phenofiles_dir):
     pheno_FD = pd.read_csv(phenofiles_dir + "/2021-11-30_fractalDimension.csv")
     pheno_VD = pd.read_csv(phenofiles_dir + "/2022-04-12_vascular_density.csv")
 
-    ## Add name to the first column
+    ## Add name to the first column (N_bif and N_green are wrong)
     pheno_ARIA.rename(columns={pheno_ARIA.columns[0]: 'image'}, inplace=True)
-    pheno_N_green.rename(columns={pheno_N_green.columns[0]: 'image'}, inplace=True)
+    pheno_N_green.rename(columns={pheno_N_green.columns[0]: 'image', pheno_N_green.columns[1]: 'N_green'}, inplace=True)
     pheno_N_bif.rename(columns={pheno_N_bif.columns[0]: 'image', pheno_N_bif.columns[1]: 'N_bif'}, inplace=True)
     pheno_tVA.rename(columns={pheno_tVA.columns[0]: 'image'}, inplace=True)
     pheno_tAA.rename(columns={pheno_tAA.columns[0]: 'image'}, inplace=True)
