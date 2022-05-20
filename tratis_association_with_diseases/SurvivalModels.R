@@ -82,26 +82,30 @@ VD_200px_vein <- g[,"VD_200px_vein"]
 
 VD_orig_all_binary <-  ifelse(g[,'VD_orig_all']>=0.07, 1, 0) # separate in two classes 
 FD_all_binary <- ifelse(g[,'FD_all']>=1.4, 1, 0) # separate age in two classes 1.4 more or less arbitrary 
-
+FD_all_binary <- as.factor(g[,"FD_all_binary"])
 ############################# GENERAL CASE: MULTIPLE VARIABLES ################
-fit2 <- survfit( Surv(year_death, death) ~ FD_all_binary + age + age2 + sex + etnia, data =  g)
-summary(fit2)
-## To do: save summary
-# Plot survival curves by sex and facet by rx and adhere
-ggsurv <- ggsurvplot(fit2, fun = "event", conf.int = TRUE, ggtheme = theme_bw(),
-                     title="Surv FD, age, sex", legend = "left", font.legend = c(8, "plain"))
-ggsurv$plot 
+#fit_cox1 <- survfit( Surv(year_death, death) ~ FD_all_binary + age_at_recruitment + age_at_recruitment2 + sex + etnia, data =  g)
+#summary(fit_cox1)
 
-pdf(file= paste(survival_output_dir, "/ggsurv_FD_age65_sex_cov1.pdf", sep=""))
-print(ggsurv, newpage = FALSE)
-dev.off()
+### Plot survival curves by sex and facet by rx and adhere: This will plot all:
+#ggsurv <- ggsurvplot(fit_cox1, fun = "event", conf.int = TRUE, ggtheme = theme_bw(), title="Surv FD, age, sex", legend = "left", font.legend = c(8, "plain"))
+#ggsurv$plot 
+#pdf(file= paste(survival_output_dir, "/ggsurv_FD_age65_sex_cov1.pdf", sep=""))
+#print(ggsurv, newpage = FALSE)
+#dev.off()
 
+### Selecting plotting:
+fit_cox2 <- coxph(Surv(year_death, death) ~ FD_all_binary + age_at_recruitment + age_at_recruitment2 + sex + etnia, data =  g) 
+ggadjustedcurves(fit_cox2, data = g, method = "average", variable = "sex")
+curve <- surv_adjustedcurves(fit_cox2, data = g, method = "average", variable = "sex")
+
+#plot(curve$surv)
+#  method = "marginal", method = "conditional"
+#ggadjustedcurves(fit2, data = g)
+#curve <- surv_adjustedcurves(fit2, data = g)
 ############### Other plots:
-# or to ggsurvplot:  ggsurvplot(survfit(res.cox), data = g, palette = "#2E9FDF")
-# 1. Define model 
-res.cox <- coxph(Surv(year_death, death) ~ age_65plus + sex) 
-
-# ggsurvplot(survfit(res.cox), data = g,
+# or to ggsurvplot:  ggsurvplot(survfit(fit_cox2), data = g, palette = "#2E9FDF")
+# ggsurvplot(survfit(fit_cox2), data = g,
 #            conf.int = TRUE,
 #            risk.table.col = "strata", # Change risk table color by groups
 #            ggtheme = theme_bw(), # Change ggplot2 theme
@@ -109,7 +113,7 @@ res.cox <- coxph(Surv(year_death, death) ~ age_65plus + sex)
 #            fun = "event")
 
 # ---- Apply the test to the model 
-temp <- cox.zph(res.cox)    
+temp <- cox.zph(fit_cox2)    
 # ---- Plot the curves 
 plot(temp) 
 
@@ -117,11 +121,11 @@ plot(temp)
 # Generate diagnostic plots 
 
 # 2. Plotting the estimated changes in the regression coefficients on deleting each patient 
-ggcoxdiagnostics(res.cox, type = "dfbeta", 
+ggcoxdiagnostics(fit_cox2, type = "dfbeta", 
                  linear.predictions = FALSE, ggtheme = theme_bw())
 
 # 3. Plotting deviance residuals 
-ggcoxdiagnostics(res.cox, type = "deviance", 
+ggcoxdiagnostics(fit_cox2, type = "deviance", 
                  linear.predictions = FALSE, ggtheme = theme_bw())
 
 # 4. Plotting Martingale residuals 
