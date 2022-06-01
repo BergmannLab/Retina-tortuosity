@@ -47,7 +47,7 @@ read_survival_data_GWAS <- function(survival_data_dir)
 read_disease_data <- function(ukbb_files_dir) 
 { 
   ### Read Ukbb files:
-  data_1 <- read.csv(file= paste(ukbb_files_dir, "/ukb34181.csv", sep=""), header = TRUE, sep=",",check.names=FALSE)
+  data_1 <- read.csv(file= paste(ukbb_files_dir, "/1_data_extraction/ukb34181.csv", sep=""), header = TRUE, sep=",",check.names=FALSE)
   gwas_covar <- data_1
   gwas_covar <- gwas_covar[, c('21022-0.0', '31-0.0', '22009-0.1', '22009-0.2', '22009-0.5', '22009-0.6', '22009-0.7', '22009-0.8', '22009-0.16', '22009-0.17', '22009-0.18', 'eid')]
   gwas_covar <- gwas_covar %>% 
@@ -83,7 +83,7 @@ read_disease_data <- function(ukbb_files_dir)
   # data_3 <- read.csv("/../3_data_extraction_tinnitus/ukb42625.csv", header = TRUE, sep=",",check.names=FALSE)
   
   # TO DO: Re rewite how to rename!
-  data_6 <- read.csv(file= paste(ukbb_files_dir, "/ukb49907.csv", sep=""),header = TRUE, sep=",",check.names=FALSE)
+  data_6 <- read.csv(file= paste(ukbb_files_dir, "/6_data_extraction/ukb49907.csv", sep=""),header = TRUE, sep=",",check.names=FALSE)
   data_6 <- data_6[, c('30750-0.0', '40006-0.0', '40013-0.0', '40007-0.0', 
                        '4689-0.0', '4700-0.0', '5408-0.0', '5610-0.0', '5832-0.0', 
                        '5843-0.0', '5855-0.0', '5890-0.0', '5945-0.0', '2443-0.0', 
@@ -95,7 +95,7 @@ read_disease_data <- function(ukbb_files_dir)
   
   # data_7 <- read.csv("/.../7_data_extraction/ukb50488.csv", header = TRUE, sep=",",check.names=FALSE)
   
-  data_8 <- read.csv(file= paste(ukbb_files_dir, "/ukb51076.csv", sep=""),  header = TRUE, sep=",",check.names=FALSE)
+  data_8 <- read.csv(file= paste(ukbb_files_dir, "/8_data_extraction/ukb51076.csv", sep=""),  header = TRUE, sep=",",check.names=FALSE)
   data_8 <- data_8[, c('20262-0.0', 'eid')]
   names(data_8)  <- c('myopia', 'eid')
   
