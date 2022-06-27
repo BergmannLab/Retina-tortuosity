@@ -1,8 +1,8 @@
 # GWAS for multiple fundus traits
-Input
+**Input**
 * precomputed phenofile
 
-Steps performed in this repository
+**Steps performed in this repository**
 * prepare a covariate file required for BGENIE GWAS
 * compute GWAS on given phenofile
 * visualizations: Manhattan, QQ
@@ -15,6 +15,7 @@ Steps performed in this repository
 
 In `configs/config.sh`, specify `NB_PCS`, how many PCs are included as covariates.
 In `GWAS/extractCovariates.py`, further choose which UKBB datafields to choose as covariates. Currently used:
+
 1) sex
 2-3) age and age-squared when visiting assessment center
 4-23) 20 PCs
