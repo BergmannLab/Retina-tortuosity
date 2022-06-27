@@ -1,6 +1,6 @@
-# a) raw ARIA measurements -> phenofile
-# or b) segment stats and image stats -> phenofile
-# ignores all images that don't pass QC!
+# converts image measurements into a phenofile usable by bgenie
+# discards all images that don't pass a given image QC
+# for any given participant, keeps only images taken at first instance if fundus images were taken at both instances
 
 import os, pathlib
 import sys
@@ -15,74 +15,33 @@ import csv
 from multiprocessing import Pool
 
 def getParticipantStatfiles(participant):
-	return [img.split(".png")[0]+"_all_segmentStats.tsv" for img in imgs if participant in img]
+        return [img.split(".png")[0]+"_all_segmentStats.tsv" for img in imgs if participant in img]
+
+def removeMultipleTimes(participant_imgs): # to adequately correct for age, we can only have images from one time point
+# also returns which time point of fundus images for given participant, to more accurately correct for age
+	times = [ i.split("_")[2] for i in participant_imgs ]
+
+	if ("0" in times) & ("1" in times): # if images from two visits present, discard later time point
+		idxs=[]
+		for idx,i in enumerate(times):
+			if i=='0':
+				idxs.append(idx)
+		return np.asarray(participant_imgs)[idxs].tolist(), 0
+
+	elif "1" in times: 	# else if only from second visit present
+		return participant_imgs, 1
+
+	else:			# else if only from first visit present
+		return participant_imgs, 0		
 
 def getParticipantImages(participant):
-        return [img for img in imgs if participant in img]
 
-def getStatfilePhenotypes(statfiles):
-        
-        # because of non-ARIA QC, some predicted statfiles might not actually exist (hence they had no ARIA output)
-        # therefore I try until I find an existing statfile
-	for i in statfiles:
-		try:
-			f=pd.read_csv(i[0], delimiter='\t')
-			columns = list(f.columns)
-			phenos = []
-			phenos = phenos + [i+"_all" for i in columns]
-			phenos = phenos + [i+"_artery" for i in columns]
-			return phenos + [i+"_vein" for i in columns]
-		except:
-			pass
+	participant_imgs = [img for img in imgs if participant in img] # imgs is global variable
+	
+	return removeMultipleTimes(participant_imgs) # returning only images of first time point in case multiple time points present
 
-def segmentStatToMedian(df, phenotype, vesselType):
-	if vesselType == 'all':
-		return [np.median(df[stat])]
-	elif vesselType == 'artery':
-		return [np.median(df[stat].loc[df['AVScore'] > 0])]
-	elif vesselType == 'vein':
-                return [np.median(df[stat].loc[df['AVScore'] < 0])]
-
-def nanmeanOrNan(medians, n_phenotypes):
-	if medians != []:
-		return np.nanmean(np.array(medians),axis=0)
-	else:
-		#print("caught!!")
-		return np.array([np.nan for i in range(0,n_phenotypes)])
-
-# INPUT: images belonging to single participant
-# 1) segment stats for img -> median
-# 2) if multiple images -> mean of all participant img stats
-# computs all the stats for: all (combined), artery, and vein
-def allSegmentStats(inputs):
-	imgs = inputs[0]
-	n_phenotypes = inputs[1]
-
-	all_medians = []
-	artery_medians = []
-	vein_medians = []
-	for i in imgs:
-		try: # because for any image passing QC, ARIA might have failed
-		# df is segment stat file
-			df = pd.read_csv(i, delimiter='\t')
-			all_medians.append(df.median(axis=0))
-			artery_medians.append(df[df['AVScore'] > 0].median(axis=0))
-			vein_medians.append(df[df['AVScore'] < 0].median(axis=0))
-		except:
-			print("ARIA didn't have stats for img", i)
-	# at the moment we are weighting all images equally. we could also weigh them by total vasculature size as a proxy for image quality
-	means = np.concatenate((nanmeanOrNan(all_medians, n_phenotypes), nanmeanOrNan(artery_medians, n_phenotypes), nanmeanOrNan(vein_medians, n_phenotypes)))
-	if np.isnan(means).any():
-		print("WARNING, at least one allSegmentStats phenotype is nan")
-	return(means)
-
-
-
-
-
-
-
-
+def imgToParticipant(imgs_of_participant):
+	return stats.loc[imgs_of_participant].mean()
 
 # pseudofunction containing old stuff that might come in handy
 
@@ -199,6 +158,8 @@ def oldStuff():
                 f.write("%s\t" % np.subtract(np.median(df['medianDiameter'].loc[diam_q4Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q4Inds])))
                 f.write("%s\n" % np.subtract(np.median(df['medianDiameter'].loc[diam_q5Inds]),np.median(df_vein['medianDiameter'].loc[diamVein_q5Inds])))
 
+# rbINT
+
 # for the following code block, the corresponding MIT License
 
 #The MIT License (MIT)
@@ -279,69 +240,84 @@ def rank_to_normal(rank, c, n):
 
 if __name__ == '__main__':
 	
-	# experiment id
-	DATE = datetime.now().strftime("%Y_%m_%d")
-	EXPERIMENT_NAME = "tortuosityPlusPaper"
-	EXPERIMENT_ID = DATE + "_" + EXPERIMENT_NAME
+	# command line arguments
+	EXPERIMENT_ID = sys.argv[1]
+	qcFile = sys.argv[2]
+	input_dir = sys.argv[3]
+	output_dir = sys.argv[4]
 
-	#input and output dirs
-	input_dir = "/data/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/" #2021_02_22_rawMeasurements/"
-	output_dir = "/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/GWAS/output/VesselStatsToPhenofile/" + EXPERIMENT_ID + "/"
 	os.chdir(input_dir)
-	pathlib.Path(output_dir).mkdir(parents=False, exist_ok=True)
+
+	#phenotypes
+	#measurements = #["2022_05_11_FD_tau1_reldiff_emmy_fixed.csv"]
+                       #["2022-05-03_vascular_density_zekavat.csv", "2022-05-04_vascular_density.csv"]
+	measurements = ["2022_05_15_fd_tau4_relative_left_right_difference.csv"]
+                       # "2021-11-30_fractalDimension.csv",\
+                       # "2021-11-29_AV_crossings.csv",\
+                       # "2022-02-04_bifurcations.csv",\
+                       # "2022-02-01_N_green_pixels.csv",\
+                       # "2022-02-13_tVA_phenotypes.csv"]
+	
+	for i,measurement in enumerate(measurements):
+		if i==0:
+			stats = pd.read_csv(measurement, index_col=0)
+		else:
+			tmp = pd.read_csv(measurement, index_col=0)
+			stats = stats.join(tmp)
 
 	#QC
-	qcFile = sys.argv[1]
 	imgs = pd.read_csv(qcFile, header=None) # images that pass QC of choice
 	imgs = imgs[0].values
 	participants = sorted(list(set([i.split("_")[0] for i in imgs]))) # participants with at least one img passing QC
+	
+	#testing
 	nTest = len(participants) # len(participants) for production
+	print(nTest)
+	#imgs_per_participant is a participant list: each element contains list of segment stat files belonging to a participant's QCd images
+	print('Start of getParticipantImages pool')
+	pool1 = Pool(processes=1)
+	out = list(pool1.map(getParticipantImages, participants[0:nTest]))
+	imgs_per_participant = [i[0] for i in out]
+	instance_per_participant = [ i[1] for i in out ]
+	instance_df = pd.DataFrame(columns=['instance'], index=participants[0:nTest], data=instance_per_participant)
 
-	#statfiles is a participant list: each element contains list of segment stat files belonging to a participant's QCd images
-	pool1 = Pool()
-	statfiles = list(pool1.map(getParticipantStatfiles, participants[0:nTest]))	
-
-	#computing participant-wise phenotypes for all the phenotypes present in ARIA segmentStats files
-	# doing so for all, artery, vein
-	names = getStatfilePhenotypes(statfiles)
-	n_stats = int(len(names)/3) # /3 because names appends _all _artery _vein
+	#computing participant-wise stats
+	print('start of imgToParticipant pool')
 	pool = Pool()
-	inputs = [(i,n_stats) for i in statfiles] # tuple inputs for pool
-	out = pool.map(allSegmentStats, inputs)
+	out = pool.map(imgToParticipant, imgs_per_participant)
 	#curating participant-wise output
-	participants_stats = pd.DataFrame(out, columns=names)
-	participants_stats['participant'] = participants[0:nTest]
-	participants_stats = participants_stats.set_index('participant')	
-	print('Nb of images that pass QC:',len(imgs),'\nNb of participants with QCd images:',len(statfiles))
+	participants_stats = pd.DataFrame(out, columns=stats.columns)
+	participants_stats.index = participants[0:nTest]
+	print('Nb of images that pass QC:',len(imgs),'\nNb of participants with QCd images:',len(imgs_per_participant))
 	# quick check of how many nans we picked up along the way
 	print('\nNans per phenotype\n',participants_stats.isna().sum())
 
-
-	# your other cool phenotypes go here
-	# you can then concatenate with existing phenofile
-	# needs function -> image\tmeasurement1\tmeasurement2... -> participant stats
-
-
 	# now that all is measured, we reorder to match sample file, then storing into phenofile
 	# also saving rank-based INT version of phenotype and storing it
-
 	fundus_samples = pd.read_csv("/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/ukb_imp_v3_subset_fundus.sample",\
 delimiter=" ",skiprows=2, header=None,dtype=str)
 	phenofile_out = pd.DataFrame(index = fundus_samples[0], columns = participants_stats.columns, data=np.nan)
-	
+	instances_out = pd.DataFrame(index = fundus_samples[0], columns = ['instance'])	
+
 	#creating phenofile, accounting for missing genotypes
 	idx = [i for i in participants_stats.index if i in phenofile_out.index]
 	print(len(idx))	
 	phenofile_out.loc[idx] = participants_stats.loc[idx]
+	instances_out.loc[idx] = instance_df.loc[idx]
 	
+	#removing all participants with at least one phenotype being NaN (PascalX requirement)
+	#phenofile_out[phenofile_out.isna().any(axis=1)] = np.nan
+		
 	#creating rank-based INT phenofile
 	phenofile_out_rbINT = phenofile_out.apply(rank_INT)
 	
-	# saving both raw and rank-based INT
+	# saving both raw and rank-based INT, and instance list
 	phenofile_out = phenofile_out.astype(str)
 	phenofile_out = phenofile_out.replace('nan', '-999')
-	phenofile_out.to_csv(output_dir+"phenofile.csv", index=False, sep=" ")
+	phenofile_out.to_csv(output_dir+EXPERIMENT_ID+".csv", index=False, sep=" ")
 
 	phenofile_out_rbINT = phenofile_out_rbINT.astype(str)
 	phenofile_out_rbINT = phenofile_out_rbINT.replace('nan', '-999')
-	phenofile_out_rbINT.to_csv(output_dir+"phenofile_qqnorm.csv", index=False, sep=" ")
+	phenofile_out_rbINT.to_csv(output_dir+EXPERIMENT_ID+"_qqnorm.csv", index=False, sep=" ")
+
+	instances_out.to_csv(output_dir+EXPERIMENT_ID+"_instances.csv")

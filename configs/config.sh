@@ -1,31 +1,51 @@
-# CONFIG FILE for Retina pipeline
+# Config file for multitrait retina project
+
+
+
+# FREQUENTLY MODIFIED
+PHENOFILE_ID=2022_05_12_aria_phenotypes # date phenofile created, project, QC
+NB_PCS=20 # nb PCs used as covariates
+
+
+
+# BASE DIRS
+archive=/stornext/CHUV1/archive/FAC/FBM/DBC/sbergman/retina/
+data=/data/FAC/FBM/DBC/sbergman/retina/
+scratch=/scratch/beegfs/FAC/FBM/DBC/sbergman/retina/
 
 # GENOTYPE INFO
-GENOTYPE_DIR=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/genotypes/
-SAMPLE_FILE="$GENOTYPE_DIR"ukb_imp_v3_subset_fundus.sample
+GENOTYPE_DIR=$scratch/UKBiob/genotypes
+SAMPLE_FILE="$GENOTYPE_DIR"/ukb_imp_v3_subset_fundus.sample
 
 # RAW IMAGE DATA
-ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/REVIEW/ # UKBB
-###ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/SkiPOGH/fundus/REVIEW/ # SkiPOGH
+ARIA_data_dir=$data/UKBiob/fundus/REVIEW/ # UKBB
+#ARIA_data_dir=/data/FAC/FBM/DBC/sbergman/retina/SkiPOGH/fundus/REVIEW/ # SkiPOGH
 raw_data_dir=$ARIA_data_dir"CLRIS/"
+raw_archive_dir=$archive/UKBiob/fundus/REVIEW/CLRIS/
 raw_data_dir_av_test=$ARIA_data_dir/CLRIS_AV_test/
 
-ARIA_MEASUREMENTS_DIR=/data/FAC/FBM/DBC/sbergman/retina/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/
-LWNET_DIR=/users/mbeyele5/data_sbergman/retina/UKBiob/fundus/AV_maps/
-FUNDUS_PHENOTYPE_DIR=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/fundus_phenotypes/
+ARIA_MEASUREMENTS_DIR=$scratch/preprocessing/output/backup/2021_10_06_rawMeasurements_withoutQC/
+LWNET_DIR=$data/UKBiob/fundus/AV_maps/
+
+# IMAGE_MEASUREMENTS
+FUNDUS_PHENOTYPE_DIR=$scratch/UKBiob/fundus/fundus_phenotypes/
+
 
 # QC
-ALL_IMAGES=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/index_files/noQC.txt
-KEPT_IMAGES=/data/FAC/FBM/DBC/sbergman/retina/UKBiob/fundus/index_files/mattiaQC_images.txt
+ALL_IMAGES=$data/UKBiob/fundus/index_files/noQC.txt
+KEPT_IMAGES=$data/UKBiob/fundus/index_files_ageCorrectedQC/ageCorrected_ventiles5.txt
 # quality thresholds for ARIA
 #min_QCthreshold_1=11000
 #max_QCthreshold_1=20000
 #min_QCthreshold_2=100
 #max_QCthreshold_2=250
 
+# PHENOFILES
+PHENOFILES_DIR=$scratch/UKBiob/fundus/phenofiles/
+
 # AV CLASSIFICATION IMAGE DATA
 ###AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/uncertainty/ # AVUncertain UKBB
-AV_data_dir=/data/FAC/FBM/DBC/sbergman/retina/michael/ClassifyAVLwnet/ # Lwnet UKBB
+AV_data_dir=$data/michael/ClassifyAVLwnet/ # Lwnet UKBB
 
 # quality thresholds of artery/vein classification
 ###AV_threshold=0.75 # A/V classification AUC around 0.95 (discard 30% of vessels with lowest classification score)
@@ -40,27 +60,21 @@ AV_threshold=0.0 # A/V classification AUC around 0.88 (consider all classified v
 # gpuid=-1 for CPU
 gpuid=-1
 
-# backups
-archive=/stornext/CHUV1/archive/FAC/FBM/DBC/sbergman/retina/mtomason/
-# location of raw data, software, and permanent pipeline outputs
-data=/data/FAC/FBM/DBC/sbergman/
-# location of scratch folder (all pipeline outputs and code)
-scratch=/scratch/beegfs/FAC/FBM/DBC/sbergman/
 # MATLAB
 matlab_runtime=/software/Development/Languages/Matlab_Compiler_Runtime/96
 # BGENIE
-bgenie_dir=$data/retina/software/bgenie
+bgenie_dir=$data/software/bgenie
 # BGENIX
-bgenix_dir=$data/retina/software/bgenix/gavinband-bgen-407eaf355425/build/apps/
+bgenix_dir=$data/software/bgenix/gavinband-bgen-407eaf355425/build/apps/
 # ARIA (compiled)
-ARIA_dir=$data/retina/software/ARIA
+ARIA_dir=$data/software/ARIA/
 # ARIA with random AV calling (compiled)
-ARIA_rndAVcalling_dir=$data/retina/software/ARIA_rndAVcalling
+ARIA_rndAVcalling_dir=$data/software/ARIA_rndAVcalling
 # conda
 conda_dir=/data/FAC/FBM/DBC/sbergman/retina/software/miniconda3/
 # AV classification
 av_uncertain_dir=/data/FAC/FBM/DBC/sbergman/retina/software/a_v_uncertain-master/
 lwnet_dir=/data/FAC/FBM/DBC/sbergman/retina/software/lwnet/
 
-# OUTPUT DIRECTORIES
-GWAS_DIR="$scratch"retina/GWAS/output/RunGWAS/
+# GWAS
+GWAS_DIR=$scratch/GWAS/output/RunGWAS/
