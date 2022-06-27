@@ -17,7 +17,9 @@ In `configs/config.sh`, specify `NB_PCS`, how many PCs are included as covariate
 In `GWAS/extractCovariates.py`, further choose which UKBB datafields to choose as covariates. Currently used:
 
 1) sex
+
 2-3) age and age-squared when visiting assessment center
+
 4-23) 20 PCs
 
 ## Run GWAS
