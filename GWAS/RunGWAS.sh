@@ -80,11 +80,12 @@ function validate_inputs(){ # check input files have matching number of samples
 	echo "Number of samples in input file(s):  " $n_pheno.
 
 	# how many entries in covar file?
-	echo "Covariates file:"
-	n_lines=$(cat $covar_file | wc -l)
+	# NO MORE COVARS
+	#echo "Covariates file:"
+	#n_lines=$(cat $covar_file | wc -l)
 	# num lines in covar file (minus 1 for the header)
-	n_covar=$(($n_lines-1)) 
-	echo "Number of samples in input file(s):  " $n_covar.
+	#n_covar=$(($n_lines-1)) 
+	#echo "Number of samples in input file(s):  " $n_covar.
 }
 
 function run_BGENIE() {
@@ -108,10 +109,10 @@ fi
 $bgenie_dir/bgenie_v1.3_static2 \
 --bgen $chromosome_file \
 --pheno $pheno_file \
---covar $covar_file \
 --out $output_file \
 --thread 8 \
 --pvals
+#--covar $covar_file \
 #--rsid rs78390460 # these options don't work with our version of BGENIE; instead one has to always generate rsID-subsetted bgen files
 #--include_rsids $RSIDS_MINI
 }
