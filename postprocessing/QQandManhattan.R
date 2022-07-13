@@ -84,7 +84,7 @@ for (i in c(1:22)){
   #gwasResults <- read.table(paste("output_CoLaus.HRC.chr", i,".MAFsubsetted.txt", sep=""), sep=" ",header=T, stringsAsFactors= F)
   
     # gwasResults <- subset( gwasResults, select = -c( 36  : 39 )) #sofia deleting tau0, beacuse is always NA
-  #gwasResults[is.na(gwasResults)] <- 0 #sofia
+  gwasResults[is.na(gwasResults)] <- 0 #sofia
   gwasResults <- gwasResults[complete.cases(gwasResults), ] # drop NAs (can happen when maf=1) 
   # filtering for AF, done in colaus cohort
   #gwasResults <- gwasResults[gwasResults$af>0.05,]
