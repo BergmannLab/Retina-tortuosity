@@ -111,8 +111,8 @@ $bgenie_dir/bgenie_v1.3_static2 \
 --pheno $pheno_file \
 --out $output_file \
 --thread 8 \
---pvals
-#--covar $covar_file \
+--pvals \
+#--covar $covar_file
 #--rsid rs78390460 # these options don't work with our version of BGENIE; instead one has to always generate rsID-subsetted bgen files
 #--include_rsids $RSIDS_MINI
 }
