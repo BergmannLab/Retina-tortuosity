@@ -4,8 +4,8 @@
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 20
-#SBATCH --mem 250G
-#SBATCH --time 24:00:00
+#SBATCH --mem 500G
+#SBATCH --time 50:00:00
 #SBATCH --partition normal
 #####SBATCH --array=1
 
@@ -22,9 +22,10 @@ source ../configs/config.sh
 
 output_dir="$GWAS_DIR"/$1/
 echo $output_dir
+mkdir -p $output_dir/inflation
 
-
-for i in "$output_dir"/*.gz; do gunzip -f $i; done
+for i in "$output_dir"/*.gz; do gunzip -f $i &; done
+wait
 
 # Bioconductor was repaired 2021-10-20
 #echo Proceeding with loading special R environment now

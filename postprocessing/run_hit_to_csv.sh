@@ -11,7 +11,7 @@ source ../configs/config.sh
 OUT_DIR="$GWAS_DIR"/$1/
 echo $OUT_DIR
 
-for i in "$OUT_DIR"/*.gz; do gunzip -f $i; done
+for i in "$OUT_DIR"/*.gz; do gunzip -f $i; done # cannot parallelize. would compute on front note
 
 NUMBER_OF_PHENOTYPES=$(awk -F' ' '{print NF; exit}' $OUT_DIR/sample_sizes.txt)
 
