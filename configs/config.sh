@@ -3,7 +3,7 @@
 
 
 # FREQUENTLY MODIFIED
-PHENOFILE_ID=2022_05_12_aria_phenotypes # date phenofile created, project, QC
+PHENOFILE_ID=2022_07_08_ventile5_corrected.two.step.FINAL
 NB_PCS=20 # nb PCs used as covariates
 
 

@@ -24,7 +24,7 @@ output_dir="$GWAS_DIR"/$1/
 echo $output_dir
 mkdir -p $output_dir/inflation
 
-for i in "$output_dir"/*.gz; do gunzip -f $i &; done
+for i in "$output_dir"/*.gz; do gunzip -f $i & done
 wait
 
 # Bioconductor was repaired 2021-10-20
