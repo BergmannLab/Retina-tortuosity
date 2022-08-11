@@ -6,3 +6,5 @@
 preprocessing/**/ARIA_run_tests
 *~
 **/slurm*
+*.log
+*tmp*

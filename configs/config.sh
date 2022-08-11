@@ -3,7 +3,7 @@
 
 
 # FREQUENTLY MODIFIED
-PHENOFILE_ID=2022_07_08_ventile5_corrected.two.step.FINAL
+PHENOFILE_ID=2022_08_03_ventile5_corrected
 NB_PCS=20 # nb PCs used as covariates
 
 

@@ -2,7 +2,7 @@
 #SBATCH --account=sbergman_retina
 #SBATCH --job-name=RunGWAS
 ##SBATCH --output=helpers/RunGWAS/slurm_runs/slurm-%x_%j.out
-##SBATCH --error=helpers/RunGWAS/slurm_runs/slurm-%x_%j.err
+#SBATCH --error=slurm-%A_%a.err # %A: job ID, %a: array index
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 #SBATCH --cpus-per-task 8

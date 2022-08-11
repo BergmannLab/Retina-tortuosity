@@ -78,9 +78,8 @@ def process_chromosome(chr_no):
 		top_hits_chr.to_csv(top_hits_file, mode='a', header=False, index=False)
 
 		#df[pascal_cols].to_csv(pascal_file, mode='a', header=False, index=False)
-
+		print("Chr no", chr_no)
 		df[ldsc_cols].to_csv(ldsc_file, sep='\t', mode='a', header=False, index=False)
-	
 	print("chr", chr_no, "end", time.time() - start_time)
 
 

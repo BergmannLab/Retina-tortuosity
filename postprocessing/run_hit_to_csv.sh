@@ -18,13 +18,13 @@ NUMBER_OF_PHENOTYPES=$(awk -F' ' '{print NF; exit}' $OUT_DIR/sample_sizes.txt)
 echo Number of phenotypes: $NUMBER_OF_PHENOTYPES
 
 cpu=1
-mem=600M #ok for full bgenie gwas
-time="01:00:00"
+mem=600M #600M ok for full bgenie gwas
+time="02:00:00" #1h generally ok, but there are occational bad nodes
 
 for i in $(seq 1 $NUMBER_OF_PHENOTYPES); do
 	PHENO=$(cat $OUT_DIR/sample_sizes.txt | head -n1 | cut -f $i -d' ')
 	SAMPLE_SIZE=$(cat $OUT_DIR/sample_sizes.txt | tail -n1 | cut -f $i -d' ')
-	sbatch -p cpu -J hit_to_csv --mem $mem -t $time -c $cpu -N 1 --account sbergman_retina --partition normal --wrap "python3 -u hit_to_csv.py $OUT_DIR $PHENO $SAMPLE_SIZE"
+	sbatch -p cpu -J hit_to_csv --mem $mem -t $time -c $cpu -N 1 --account sbergman_retina --partition normal --error slurm-%j.err --wrap "python3 -u hit_to_csv.py $OUT_DIR $PHENO $SAMPLE_SIZE"
 done
 
 
