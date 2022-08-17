@@ -1,4 +1,14 @@
 #!/bin/bash
+#SBATCH --account=sbergman_retina
+#SBATCH --job-name=unpack
+#SBATCH --error=slurm-%j.err
+#SBATCH --nodes 1
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 22
+#SBATCH --mem 20G
+#SBATCH --time 00:30:00
+#SBATCH --partition normal
+
 
 # HOW-TO
 # bash hit_to_csv.sh *EXPERIMENT_ID* 
@@ -11,7 +21,8 @@ source ../configs/config.sh
 OUT_DIR="$GWAS_DIR"/$1/
 echo $OUT_DIR
 
-for i in "$OUT_DIR"/*.gz; do gunzip -f $i; done # cannot parallelize. would compute on front note
+for i in "$OUT_DIR"/*.gz; do gunzip -f $i & done
+wait
 
 NUMBER_OF_PHENOTYPES=$(awk -F' ' '{print NF; exit}' $OUT_DIR/sample_sizes.txt)
 

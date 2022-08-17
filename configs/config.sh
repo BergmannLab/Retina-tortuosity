@@ -3,8 +3,8 @@
 
 
 # FREQUENTLY MODIFIED
-PHENOFILE_ID=2022_08_03_ventile5_corrected
-NB_PCS=20 # nb PCs used as covariates
+PHENOFILE_ID=2022_08_17_ventile4_corrected
+NB_PCS=20 # if using uncorrected phenotypes: nb PCs used as covariates
 
 
 
