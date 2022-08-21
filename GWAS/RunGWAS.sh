@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task 8
 #SBATCH --mem 16G
 #####SBATCH --time 01-10:00:00
-#SBATCH --time 00-20:00:00 # new GWAS takes around 4 hours, but occasionally one node might compute slowly
+#SBATCH --time 01-10:00:00 # fes traits: ~4h; hundreds: ~24h
 #SBATCH --partition normal
 #SBATCH --array=1-22
 
@@ -112,7 +112,7 @@ $bgenie_dir/bgenie_v1.3_static2 \
 --out $output_file \
 --thread 8 \
 --pvals \
-#--covar $covar_file
+--covar $covar_file
 #--rsid rs78390460 # these options don't work with our version of BGENIE; instead one has to always generate rsID-subsetted bgen files
 #--include_rsids $RSIDS_MINI
 }

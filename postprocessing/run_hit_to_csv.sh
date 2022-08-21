@@ -11,14 +11,21 @@
 
 
 # HOW-TO
-# bash hit_to_csv.sh *EXPERIMENT_ID* 
+
+# Read from config
+# sbatch run_hit_to_csv.sh
+
+# Custom run
+# sbatch run_hit_to_csv.sh *EXPERIMENT_ID* 
 
 source /dcsrsoft/spack/bin/setup_dcsrsoft
 module load gcc python/3
 
 source ../configs/config.sh
 
-OUT_DIR="$GWAS_DIR"/$1/
+run=${1:-$PHENOFILE_ID}
+
+OUT_DIR="$GWAS_DIR"/$run/
 echo $OUT_DIR
 
 for i in "$OUT_DIR"/*.gz; do gunzip -f $i & done
@@ -30,7 +37,7 @@ echo Number of phenotypes: $NUMBER_OF_PHENOTYPES
 
 cpu=1
 mem=600M #600M ok for full bgenie gwas
-time="02:00:00" #1h generally ok, but there are occational bad nodes
+time="05:00:00" #1h generally ok, but there are occational bad nodes; 5h necessary >300 traits
 
 for i in $(seq 1 $NUMBER_OF_PHENOTYPES); do
 	PHENO=$(cat $OUT_DIR/sample_sizes.txt | head -n1 | cut -f $i -d' ')
